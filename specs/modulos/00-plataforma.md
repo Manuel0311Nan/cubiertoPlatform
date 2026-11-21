@@ -146,9 +146,9 @@ model Venue {
   id        String @id @default(cuid())
   tenantId  String
   name      String
-  addressLine String
-  city      String
-  postalCode String
+  addressLine String?                     // opcionales hasta que el dueño los rellene (PLT-04): el alta crea el local vacío (PLT-01)
+  city      String?
+  postalCode String?
   phone     String?
   whatsappPhone String?                    // E.164; con valor, la web y las reservas muestran "Reservar por WhatsApp" (RES-18)
   email     String?
@@ -225,7 +225,7 @@ model AuditLog {
 
 ### PLT-01 · Crear tenant (superadmin)
 Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
-- Formulario: nombre, slug (sugerido desde el nombre, editable, único, `[a-z0-9-]`, 3–40 caracteres), email del OWNER, módulos iniciales.
+- Formulario: nombre, slug (sugerido desde el nombre, editable, único, `[a-z0-9-]` sin guion al principio ni al final porque es un subdominio, 3–40 caracteres), email del OWNER, módulos iniciales.
 - Crea `Tenant`, `Venue` vacío, `Invitation` OWNER y envía el email de invitación (vía outbox).
 - Slug reservado → error de validación. Lista completa en `../02-arquitectura.md` §7 (`app`, `admin`, `api`, `www`, `mail`, `panel`, `c`, `r`…); vive en una constante de `tenancy` y solo se amplía.
 

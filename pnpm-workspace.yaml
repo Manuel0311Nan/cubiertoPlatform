@@ -1,3 +1,8 @@
 packages:
   - apps/*
   - packages/*
+
+# Prisma descarga su motor de migraciones al instalarse.
+allowBuilds:
+  "@prisma/engines": true
+  prisma: true

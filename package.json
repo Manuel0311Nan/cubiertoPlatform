@@ -9,7 +9,14 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:generate": "pnpm --filter @cubierto/db generate",
+    "db:migrate:dev": "pnpm --filter @cubierto/db migrate:dev",
+    "db:migrate:deploy": "pnpm --filter @cubierto/db migrate:deploy",
+    "db:migrate:test": "pnpm --filter @cubierto/db migrate:test",
+    "db:migrate:status": "pnpm --filter @cubierto/db migrate:status",
+    "db:seed": "pnpm --filter @cubierto/db seed"
   },
   "devDependencies": {
     "turbo": "2.11.13"
