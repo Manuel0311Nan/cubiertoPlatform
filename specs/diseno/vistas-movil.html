@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cubierto, vistas en móvil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:opsz,wght@9..144,500..700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Bricolage Grotesque',system-ui,sans-serif;background:#E7ECE9;color:#14281F;-webkit-font-smoothing:antialiased}
+
+/* ---------- Galería ---------- */
+.g-head{max-width:1360px;margin:0 auto;padding:40px 24px 16px}
+.g-head .lg{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.03em;margin-bottom:18px}
+.g-head h1{font-size:clamp(30px,4.4vw,48px);letter-spacing:-.035em;margin:0;font-weight:750;line-height:1.02}
+.g-head p{max-width:70ch;color:#4B6158;font-size:17px;line-height:1.5;margin:12px 0 0}
+.g-nav{position:sticky;top:0;z-index:5;background:rgba(231,236,233,.95);backdrop-filter:blur(6px);border-bottom:1px solid #C9D6CF}
+.g-nav .in{max-width:1360px;margin:0 auto;padding:8px 24px;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;font-weight:650;font-size:15px}
+.g-nav a{color:#1D4A3A;text-decoration:none;padding:8px 0}
+.g-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.g-nav a:focus-visible,.g-head a:focus-visible{outline:3px solid #E8A317;outline-offset:2px;border-radius:4px}
+.g-nav .other{margin-left:auto;color:#14281F}
+.g-group{max-width:1360px;margin:0 auto;padding:48px 24px 8px;scroll-margin-top:48px}
+.g-group>h2{font-size:30px;letter-spacing:-.025em;margin:0;line-height:1.1}
+.g-group>p{color:#4B6158;margin:8px 0 0;max-width:70ch;line-height:1.5;font-size:16px}
+.g-list{display:flex;flex-wrap:wrap;gap:56px 40px;margin-top:28px}
+.g-item{margin:0;min-width:0;width:100%;scroll-margin-top:60px}
+.g-list.m .g-item{width:390px;max-width:100%}
+.g-cap{margin:0 0 14px}
+.g-cap .t{display:flex;gap:10px;align-items:baseline}
+.g-id{font-weight:750;font-size:13px;background:#14281F;color:#F7F8F5;border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums;flex:none}
+.g-name{font-weight:700;font-size:18px;letter-spacing:-.01em}
+.g-why{color:#4B6158;font-size:14.5px;margin:6px 0 0;line-height:1.45;max-width:72ch}
+.stage{position:relative;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 0 0 1px #C9D6CF,0 24px 48px -30px rgba(20,40,31,.55)}
+.g-list.m .stage{border-radius:30px;box-shadow:0 0 0 8px #14281F,0 24px 48px -24px rgba(20,40,31,.6);margin:8px}
+.g-list.m .g-item{width:406px}
+.stage>.scr{transform-origin:0 0;position:absolute;top:0;left:0}
+.g-foot{max-width:1360px;margin:0 auto;padding:56px 24px 64px;color:#4B6158;font-size:14px}
+
+/* ---------- Pantallas ---------- */
+.scr{overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:15px;line-height:1.4;display:flex;flex-direction:column}
+.t-cub{--ink:#14281F;--bg:#F7F8F5;--card:#fff;--line:#C9D6CF;--mute:#4B6158;--acc:#E8A317;--acc-ink:#14281F;--brand:#1D4A3A;--brand-ink:#F2F6F3;--soft:#E4ECE7;--bad:#B83A27;--warn-bg:#FBF1D6;--warn-ink:#5A4204;--r:999px}
+.t-brezo{--ink:#2B2118;--bg:#FBFAF6;--card:#fff;--line:#E6DED2;--mute:#6B5A48;--acc:#C8553D;--acc-ink:#fff;--brand:#2B2118;--brand-ink:#F6EFE4;--soft:#F3E6CC;--bad:#A3301F;--warn-bg:#F3E6CC;--warn-ink:#5C4B39;--r:10px}
+.serif{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em}
+.scr h1,.scr h2,.scr h3,.scr p{margin:0}
+.scr h1{font-weight:750;letter-spacing:-.03em;line-height:1.05}
+.scr h2{letter-spacing:-.02em;line-height:1.15}
+.scr a{color:var(--brand);text-decoration:underline;text-underline-offset:3px;font-weight:650}
+.mute{color:var(--mute)}
+.small{font-size:13px}
+.b{font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:var(--r);border:2px solid var(--ink);background:transparent;color:var(--ink);font:inherit;font-weight:650;font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.soft{border:1px solid var(--line);background:var(--card)}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:14px}
+.btn.lg{min-height:52px;font-size:17px}
+.btn.block{width:100%}
+.btn.off{background:var(--line);border-color:var(--line);color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.t-brezo .card{border-radius:14px}
+.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;line-height:1.3}
+.p-ok{background:#DDEEE4;color:#1D4A3A}.p-warn{background:#FBF1D6;color:#5A4204}.p-bad{background:#F6DCD7;color:#8E2A1B}.p-mute{background:var(--soft);color:var(--mute)}.p-dark{background:var(--ink);color:var(--bg)}.p-line{border:1.5px solid var(--line);color:var(--mute)}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:14px;white-space:nowrap}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip .n{font-variant-numeric:tabular-nums;opacity:.7}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>span:first-child{font-weight:650;font-size:14px}
+.inp{white-space:nowrap;overflow:hidden;min-height:46px;padding:0 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);display:flex;align-items:center;gap:8px}
+.inp.ph{color:var(--mute)}
+.inp.ta{white-space:normal;min-height:84px;align-items:flex-start;padding-top:11px}
+.inp.focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(232,163,23,.35)}
+.t-brezo .inp{border-radius:10px;border-width:1.5px;border-color:#D8CFC2}
+.t-brezo .inp.focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(200,85,61,.22)}
+.hint{font-size:13px;color:var(--mute);line-height:1.4}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stack{display:flex;flex-direction:column}
+.wrap{flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.list{list-style:none;margin:0;padding:0}
+.list>li{border-bottom:1px solid var(--line)}
+.sw{width:52px;height:32px;padding:4px;border-radius:999px;background:var(--line);display:flex;flex:none}
+.sw::after{content:'';width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw.on{background:var(--brand);justify-content:flex-end}
+.sw.red.on{background:var(--bad)}
+.bar{height:10px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--brand);border-radius:999px}
+.bar>i.acc{background:var(--acc)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:13px;font-weight:650;color:var(--mute);padding:10px 12px;border-bottom:2px solid var(--ink);white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr.grp td{background:var(--soft);font-weight:700;font-size:13.5px;padding:7px 12px}
+.tbl tr.sel td{background:#FBF1D6}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs>span{padding:10px 14px;font-weight:650;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs>span.on{color:var(--ink);border-color:var(--acc)}
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--soft)}
+.seg>span{padding:7px 14px;border-radius:999px;font-weight:650;font-size:14px;color:var(--mute)}
+.seg>span.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.al{display:inline-flex;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:#EFE8DD;color:#4A3B2C;white-space:nowrap}
+.t-cub .al{background:var(--soft);color:var(--brand)}
+.als{display:flex;flex-wrap:wrap;gap:4px}
+.check{width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);flex:none;display:inline-flex;align-items:center;justify-content:center;background:var(--card)}
+.check.on{background:var(--ink);border-color:var(--ink)}
+.check.on::after{content:'';width:10px;height:5px;border-left:2.5px solid var(--bg);border-bottom:2.5px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--mute);flex:none;background:var(--card)}
+.radio.on{border:7px solid var(--ink)}
+.note{font-size:13px;padding:4px 10px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);display:inline-block;line-height:1.4}
+.banner{padding:12px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink);border:1.5px solid var(--acc)}
+.t-brezo .banner{border-color:#E2CFA8}
+.img{background:repeating-linear-gradient(135deg,#E9DFD0 0 14px,#E3D8C7 14px 28px);display:flex;align-items:flex-end;padding:12px 14px;color:#6B5A48;font-size:13px;font-weight:650;border-radius:14px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.cnt{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--acc);color:var(--acc-ink);font-size:12px;font-weight:750;align-items:center;justify-content:center;margin-left:auto}
+.kbd{font-size:12px;padding:1px 6px;border-radius:5px;border:1px solid var(--line);background:var(--card)}
+.dim{position:absolute;inset:0;background:rgba(20,40,31,.45)}
+.t-brezo .dim{background:rgba(43,33,24,.5)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:10px 20px 22px;box-shadow:0 -12px 30px rgba(0,0,0,.18)}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.modal{position:absolute;background:var(--card);border-radius:20px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Panel en ordenador */
+.pn{flex-direction:row}
+.side{width:232px;flex:none;background:var(--brand);color:var(--brand-ink);padding:22px 14px;display:flex;flex-direction:column;gap:24px}
+.side .logo{display:flex;align-items:center;gap:10px;font-weight:750;font-size:21px;letter-spacing:-.03em;padding:0 8px}
+.side .loc{padding:10px 12px;border-radius:10px;border:1px solid rgba(242,246,243,.25)}
+.side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;font-weight:550;font-size:15px}
+.side li{padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:10px}
+.side li.on{background:rgba(242,246,243,.13);box-shadow:inset 4px 0 0 var(--acc)}
+.side .who{margin-top:auto;padding:0 12px;font-size:13px;line-height:1.45;opacity:.88}
+.main{flex:1;min-width:0;padding:28px 36px;display:flex;flex-direction:column;gap:22px;overflow:hidden;position:relative}
+.phd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.phd h1{font-size:34px}
+.phd p{color:var(--mute);margin-top:4px}
+
+/* Superadmin */
+.sa-top{background:#14281F;color:#F2F6F3;padding:14px 32px;display:flex;align-items:center;gap:28px}
+.sa-top .logo{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.03em}
+.sa-top nav{display:flex;gap:22px;font-weight:600;font-size:15px;color:#C9D6CF}
+.sa-top nav .on{color:#F2F6F3;text-decoration:underline;text-decoration-color:#E8A317;text-decoration-thickness:3px;text-underline-offset:7px}
+.sa-badge{font-size:12.5px;padding:2px 10px;border-radius:999px;background:rgba(232,163,23,.2);color:#F5C766;font-weight:650}
+
+/* Panel en móvil */
+.mtop{background:var(--brand);color:var(--brand-ink);padding:14px 20px 14px}
+.mtab{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--card);padding:8px 4px 18px;flex:none}
+.mtab>span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:650;color:var(--mute);position:relative}
+.mtab>span .ic{width:24px;height:24px}
+.mtab>span.on{color:var(--brand)}
+.mtab>span.on::before{content:'';position:absolute;top:-9px;width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--acc)}
+.mbody{flex:1;min-height:0;overflow:hidden;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.fab{position:absolute;right:20px;bottom:92px;min-height:54px;padding:0 22px;border-radius:999px;background:var(--acc);color:var(--acc-ink);font-weight:750;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px rgba(20,40,31,.5)}
+.back{display:inline-flex;align-items:center;gap:6px;font-weight:650;font-size:15px}
+
+/* Web del local */
+.wnav{display:flex;align-items:center;gap:28px;padding:18px 48px;background:var(--brand);color:var(--brand-ink)}
+.wnav .nm{font-family:Fraunces,Georgia,serif;font-weight:650;font-size:26px;margin-right:auto}
+.wnav a{color:#DCCFBD;text-decoration:none;font-weight:600}
+.wfoot{background:#2B2118;color:#DCCFBD;padding:22px 48px;display:flex;gap:24px;font-size:13.5px;align-items:center}
+.wfoot a{color:#DCCFBD;font-weight:500}
+@media (max-width:700px){.g-nav{position:static}.g-nav .other{margin-left:0}}
+
+</style>
+</head>
+<body>
+<header class="g-head"><div class="lg"><span data-logo="#1D4A3A,#F2F6F3,30"></span>cubierto</div><h1>Todas las vistas en el móvil</h1><p>Cada pantalla a tamaño real de un móvil (390 × 844). Arriba lo que ve el comensal, con los colores de un local de ejemplo; después el panel que usa el equipo del restaurante, y al final tu panel de Cubierto. Usa los códigos (M1, M2…) para pedir cambios.</p></header>
+<nav class="g-nav" aria-label="Secciones"><div class="in"><a href="#comensal">Lo que ve el comensal (9)</a><a href="#local">Lo que usa el restaurante (7)</a><a href="#cubierto">Tu panel de Cubierto (1)</a><a class="other" href="vistas-ordenador.html">Ver las vistas en ordenador</a></div></nav>
+<main><section class="g-group" id="comensal"><h2>Lo que ve el comensal</h2><p>Web, carta y reservas del restaurante. Cada local las ve con sus propios colores y tipografía: aquí, el tema rústico de Casa Brezo.</p><div class="g-list m">
+
+<figure class="g-item" id="M1"><figcaption class="g-cap"><div class="t"><span class="g-id">M1</span><span class="g-name">Web del local</span></div><p class="g-why">Lo primero que encuentra quien busca el restaurante en Google. Reservar y ver la carta, a un toque.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header class="between" style="background:var(--brand);color:var(--brand-ink);padding:16px 20px"><span class="serif" style="font-size:24px">Casa Brezo</span><span class="row small" style="gap:6px;font-weight:650"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menú</span></header>
+<div class="img" style="height:220px;border-radius:0;flex:none">Foto del comedor</div>
+<div class="stack" style="padding:20px;gap:16px">
+  <h1 class="serif" style="font-size:32px;font-weight:650;letter-spacing:-.015em;line-height:1.08">Cocina de mercado en la Calle Mayor</h1>
+  <p class="mute" style="font-size:16px;line-height:1.5">Guisos de cuchara, verdura de la vega del Henares y una bodega pequeña pero bien elegida.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span class="btn pri lg">Reservar mesa</span><span class="btn lg">Ver la carta</span></div>
+  <div class="card stack" style="padding:14px 16px;gap:10px">
+    <div class="row" style="gap:10px"><span class="dot" style="background:#3F7D4E"></span><span><b>Abierto hoy</b>, de 13:00 a 16:00 y de 20:30 a 23:30</span></div>
+    <div class="between"><span class="mute">Calle Mayor 12, Alcalá de Henares</span><a href="#" style="white-space:nowrap">Cómo llegar</a></div>
+  </div>
+  <div style="padding:14px 16px;border-radius:14px;background:var(--soft)">
+    <div class="between"><span class="serif" style="font-size:20px">Menú del día</span><b class="num" style="font-size:18px">14,50 €</b></div>
+    <p class="small" style="margin-top:4px;color:#5C4B39">De lunes a viernes al mediodía. Primero, segundo, pan, bebida y postre o café.</p>
+  </div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M2"><figcaption class="g-cap"><div class="t"><span class="g-id">M2</span><span class="g-name">Primera visita: cookies</span></div><p class="g-why">El aviso que exige la ley. Aceptar y rechazar tienen el mismo peso, y nada se carga hasta que el comensal elige.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header class="between" style="background:var(--brand);color:var(--brand-ink);padding:16px 20px"><span class="serif" style="font-size:24px">Casa Brezo</span><span class="small" style="font-weight:650">Menú</span></header>
+<div class="img" style="height:220px;border-radius:0;flex:none">Foto del comedor</div>
+<div style="padding:20px"><h1 class="serif" style="font-size:32px;font-weight:650;line-height:1.08">Cocina de mercado en la Calle Mayor</h1></div>
+<div class="dim"></div>
+<div class="sheet stack" style="gap:14px">
+  <div class="grab"></div>
+  <h2 class="serif" style="font-size:22px">Cookies en casabrezo.es</h2>
+  <p style="font-size:15px;line-height:1.5">Usamos cookies técnicas para que la web funcione. Con tu permiso, también cargamos el mapa de Google y contamos las visitas para mejorar la web.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span class="btn dark lg">Rechazar</span><span class="btn dark lg">Aceptar todas</span></div>
+  <span class="btn lg block">Elegir qué cookies</span>
+  <a href="#" class="small" style="align-self:center">Leer la política de cookies</a>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M3"><figcaption class="g-cap"><div class="t"><span class="g-id">M3</span><span class="g-name">Carta con QR</span></div><p class="g-why">Lo que se abre al escanear el código de la mesa. Sabe en qué mesa está, cambia a inglés y tacha lo agotado al momento.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header class="stack" style="background:var(--brand);color:var(--brand-ink);padding:18px 20px 14px;gap:12px">
+  <div class="between"><div><div class="serif" style="font-size:26px;line-height:1.1">Casa Brezo</div><div class="small" style="color:#DCCFBD">Mesa 7</div></div>
+    <div class="row" style="gap:0;border:1px solid #6B5A48;border-radius:999px;padding:3px"><span style="padding:7px 13px;border-radius:999px;background:#F6EFE4;color:#2B2118;font-weight:700;font-size:13px">ES</span><span style="padding:7px 13px;font-weight:600;font-size:13px">EN</span></div></div>
+  <div class="row" style="gap:18px;font-weight:600;white-space:nowrap;overflow:hidden"><span style="text-decoration:underline;text-decoration-color:#E8A317;text-decoration-thickness:3px;text-underline-offset:7px">Menú del día</span><span style="color:#DCCFBD">Para compartir</span><span style="color:#DCCFBD">Principales</span><span style="color:#DCCFBD">Postres</span></div>
+</header>
+<div class="stack" style="padding:16px 20px 0;gap:16px;flex:1;overflow:hidden">
+  <div class="row wrap" style="gap:8px"><span class="chip">Sin gluten</span><span class="chip">Sin lactosa</span><span class="chip">Más alérgenos</span></div>
+  <section style="padding:16px;border-radius:14px;background:var(--soft)">
+    <div class="between"><h2 class="serif" style="font-size:22px">Menú del día</h2><b class="num" style="font-size:20px">14,50 €</b></div>
+    <p class="small" style="margin:4px 0 10px;color:#5C4B39">Lunes a viernes, de 13:00 a 16:00. Pan, bebida y postre o café.</p>
+    <div style="font-size:14px;line-height:1.6"><b>Primeros a elegir</b><br>Crema de calabaza asada<br>Ensalada de garbanzos y bacalao</div>
+  </section>
+  <section><h2 class="serif" style="font-size:22px;margin-bottom:2px">Para compartir</h2>
+    <ul class="list">
+      <li style="padding:12px 0"><div class="between"><span style="font-weight:650;font-size:16px;color:#8C7E70;text-decoration:line-through">Croquetas caseras de jamón</span><span class="num" style="color:#8C7E70;text-decoration:line-through">9,50 €</span></div><div class="small b" style="color:var(--bad);margin-top:2px">Agotado hoy</div><div class="als" style="margin-top:6px"><span class="al">Gluten</span><span class="al">Huevo</span><span class="al">Leche</span></div></li>
+      <li style="padding:12px 0"><div class="between"><span style="font-weight:650;font-size:16px">Tomate de la huerta con ventresca</span><span class="num">11,00 €</span></div><div class="small mute" style="margin-top:2px">Aceite de Toledo y cebolleta</div><div class="als" style="margin-top:6px"><span class="al">Pescado</span></div></li>
+      <li style="padding:12px 0"><div class="between"><span style="font-weight:650;font-size:16px">Torreznos crujientes</span><span class="num">7,50 €</span></div><div class="small mute" style="margin-top:2px">Con pimentón de la Vera</div></li>
+    </ul></section>
+</div>
+<footer class="stack" style="padding:12px 20px 18px;border-top:1px solid var(--line);gap:10px;background:var(--bg)"><p class="small mute">Si tienes alguna alergia o intolerancia, consulta al personal antes de pedir.</p><span class="btn dark block">Reservar otra visita</span></footer>
+</div></div></figure>
+
+<figure class="g-item" id="M4"><figcaption class="g-cap"><div class="t"><span class="g-id">M4</span><span class="g-name">Carta: filtro de alérgenos</span></div><p class="g-why">Los 14 alérgenos que obliga la normativa. Al marcar uno, desaparecen los platos que lo llevan.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header class="stack" style="background:var(--brand);color:var(--brand-ink);padding:18px 20px 14px;gap:4px"><div class="serif" style="font-size:26px">Casa Brezo</div><div class="small" style="color:#DCCFBD">Mesa 7</div></header>
+<div style="padding:16px 20px" class="stack"><div class="row" style="gap:8px"><span class="chip on">Sin gluten</span><span class="chip">Sin lactosa</span></div><h2 class="serif" style="font-size:22px;margin-top:16px">Para compartir</h2><p style="margin-top:12px;font-weight:650">Tomate de la huerta con ventresca</p></div>
+<div class="dim"></div>
+<div class="sheet stack" style="gap:14px">
+  <div class="grab"></div>
+  <div class="between"><h2 class="serif" style="font-size:22px">Ocultar platos con…</h2><span class="small b">2 marcados</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:15px">
+    <span class="row" style="min-height:40px;gap:10px"><i class="check on"></i>Gluten</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Crustáceos</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Huevo</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Pescado</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Cacahuetes</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Soja</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check on"></i>Leche</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Frutos de cáscara</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Apio</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Mostaza</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Sésamo</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Sulfitos</span>
+    <span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Altramuces</span><span class="row" style="min-height:40px;gap:10px"><i class="check"></i>Moluscos</span>
+  </div>
+  <p class="hint">La información de alérgenos la pone el restaurante. Si tienes una alergia grave, avisa siempre al personal.</p>
+  <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:8px"><span class="btn lg">Quitar filtros</span><span class="btn dark lg">Ver 23 platos</span></div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M5"><figcaption class="g-cap"><div class="t"><span class="g-id">M5</span><span class="g-name">Reservar: día y hora</span></div><p class="g-why">Paso 1 de 2. Solo aparecen las horas reales con sitio para ese número de personas; las completas se ven tachadas.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header style="padding:18px 20px 14px;background:var(--brand);color:var(--brand-ink)"><span class="small" style="color:#DCCFBD">Volver</span><h1 class="serif" style="margin-top:8px;font-size:26px;font-weight:650">Reserva en Casa Brezo</h1><p class="small" style="margin-top:4px;color:#DCCFBD">Paso 1 de 2: día y hora</p></header>
+<div class="stack" style="padding:18px 20px;gap:18px;flex:1">
+  <div><p class="b" style="margin-bottom:10px;font-size:16px">¿Cuántas personas?</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:17px;font-weight:600">
+      <span class="btn soft">1</span><span class="btn soft">2</span><span class="btn soft">3</span><span class="btn dark">4</span><span class="btn soft">5</span><span class="btn soft">6</span><span class="btn soft">7</span><span class="btn soft">8</span></div>
+    <p class="hint" style="margin-top:8px">¿Sois más de 8? Envía una solicitud y te contestamos.</p></div>
+  <div><p class="b" style="margin-bottom:10px;font-size:16px">¿Qué día?</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+      <span class="btn dark stack" style="min-height:58px;padding:0;gap:0"><span class="small">Hoy</span><b class="num" style="font-size:19px">14</b></span>
+      <span class="btn soft stack" style="min-height:58px;padding:0;gap:0"><span class="small">Dom</span><b class="num" style="font-size:19px">15</b></span>
+      <span class="btn soft stack" style="min-height:58px;padding:0;gap:0"><span class="small">Mar</span><b class="num" style="font-size:19px">17</b></span>
+      <span class="btn soft stack" style="min-height:58px;padding:0;gap:0"><span class="small">Mié</span><b class="num" style="font-size:19px">18</b></span>
+      <span class="btn soft stack" style="min-height:58px;padding:0;gap:0"><span class="small">Más</span><b style="font-size:15px">fechas</b></span></div></div>
+  <div><p class="b" style="font-size:16px">¿A qué hora?</p>
+    <p class="small mute" style="margin:10px 0 6px;font-weight:600">Comidas</p>
+    <div class="num" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <span class="btn soft">13:00</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">13:30</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">14:00</span><span class="btn soft">14:30</span><span class="btn soft">15:00</span><span class="btn soft">15:30</span></div>
+    <p class="small mute" style="margin:12px 0 6px;font-weight:600">Cenas</p>
+    <div class="num" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <span class="btn soft">20:30</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">21:00</span><span class="btn dark">21:30</span><span class="btn soft">22:00</span><span class="btn soft">22:30</span></div></div>
+</div>
+<footer class="stack" style="padding:12px 20px 18px;border-top:1px solid var(--line);gap:6px"><p class="small mute" style="text-align:center">4 personas, hoy sábado 14 a las 21:30</p><span class="btn pri lg block" style="border-radius:10px">Continuar</span></footer>
+</div></div></figure>
+
+<figure class="g-item" id="M6"><figcaption class="g-cap"><div class="t"><span class="g-id">M6</span><span class="g-name">Reservar: tus datos</span></div><p class="g-why">Paso 2 de 2. Lo mínimo para confirmar: nombre, teléfono y email. Las novedades del local van aparte y desmarcadas.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header style="padding:18px 20px 14px;background:var(--brand);color:var(--brand-ink)"><span class="small" style="color:#DCCFBD">Volver</span><h1 class="serif" style="margin-top:8px;font-size:26px;font-weight:650">Tus datos</h1><p class="small" style="margin-top:4px;color:#DCCFBD">Paso 2 de 2</p></header>
+<div class="stack" style="padding:16px 20px;gap:14px;flex:1">
+  <div class="between card" style="padding:12px 14px;background:var(--soft);border:0"><span><b>4 personas</b><br><span class="small">Hoy, sábado 14, a las 21:30</span></span><a href="#" class="small">Cambiar</a></div>
+  <label class="fld"><span>Nombre</span><span class="inp">Carmen Sanz</span></label>
+  <label class="fld"><span>Teléfono</span><span class="inp num">612 345 678</span></label>
+  <label class="fld"><span>Email</span><span class="inp focus">c.sanz@corr<span style="width:2px;height:20px;background:var(--ink)"></span></span><span class="hint">Te mandamos aquí la confirmación y el enlace para cambiarla.</span></label>
+  <label class="fld"><span>¿Algo que debamos saber? <span class="mute" style="font-weight:500">(opcional)</span></span><span class="inp ta ph">Alergias, trona, una celebración…</span></label>
+  <span class="row small" style="gap:10px;align-items:flex-start"><i class="check on"></i><span>He leído la <a href="#">política de privacidad</a></span></span>
+  <span class="row small" style="gap:10px;align-items:flex-start"><i class="check"></i><span>Quiero recibir novedades de Casa Brezo</span></span>
+</div>
+<footer class="stack" style="padding:12px 20px 18px;border-top:1px solid var(--line);gap:6px"><span class="btn pri lg block">Confirmar reserva</span><p class="hint" style="text-align:center">Te guardamos la mesa 15 minutos.</p></footer>
+</div></div></figure>
+
+<figure class="g-item" id="M7"><figcaption class="g-cap"><div class="t"><span class="g-id">M7</span><span class="g-name">Reserva confirmada</span></div><p class="g-why">Confirmación inmediata, sin esperar a que el local conteste. Lo útil a mano: calendario y cómo llegar.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header style="padding:16px 20px;background:var(--brand);color:var(--brand-ink)"><span class="serif" style="font-size:22px">Casa Brezo</span></header>
+<div class="stack" style="padding:36px 24px 20px;gap:20px;flex:1">
+  <svg width="72" height="72" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="#C8553D"/><path d="M22 37l9 9 19-20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h1 class="serif" style="font-size:34px;font-weight:650;line-height:1.05">Reserva hecha, Carmen</h1>
+  <div class="card" style="padding:4px 18px">
+    <div class="between" style="padding:12px 0;border-bottom:1px solid var(--line)"><span class="mute">Día</span><b>Sábado, 14 de noviembre</b></div>
+    <div class="between" style="padding:12px 0;border-bottom:1px solid var(--line)"><span class="mute">Hora</span><b class="num">21:30</b></div>
+    <div class="between" style="padding:12px 0;border-bottom:1px solid var(--line)"><span class="mute">Personas</span><b>4</b></div>
+    <div class="between" style="padding:12px 0"><span class="mute">Dónde</span><b>Calle Mayor 12</b></div>
+  </div>
+  <p style="line-height:1.5">Te hemos enviado la confirmación a <b>c.sanz@correo.es</b>.</p>
+  <div class="stack" style="gap:8px"><span class="btn dark lg block">Añadir al calendario</span><span class="btn lg block">Cómo llegar</span></div>
+  <p class="hint" style="margin-top:auto">¿Cambio de planes? Desde el email puedes cambiar o cancelar la reserva.</p>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M8"><figcaption class="g-cap"><div class="t"><span class="g-id">M8</span><span class="g-name">Reservar: turno completo</span></div><p class="g-why">Cuando no queda sitio, el comensal no se va con las manos vacías: lista de espera y los huecos más cercanos.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header style="padding:18px 20px 14px;background:var(--brand);color:var(--brand-ink)"><span class="small" style="color:#DCCFBD">Volver</span><h1 class="serif" style="margin-top:8px;font-size:26px;font-weight:650">Reserva en Casa Brezo</h1><p class="small" style="margin-top:4px;color:#DCCFBD">Paso 1 de 2: día y hora</p></header>
+<div class="stack" style="padding:18px 20px;gap:18px;flex:1">
+  <div class="between card" style="padding:12px 14px"><span><b>4 personas</b>, hoy sábado 14</span><a href="#" class="small">Cambiar</a></div>
+  <div><p class="b" style="font-size:16px">Cenas</p>
+    <div class="num" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px">
+      <span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">20:30</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">21:00</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">21:30</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">22:00</span><span class="btn soft" style="background:#F1ECE4;color:#8C7E70;border:1.5px dashed #D8CFC2;text-decoration:line-through">22:30</span></div></div>
+  <div class="stack" style="gap:12px;padding:18px;border-radius:14px;background:var(--soft)">
+    <h2 class="serif" style="font-size:22px">Las cenas de hoy están completas para 4</h2>
+    <p style="line-height:1.5">Apúntate a la lista de espera. Si se libera una mesa, te avisamos por email y la reservas con un toque.</p>
+    <span class="btn dark lg block">Apuntarme a la lista de espera</span>
+  </div>
+  <div><p class="b" style="font-size:16px">Otros días con sitio para 4</p>
+    <div class="stack" style="gap:8px;margin-top:10px">
+      <span class="between card" style="padding:12px 14px"><span><b>Domingo 15</b><br><span class="small mute">Solo comidas</span></span><span class="row" style="gap:6px"><span class="chip num">13:30</span><span class="chip num">14:00</span></span></span>
+      <span class="between card" style="padding:12px 14px"><span><b>Martes 17</b><br><span class="small mute">Cenas</span></span><span class="row" style="gap:6px"><span class="chip num">21:00</span><span class="chip num">21:30</span></span></span>
+    </div></div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M9"><figcaption class="g-cap"><div class="t"><span class="g-id">M9</span><span class="g-name">Gestionar mi reserva</span></div><p class="g-why">Se abre desde el enlace del email, sin cuenta ni contraseña. Cambiar o cancelar libera la mesa para otro cliente al instante.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-brezo">
+<header style="padding:16px 20px;background:var(--brand);color:var(--brand-ink)"><span class="serif" style="font-size:22px">Casa Brezo</span></header>
+<div class="stack" style="padding:24px 20px;gap:18px;flex:1">
+  <div class="stack" style="gap:6px"><span class="pill p-ok" style="align-self:flex-start">Confirmada</span><h1 class="serif" style="font-size:30px;font-weight:650">Tu reserva</h1></div>
+  <div class="card stack" style="padding:16px 18px;gap:4px"><b style="font-size:18px">Sábado 14, a las 21:30</b><span>4 personas, a nombre de Carmen Sanz</span><span class="small mute">Calle Mayor 12, Alcalá de Henares</span></div>
+  <ul class="list" style="border-top:1px solid var(--line)">
+    <li class="between" style="min-height:58px"><span style="font-weight:650">Cambiar día u hora</span><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></li>
+    <li class="between" style="min-height:58px"><span style="font-weight:650">Cambiar número de personas</span><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></li>
+    <li class="between" style="min-height:58px"><span style="font-weight:650">Añadir una nota para el restaurante</span><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></li>
+  </ul>
+  <div class="stack" style="gap:8px;margin-top:auto"><span class="btn bad lg block">Cancelar reserva</span><p class="hint" style="text-align:center">Puedes cancelar hasta 2 horas antes. Después, llama al 918 000 000.</p></div>
+</div>
+</div></div></figure>
+</div></section>
+
+<section class="g-group" id="local"><h2>Lo que usa el restaurante</h2><p>El panel del equipo en el móvil: pensado para usarlo de pie, en plena sala, con botones grandes y las acciones del servicio a la vista.</p><div class="g-list m">
+
+<figure class="g-item" id="M10"><figcaption class="g-cap"><div class="t"><span class="g-id">M10</span><span class="g-name">Entrar al panel</span></div><p class="g-why">Sin contraseñas: el equipo entra con un enlace que le llega al correo. Esta es la pantalla después de pedirlo.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<div class="stack" style="padding:28px 24px;gap:22px;flex:1">
+  <div class="row" style="gap:10px;font-weight:750;font-size:21px;letter-spacing:-.03em"><span data-logo="#1D4A3A,#F2F6F3"></span>cubierto</div>
+  <svg width="96" height="80" viewBox="0 0 96 80" aria-hidden="true" style="margin-top:40px"><rect x="4" y="10" width="88" height="62" rx="10" fill="#fff" stroke="#14281F" stroke-width="3"/><path d="M6 14l42 32 42-32" fill="none" stroke="#14281F" stroke-width="3" stroke-linejoin="round"/><circle cx="82" cy="12" r="10" fill="#E8A317"/></svg>
+  <h1 style="font-size:34px">Revisa tu correo</h1>
+  <p style="font-size:16px;line-height:1.5">Te hemos enviado un enlace a <b>lucia@casabrezo.es</b>. Tócalo desde este móvil para entrar al panel.</p>
+  <p class="hint">El enlace caduca en 15 minutos. Si no lo ves, mira en la carpeta de spam.</p>
+  <div class="stack" style="gap:8px;margin-top:auto"><span class="btn lg block">Reenviar el enlace</span><a href="#" style="align-self:center;padding:10px">Usar otro email</a></div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="M11"><figcaption class="g-cap"><div class="t"><span class="g-id">M11</span><span class="g-name">Hoy</span></div><p class="g-why">La pantalla de inicio del encargado: cómo van los turnos, quién llega ahora y qué espera una decisión suya.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop"><div class="between small" style="opacity:.85"><span>Casa Brezo</span><span>13:15</span></div><h1 style="font-size:28px;margin-top:4px">Sábado 14</h1></header>
+<div class="mbody">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="card stack" style="padding:12px 14px;gap:6px"><span class="small b">Comidas</span><span><b class="num" style="font-size:26px;letter-spacing:-.03em">64</b> <span class="small mute">de 80</span></span><div class="bar"><i style="width:80%"></i></div></div>
+    <div class="card stack" style="padding:12px 14px;gap:6px"><span class="small b">Cenas</span><span><b class="num" style="font-size:26px;letter-spacing:-.03em">78</b> <span class="small mute">de 90</span></span><div class="bar"><i class="acc" style="width:87%"></i></div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span class="btn pri">Nueva reserva</span><span class="btn">Sin reserva</span></div>
+  <section><h2 style="font-size:19px;margin-bottom:6px">Pendiente de ti</h2>
+    <ul class="list card" style="padding:0 14px">
+      <li class="between" style="min-height:54px"><span><b>2 grupos</b> esperan confirmación</span><span class="cnt" style="margin:0">2</span></li>
+      <li class="between" style="min-height:54px;border:0"><span>Carta en inglés lista para revisar</span><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></li>
+    </ul></section>
+  <section><div class="between" style="margin-bottom:4px"><h2 style="font-size:19px">Llegan pronto</h2><a href="#" class="small">Ver todas</a></div>
+    <ul class="list" style="border-top:2px solid var(--ink)">
+      <li class="row" style="padding:10px 0"><b class="num" style="width:48px">13:30</b><span class="grow"><b>Andrea Ruiz</b><br><span class="small mute">2 personas, mesa 1</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+      <li class="row" style="padding:10px 0"><b class="num" style="width:48px">13:30</b><span class="grow"><b>Familia Ortega</b><br><span class="small mute">3 personas, mesa 9</span><br><span class="note" style="margin-top:4px">Necesitan trona</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+      <li class="row" style="padding:10px 0"><b class="num" style="width:48px">14:00</b><span class="grow"><b>Carmen Sanz</b><br><span class="small mute">4 personas, mesa 7</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+    </ul></section>
+</div>
+<nav data-mtab="hoy"></nav>
+</div></div></figure>
+
+<figure class="g-item" id="M12"><figcaption class="g-cap"><div class="t"><span class="g-id">M12</span><span class="g-name">Reservas del día</span></div><p class="g-why">Todas las reservas por turno, con su estado. Los filtros de arriba llevan a lo que necesita atención.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop stack" style="gap:12px"><h1 style="font-size:28px">Reservas</h1>
+  <div class="row num" style="gap:6px;font-weight:650">
+    <span style="padding:6px 12px;border-radius:999px;background:#F2F6F3;color:#1D4A3A">Hoy 14</span><span style="padding:6px 10px;opacity:.85">Dom 15</span><span style="padding:6px 10px;opacity:.85">Mar 17</span><span style="padding:6px 10px;opacity:.85">Mié 18</span><span style="padding:6px 10px;opacity:.85">Jue 19</span></div></header>
+<div class="mbody" style="gap:12px;position:relative">
+  <div class="row" style="gap:6px;overflow:hidden"><span class="chip on">Todas <span class="n">40</span></span><span class="chip">Por confirmar <span class="n">2</span></span><span class="chip">En espera <span class="n">4</span></span></div>
+  <div class="between small" style="padding:6px 10px;border-radius:8px;background:var(--soft)"><b>Comidas</b><span>64 de 80 cubiertos</span></div>
+  <ul class="list">
+    <li class="row" style="padding:9px 0"><b class="num" style="width:46px">13:00</b><span class="grow"><b>Pedro Gil</b><br><span class="small mute">2 pers., mesa 3</span></span><span class="pill p-dark">En mesa</span></li>
+    <li class="row" style="padding:9px 0"><b class="num" style="width:46px">13:30</b><span class="grow"><b>Andrea Ruiz</b><br><span class="small mute">2 pers., mesa 1</span></span><span class="pill p-ok">Confirmada</span></li>
+    <li class="row" style="padding:9px 0"><b class="num" style="width:46px">13:30</b><span class="grow"><b>Familia Ortega</b><br><span class="small mute">3 pers., mesa 9</span></span><span class="pill p-ok">Confirmada</span></li>
+    <li class="row" style="padding:9px 0;background:#FBF1D6;margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:8px"><b class="num" style="width:46px">14:00</b><span class="grow"><b>Carmen Sanz</b><br><span class="small mute">4 pers., mesa 7</span></span><span class="pill p-ok">Confirmada</span></li>
+    <li class="row" style="padding:9px 0"><b class="num" style="width:46px">14:00</b><span class="grow"><b>Luis Martín</b><br><span class="small mute">2 pers., sin mesa</span></span><span class="pill p-warn">Sin mesa</span></li>
+    <li class="row" style="padding:9px 0"><b class="num" style="width:46px">14:30</b><span class="grow"><b>Taller Henares</b><br><span class="small mute">6 pers., mesa 11</span></span><span class="pill p-ok">Confirmada</span></li>
+  </ul>
+  <div class="between small" style="padding:6px 10px;border-radius:8px;background:var(--soft)"><b>Cenas</b><span>78 de 90 cubiertos</span></div>
+  <ul class="list"><li class="row" style="padding:9px 0"><b class="num" style="width:46px">20:30</b><span class="grow"><b>Raúl Ibáñez</b><br><span class="small mute">2 pers., mesa 2</span></span><span class="pill p-ok">Confirmada</span></li></ul>
+  <span class="fab" style="bottom:16px"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva</span>
+</div>
+<nav data-mtab="reservas"></nav>
+</div></div></figure>
+
+<figure class="g-item" id="M13"><figcaption class="g-cap"><div class="t"><span class="g-id">M13</span><span class="g-name">Ficha de reserva</span></div><p class="g-why">Todo sobre una reserva en una pantalla. La acción del momento («Ha llegado») es la más grande.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop stack" style="gap:6px"><span class="back small"><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15 6l-6 6 6 6"/></svg>Reservas</span><h1 style="font-size:30px">Carmen Sanz</h1><p style="opacity:.9">4 personas, hoy a las 14:00</p></header>
+<div class="mbody" style="gap:14px">
+  <span class="note" style="font-size:14px;padding:8px 12px">Cumpleaños: sacar la tarta con vela a los postres</span>
+  <ul class="list card" style="padding:0 16px">
+    <li class="between" style="min-height:56px"><span><span class="small mute">Mesa</span><br><b>7, en sala</b></span><a href="#" class="small">Cambiar</a></li>
+    <li class="between" style="min-height:56px"><span><span class="small mute">Teléfono</span><br><b class="num">612 345 678</b></span><span class="btn sm soft">Llamar</span></li>
+    <li class="between" style="min-height:56px"><span><span class="small mute">Reservó</span><br><b>Desde la web, el martes</b></span></li>
+    <li style="padding:12px 0;border:0"><span class="small mute">Historial</span><br><b>3.ª visita</b>. La última, el 20 de septiembre. Nunca ha faltado.</li>
+  </ul>
+  <div class="stack" style="gap:8px;margin-top:auto">
+    <span class="btn pri lg block">Ha llegado: sentar</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span class="btn">Cambiar</span><span class="btn bad">No vino</span></div>
+    <a href="#" style="align-self:center;color:var(--bad);padding:8px">Cancelar reserva</a>
+  </div>
+</div>
+<nav data-mtab="reservas"></nav>
+</div></div></figure>
+
+<figure class="g-item" id="M14"><figcaption class="g-cap"><div class="t"><span class="g-id">M14</span><span class="g-name">Nueva reserva por teléfono</span></div><p class="g-why">Para apuntar una llamada en segundos. Al teclear el teléfono reconoce a los clientes que ya han venido.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop between"><span class="small" style="font-weight:650">Cancelar</span><b style="font-size:17px">Nueva reserva</b><span style="width:56px"></span></header>
+<div class="mbody" style="gap:14px">
+  <div class="between"><b>Personas</b><span class="row" style="gap:0;border:2px solid var(--line);border-radius:999px;background:#fff"><span style="width:46px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px">−</span><b class="num" style="width:36px;text-align:center;font-size:20px">4</b><span style="width:46px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px">+</span></span></div>
+  <div class="row" style="gap:6px"><span class="chip on">Hoy</span><span class="chip">Mañana</span><span class="chip">Otra fecha</span></div>
+  <div><p class="small mute b" style="margin-bottom:6px">Cenas, plazas libres en cada hora</p>
+    <div class="num" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <span class="btn soft sm stack" style="min-height:52px;gap:0;border-radius:12px"><b>20:30</b><span class="small mute">12</span></span>
+      <span class="btn soft sm stack" style="min-height:52px;gap:0;border-radius:12px;opacity:.55;text-decoration:line-through"><b>21:00</b><span class="small">0</span></span>
+      <span class="btn dark sm stack" style="min-height:52px;gap:0;border-radius:12px"><b>21:30</b><span class="small">8</span></span>
+      <span class="btn soft sm stack" style="min-height:52px;gap:0;border-radius:12px"><b>22:00</b><span class="small mute">14</span></span></div></div>
+  <label class="fld"><span>Teléfono</span><span class="inp focus num">612 345 6<span style="width:2px;height:20px;background:var(--ink)"></span></span></label>
+  <div class="between card" style="padding:10px 14px;background:var(--soft);border:0;margin-top:-6px"><span><b>Carmen Sanz</b><br><span class="small mute">612 345 678, 3 visitas</span></span><span class="btn sm dark">Usar</span></div>
+  <label class="fld"><span>Nombre</span><span class="inp ph">Nombre de la reserva</span></label>
+  <label class="fld"><span>Nota <span class="mute" style="font-weight:500">(opcional)</span></span><span class="inp ph">Alergias, trona, celebración…</span></label>
+  <span class="row small" style="gap:10px"><i class="check on"></i>Enviarle la confirmación por email</span>
+</div>
+<footer style="padding:12px 20px 18px;border-top:1px solid var(--line);background:#fff"><span class="btn pri lg block">Guardar reserva</span></footer>
+</div></div></figure>
+
+<figure class="g-item" id="M15"><figcaption class="g-cap"><div class="t"><span class="g-id">M15</span><span class="g-name">Sala en el móvil</span></div><p class="g-why">En pantalla pequeña el plano no se lee, así que las mesas pasan a fichas por zona. «Plano» abre el dibujo para quien lo prefiera.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop stack" style="gap:4px"><h1 style="font-size:28px">Sala</h1><p class="small" style="opacity:.9">A las 21:00, 5 de 12 mesas en uso</p></header>
+<div class="mbody" style="gap:12px">
+  <div class="between"><span class="seg"><span class="on">Fichas</span><span>Plano</span></span><span class="chip num">21:00</span></div>
+  <p class="small b mute">Terraza</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+    <span class="card stack" style="padding:10px;gap:2px;border:2px solid var(--line)"><b style="font-size:20px">1</b><span class="small mute">Libre, 2</span></span>
+    <span class="stack" style="padding:10px;gap:2px;border-radius:14px;background:var(--brand);color:#F2F6F3"><b style="font-size:20px">2</b><span class="small">Vera, desde 20:40</span></span>
+    <span class="card stack" style="padding:10px;gap:2px;border:2px solid var(--line)"><b style="font-size:20px">3</b><span class="small mute">Libre, 2</span></span>
+    <span class="stack" style="padding:10px;gap:2px;border-radius:14px;background:var(--brand);color:#F2F6F3"><b style="font-size:20px">4</b><span class="small">Ibáñez, 20:30</span></span>
+    <span class="card stack" style="padding:10px;gap:2px;border:2px solid var(--line)"><b style="font-size:20px">5</b><span class="small mute">Libre, 4</span></span>
+  </div>
+  <p class="small b mute">Sala</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+    <span class="stack" style="padding:10px;gap:2px;border-radius:14px;background:#F7DFA6;border:2px solid var(--acc)"><b style="font-size:20px">6</b><span class="small">Ramos llega 21:15</span></span>
+    <span class="card stack" style="padding:10px;gap:2px;border:2px solid var(--line)"><b style="font-size:20px">7</b><span class="small mute">Libre, 4</span></span>
+    <span class="stack" style="padding:10px;gap:2px;border-radius:14px;background:#F7DFA6;border:2px solid var(--acc)"><b style="font-size:20px">8</b><span class="small">Díaz llega 21:30</span></span>
+    <span class="stack" style="grid-column:span 2;padding:10px;gap:2px;border-radius:14px;background:var(--brand);color:#F2F6F3;outline:3px solid var(--ink);outline-offset:-3px"><b style="font-size:20px">9 + 10 <span class="small" style="font-weight:600;opacity:.85">juntas</span></b><span class="small">Cumpleaños de Lucía, 8</span></span>
+    <span class="card stack" style="padding:10px;gap:2px;border:2px solid var(--line)"><b style="font-size:20px">11</b><span class="small mute">Libre, 6</span></span>
+    <span class="stack" style="padding:10px;gap:2px;border-radius:14px;background:var(--brand);color:#F2F6F3"><b style="font-size:20px">12</b><span class="small">Peña, 8</span></span>
+  </div>
+  <div class="between card" style="padding:10px 14px;border:2px dashed var(--line)"><span><b>2 reservas sin mesa</b><br><span class="small mute">Tócalas y después una mesa libre</span></span><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+</div>
+<nav data-mtab="sala"></nav>
+</div></div></figure>
+
+<figure class="g-item" id="M16"><figcaption class="g-cap"><div class="t"><span class="g-id">M16</span><span class="g-name">Agotados en servicio</span></div><p class="g-why">Un interruptor por plato. Al marcarlo, la carta de los comensales lo tacha al momento.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="mtop stack" style="gap:2px"><div class="between small" style="opacity:.85"><span>Casa Brezo</span><span>Carta</span></div><h1 style="font-size:28px">Servicio de cenas</h1><p style="color:var(--acc);font-weight:700">2 platos agotados ahora</p></header>
+<div style="padding:14px 20px 4px"><span class="inp ph">Buscar plato</span></div>
+<ul class="list" style="padding:0 20px;flex:1;overflow:hidden">
+  <li class="between" style="min-height:62px"><span><b style="color:var(--mute);text-decoration:line-through">Croquetas caseras de jamón</b><br><span class="small b" style="color:var(--bad)">Agotado: los clientes lo ven tachado</span></span><i class="sw red on"></i></li>
+  <li class="between" style="min-height:62px"><span><b style="color:var(--mute);text-decoration:line-through">Pulpo a la gallega</b><br><span class="small b" style="color:var(--bad)">Agotado: los clientes lo ven tachado</span></span><i class="sw red on"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Tomate de la huerta con ventresca</b><br><span class="small mute">Para compartir</span></span><i class="sw"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Torreznos crujientes</b><br><span class="small mute">Para compartir</span></span><i class="sw"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Carrillera al vino tinto</b><br><span class="small mute">Principales</span></span><i class="sw"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Merluza a la romana</b><br><span class="small mute">Principales</span></span><i class="sw"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Tarta de queso al horno</b><br><span class="small mute">Postres</span></span><i class="sw"></i></li>
+  <li class="between" style="min-height:62px"><span><b>Torrija con helado de canela</b><br><span class="small mute">Postres</span></span><i class="sw"></i></li>
+</ul>
+<div style="padding:10px 20px"><span class="btn block">Reponer todo al cerrar</span></div>
+<nav data-mtab="carta"></nav>
+</div></div></figure>
+</div></section>
+
+<section class="g-group" id="cubierto"><h2>Tu panel de Cubierto</h2><p>Lo que ves tú como administrador: todos los locales, sus pagos, dominios y gasto de IA. Para echar un vistazo desde el móvil.</p><div class="g-list m">
+
+<figure class="g-item" id="M17"><figcaption class="g-cap"><div class="t"><span class="g-id">M17</span><span class="g-name">Locales</span></div><p class="g-why">Primero lo que necesita tu atención; después cada local con sus módulos, pago y gasto de IA del mes.</p></figcaption><div class="stage" data-w="390" data-h="844"><div class="scr t-cub">
+<header class="between" style="background:#14281F;color:#F2F6F3;padding:14px 20px"><span class="row" style="gap:8px;font-weight:750;font-size:19px;letter-spacing:-.03em"><span data-logo="#E8A317,#14281F,26"></span>cubierto</span><span class="sa-badge">Superadmin</span></header>
+<div class="mbody" style="gap:14px">
+  <div><h1 style="font-size:30px">Locales</h1><p class="mute">5 locales, 3 en piloto</p></div>
+  <div class="banner stack" style="gap:6px"><b>Necesita tu atención</b><span class="small">labodegadesanta.es espera el cambio de DNS desde hace 3 días.</span><span class="small">El pago de Taberna El Arco falló el 10/11.</span></div>
+  <ul class="list stack" style="gap:8px">
+    <li class="card stack" style="padding:12px 14px;gap:8px;border-bottom:1px solid var(--line)"><div class="between"><b>Casa Brezo</b><span class="pill p-warn">Piloto</span></div><div class="row" style="gap:4px"><span class="al">Web</span><span class="al">Carta</span><span class="al">Reservas</span></div><div class="between small"><span class="mute">IA del mes</span><span class="num">1,85 € de 2 €</span></div><div class="bar" style="height:6px"><i class="acc" style="width:92%"></i></div></li>
+    <li class="card stack" style="padding:12px 14px;gap:8px;border-bottom:1px solid var(--line)"><div class="between"><b>Taberna El Arco</b><span class="pill p-bad">Pago pendiente</span></div><div class="row" style="gap:4px"><span class="al">Carta</span><span class="al">Reservas</span></div><div class="between small"><span class="mute">IA del mes</span><span class="num">0,40 € de 2 €</span></div><div class="bar" style="height:6px"><i style="width:20%"></i></div></li>
+    <li class="card stack" style="padding:12px 14px;gap:8px;border-bottom:1px solid var(--line)"><div class="between"><b>La Bodega de Santa</b><span class="pill p-warn">Piloto</span></div><div class="row" style="gap:4px"><span class="al">Web</span><span class="al">Carta</span></div><div class="between small"><span class="mute">Dominio</span><span>Esperando DNS</span></div></li>
+    <li class="card stack" style="padding:12px 14px;gap:8px;border-bottom:1px solid var(--line)"><div class="between"><b>Café Cervantes</b><span class="pill p-ok">Al día</span></div><div class="row" style="gap:4px"><span class="al">Carta</span></div></li>
+  </ul>
+</div>
+</div></div></figure>
+</div></section>
+</main>
+<footer class="g-foot">Maqueta de diseño de Cubierto, noviembre de 2026. Locales, platos, personas y cifras son de ejemplo.</footer>
+<script>
+(function () {
+  var LOGO = function (bg, fg, s) {
+    s = s || 28;
+    return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="' + bg + '"/><path d="M10 9v14M22 9c-4 2-4 6 0 7v7" fill="none" stroke="' + fg + '" stroke-width="2.6" stroke-linecap="round"/></svg>';
+  };
+  var ICONS = {
+    hoy: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    reservas: '<path d="M10 7h10M10 12h10M10 17h10"/><path d="M4.5 7h.01M4.5 12h.01M4.5 17h.01" stroke-width="3"/>',
+    sala: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="16" height="7" rx="2"/>',
+    carta: '<path d="M6 4h9a4 4 0 0 1 4 4v12H10a4 4 0 0 1-4-4z"/><path d="M10 9h5M10 13h5"/>',
+    mas: '<path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3.2"/>'
+  };
+  var ic = function (n) { return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[n] + '</svg>'; };
+
+  // Barra lateral del panel del local
+  document.querySelectorAll('[data-side]').forEach(function (el) {
+    var on = el.getAttribute('data-side');
+    var items = ['Hoy', 'Reservas', 'Sala', 'Carta', 'Web', 'Mensajes', 'Clientes', 'Ajustes'];
+    el.classList.add('side');
+    el.innerHTML = '<div class="logo">' + LOGO('#F2F6F3', '#1D4A3A') + '<span>cubierto</span></div>' +
+      '<div class="loc"><div style="font-weight:700">Casa Brezo</div><div class="small" style="opacity:.8">Calle Mayor 12, Alcalá</div></div>' +
+      '<ul>' + items.map(function (i) {
+        return '<li class="' + (i === on ? 'on' : '') + '">' + i + (i === 'Mensajes' ? '<span class="cnt">1</span>' : '') + '</li>';
+      }).join('') + '</ul>' +
+      '<div class="who"><div style="font-weight:650">Lucía Brezo</div><div>Propietaria</div></div>';
+  });
+
+  // Barra inferior del panel en móvil
+  document.querySelectorAll('[data-mtab]').forEach(function (el) {
+    var on = el.getAttribute('data-mtab');
+    var items = [['hoy', 'Hoy'], ['reservas', 'Reservas'], ['sala', 'Sala'], ['carta', 'Carta'], ['mas', 'Más']];
+    el.classList.add('mtab');
+    el.innerHTML = items.map(function (i) {
+      return '<span class="' + (i[0] === on ? 'on' : '') + '">' + ic(i[0]) + i[1] + '</span>';
+    }).join('');
+  });
+
+  // Cabecera del superadmin
+  document.querySelectorAll('[data-sa]').forEach(function (el) {
+    var on = el.getAttribute('data-sa');
+    el.classList.add('sa-top');
+    el.innerHTML = '<div class="logo">' + LOGO('#E8A317', '#14281F') + '<span>cubierto</span><span class="sa-badge">Superadmin</span></div>' +
+      '<nav>' + ['Locales', 'Dominios', 'Uso de IA', 'Avisos'].map(function (i) {
+        return '<span class="' + (i === on ? 'on' : '') + '">' + i + '</span>';
+      }).join('') + '</nav><span style="margin-left:auto;font-size:14px;color:#C9D6CF">Manuel</span>';
+  });
+
+  document.querySelectorAll('[data-logo]').forEach(function (el) {
+    var p = el.getAttribute('data-logo').split(',');
+    el.innerHTML = LOGO(p[0], p[1], +(p[2] || 28));
+  });
+
+  // Plano de sala (SVG)
+  function plan(mode) {
+    var T = [
+      { id: 1, s: 'r', x: 85, y: 130, st: 'free' }, { id: 2, s: 'r', x: 175, y: 130, st: 'seated' },
+      { id: 3, s: 'r', x: 85, y: 245, st: 'free' }, { id: 4, s: 'r', x: 175, y: 245, st: 'seated' },
+      { id: 5, s: 'q', x: 130, y: 370, st: 'free' }, { id: 6, s: 'q', x: 320, y: 180, st: 'soon' },
+      { id: 7, s: 'q', x: 440, y: 180, st: 'free' }, { id: 8, s: 'q', x: 560, y: 180, st: 'soon' },
+      { id: 9, s: 'q', x: 320, y: 300, st: 'join' }, { id: 10, s: 'q', x: 440, y: 300, st: 'join' },
+      { id: 11, s: 'l', n: 6, x: 650, y: 300, st: 'free' }, { id: 12, s: 'l', n: 8, x: 400, y: 410, st: 'seated' }
+    ];
+    var edit = mode === 'editor';
+    var look = {
+      free: { f: '#FFFFFF', s: '#4B6158', i: '#14281F', c: '#C9D6CF' },
+      soon: { f: '#F7DFA6', s: '#E8A317', i: '#14281F', c: '#C9D6CF' },
+      seated: { f: '#1D4A3A', s: '#1D4A3A', i: '#F2F6F3', c: '#7E9B8E' }
+    };
+    var o = '<svg viewBox="0 0 800 500" role="img" aria-label="Plano de sala de Casa Brezo" style="display:block;width:100%;height:auto;font-family:\'Bricolage Grotesque\',system-ui,sans-serif">';
+    if (edit) {
+      o += '<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#E1E8E4" stroke-width="1"/></pattern></defs><rect x="0" y="0" width="800" height="500" fill="url(#grid)"/>';
+    }
+    o += '<rect x="20" y="20" width="760" height="460" rx="14" fill="' + (edit ? 'rgba(247,248,245,.6)' : '#F7F8F5') + '" stroke="#14281F" stroke-width="3"/>' +
+      '<rect x="20" y="20" width="210" height="460" rx="14" fill="#E4ECE7" stroke="#C9D6CF" stroke-width="2" stroke-dasharray="8 6"/>' +
+      '<text x="40" y="52" font-size="18" font-weight="700" fill="#4B6158">Terraza</text><text x="252" y="52" font-size="18" font-weight="700" fill="#4B6158">Sala</text>' +
+      '<rect x="600" y="20" width="180" height="120" fill="#E4ECE7" stroke="#14281F" stroke-width="2"/><text x="690" y="86" font-size="15" font-weight="600" fill="#4B6158" text-anchor="middle">Cocina</text>' +
+      '<rect x="300" y="64" width="260" height="34" rx="6" fill="#E4ECE7" stroke="#4B6158" stroke-width="2"/><text x="430" y="86" font-size="15" font-weight="600" fill="#4B6158" text-anchor="middle">Barra</text>' +
+      '<line x1="520" y1="480" x2="600" y2="480" stroke="#E8A317" stroke-width="8"/><text x="560" y="470" font-size="13" font-weight="600" fill="#4B6158" text-anchor="middle">Entrada</text>';
+    var chairs = '', tables = '';
+    var cw = 22, ch = 10, g = 6;
+    T.forEach(function (t) {
+      var st = edit ? 'free' : t.st;
+      if (st === 'join') return;
+      var l = look[st];
+      var w = t.s === 'r' ? 52 : t.s === 'q' ? 64 : (t.n === 8 ? 220 : 150);
+      var h = t.s === 'r' ? 52 : t.s === 'q' ? 64 : 58;
+      var C = function (x, y, ww, hh) { chairs += '<rect x="' + x + '" y="' + y + '" width="' + ww + '" height="' + hh + '" rx="4" fill="' + l.c + '"/>'; };
+      if (t.s === 'r') { C(t.x - w / 2 - g - ch, t.y - cw / 2, ch, cw); C(t.x + w / 2 + g, t.y - cw / 2, ch, cw); }
+      else if (t.s === 'q') { C(t.x - cw / 2, t.y - h / 2 - g - ch, cw, ch); C(t.x - cw / 2, t.y + h / 2 + g, cw, ch); C(t.x - w / 2 - g - ch, t.y - cw / 2, ch, cw); C(t.x + w / 2 + g, t.y - cw / 2, ch, cw); }
+      else { var per = t.n / 2; for (var i = 0; i < per; i++) { var cx = t.x - w / 2 + (w / per) * (i + .5); C(cx - cw / 2, t.y - h / 2 - g - ch, cw, ch); C(cx - cw / 2, t.y + h / 2 + g, cw, ch); } }
+      var selected = edit && t.id === 11;
+      var stroke = selected ? '#E8A317' : l.s, sw = selected ? 4 : 2.5;
+      if (t.s === 'r') tables += '<circle cx="' + t.x + '" cy="' + t.y + '" r="26" fill="' + l.f + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+      else tables += '<rect x="' + (t.x - w / 2) + '" y="' + (t.y - h / 2) + '" width="' + w + '" height="' + h + '" rx="8" fill="' + l.f + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+      tables += '<text x="' + t.x + '" y="' + (t.y + 6) + '" font-size="18" font-weight="750" fill="' + l.i + '" text-anchor="middle">' + t.id + '</text>';
+      if (selected) {
+        var x0 = t.x - w / 2 - 14, y0 = t.y - h / 2 - 26, x1 = t.x + w / 2 + 14, y1 = t.y + h / 2 + 26;
+        tables += '<rect x="' + x0 + '" y="' + y0 + '" width="' + (x1 - x0) + '" height="' + (y1 - y0) + '" fill="none" stroke="#E8A317" stroke-width="2" stroke-dasharray="6 4"/>';
+        [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].forEach(function (p) { tables += '<rect x="' + (p[0] - 6) + '" y="' + (p[1] - 6) + '" width="12" height="12" fill="#fff" stroke="#14281F" stroke-width="2"/>'; });
+        tables += '<circle cx="' + t.x + '" cy="' + (y0 - 18) + '" r="7" fill="#fff" stroke="#14281F" stroke-width="2"/><line x1="' + t.x + '" y1="' + (y0 - 11) + '" x2="' + t.x + '" y2="' + y0 + '" stroke="#14281F" stroke-width="2"/>';
+      }
+    });
+    if (!edit) {
+      [320, 440].forEach(function (x) { chairs += '<rect x="' + (x - 11) + '" y="252" width="22" height="10" rx="4" fill="#7E9B8E"/><rect x="' + (x - 11) + '" y="338" width="22" height="10" rx="4" fill="#7E9B8E"/>'; });
+      chairs += '<rect x="272" y="289" width="10" height="22" rx="4" fill="#7E9B8E"/><rect x="478" y="289" width="10" height="22" rx="4" fill="#7E9B8E"/>';
+      tables += '<rect x="288" y="268" width="184" height="64" rx="8" fill="#1D4A3A" stroke="#14281F" stroke-width="5"/><text x="320" y="306" font-size="18" font-weight="750" fill="#F2F6F3" text-anchor="middle">9</text><text x="440" y="306" font-size="18" font-weight="750" fill="#F2F6F3" text-anchor="middle">10</text>';
+    } else {
+      // Mesas 9 y 10 sueltas en el editor
+      [320, 440].forEach(function (x, k) {
+        chairs += '<rect x="' + (x - 11) + '" y="252" width="22" height="10" rx="4" fill="#C9D6CF"/><rect x="' + (x - 11) + '" y="338" width="22" height="10" rx="4" fill="#C9D6CF"/><rect x="' + (x - 48) + '" y="289" width="10" height="22" rx="4" fill="#C9D6CF"/><rect x="' + (x + 38) + '" y="289" width="10" height="22" rx="4" fill="#C9D6CF"/>';
+        tables += '<rect x="' + (x - 32) + '" y="268" width="64" height="64" rx="8" fill="#fff" stroke="#4B6158" stroke-width="2.5"/><text x="' + x + '" y="306" font-size="18" font-weight="750" fill="#14281F" text-anchor="middle">' + (9 + k) + '</text>';
+      });
+      tables += '<path d="M371 300h18" stroke="#1D4A3A" stroke-width="2.5" stroke-dasharray="3 3"/><text x="380" y="262" font-size="12" font-weight="650" fill="#1D4A3A" text-anchor="middle">se juntan</text>';
+    }
+    return o + chairs + tables + '</svg>';
+  }
+  document.querySelectorAll('[data-plan]').forEach(function (el) { el.innerHTML = plan(el.getAttribute('data-plan')); });
+
+  // Códigos QR de muestra (dibujo, no escaneables)
+  function qr(seed, size) {
+    var n = 25, s = size / n, r = seed * 9301 + 49297, o = '';
+    var rnd = function () { r = (r * 9301 + 49297) % 233280; return r / 233280; };
+    var finder = function (x, y) { return (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7); };
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) { if (!finder(x, y) && rnd() > .52) o += '<rect x="' + x * s + '" y="' + y * s + '" width="' + s + '" height="' + s + '"/>'; }
+    var F = function (x, y) { return '<rect x="' + (x * s + s / 2) + '" y="' + (y * s + s / 2) + '" width="' + 6 * s + '" height="' + 6 * s + '" fill="none" stroke="#14281F" stroke-width="' + s + '"/><rect x="' + (x + 2) * s + '" y="' + (y + 2) * s + '" width="' + 3 * s + '" height="' + 3 * s + '"/>'; };
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" aria-hidden="true" style="display:block"><g fill="#14281F">' + o + F(0, 0) + F(n - 7, 0) + F(0, n - 7) + '</g></svg>';
+  }
+  document.querySelectorAll('[data-qr]').forEach(function (el) { el.innerHTML = qr(+el.getAttribute('data-qr'), 200); });
+
+  // Escalado de cada pantalla al ancho disponible
+  function fit() {
+    document.querySelectorAll('.stage').forEach(function (st) {
+      var w = +st.getAttribute('data-w'), h = +st.getAttribute('data-h');
+      var avail = st.parentElement.clientWidth - (st.closest('.g-list.m') ? 16 : 0);
+      var k = Math.min(1, avail / w);
+      st.style.width = (w * k) + 'px';
+      st.style.height = (h * k) + 'px';
+      var scr = st.firstElementChild;
+      scr.style.width = w + 'px';
+      scr.style.height = h + 'px';
+      scr.style.transform = k < 1 ? 'scale(' + k + ')' : '';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+
+</script>
+</body>
+</html>

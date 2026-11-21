@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cubierto, vistas en ordenador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:opsz,wght@9..144,500..700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Bricolage Grotesque',system-ui,sans-serif;background:#E7ECE9;color:#14281F;-webkit-font-smoothing:antialiased}
+
+/* ---------- Galería ---------- */
+.g-head{max-width:1360px;margin:0 auto;padding:40px 24px 16px}
+.g-head .lg{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.03em;margin-bottom:18px}
+.g-head h1{font-size:clamp(30px,4.4vw,48px);letter-spacing:-.035em;margin:0;font-weight:750;line-height:1.02}
+.g-head p{max-width:70ch;color:#4B6158;font-size:17px;line-height:1.5;margin:12px 0 0}
+.g-nav{position:sticky;top:0;z-index:5;background:rgba(231,236,233,.95);backdrop-filter:blur(6px);border-bottom:1px solid #C9D6CF}
+.g-nav .in{max-width:1360px;margin:0 auto;padding:8px 24px;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;font-weight:650;font-size:15px}
+.g-nav a{color:#1D4A3A;text-decoration:none;padding:8px 0}
+.g-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.g-nav a:focus-visible,.g-head a:focus-visible{outline:3px solid #E8A317;outline-offset:2px;border-radius:4px}
+.g-nav .other{margin-left:auto;color:#14281F}
+.g-group{max-width:1360px;margin:0 auto;padding:48px 24px 8px;scroll-margin-top:48px}
+.g-group>h2{font-size:30px;letter-spacing:-.025em;margin:0;line-height:1.1}
+.g-group>p{color:#4B6158;margin:8px 0 0;max-width:70ch;line-height:1.5;font-size:16px}
+.g-list{display:flex;flex-wrap:wrap;gap:56px 40px;margin-top:28px}
+.g-item{margin:0;min-width:0;width:100%;scroll-margin-top:60px}
+.g-list.m .g-item{width:390px;max-width:100%}
+.g-cap{margin:0 0 14px}
+.g-cap .t{display:flex;gap:10px;align-items:baseline}
+.g-id{font-weight:750;font-size:13px;background:#14281F;color:#F7F8F5;border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums;flex:none}
+.g-name{font-weight:700;font-size:18px;letter-spacing:-.01em}
+.g-why{color:#4B6158;font-size:14.5px;margin:6px 0 0;line-height:1.45;max-width:72ch}
+.stage{position:relative;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 0 0 1px #C9D6CF,0 24px 48px -30px rgba(20,40,31,.55)}
+.g-list.m .stage{border-radius:30px;box-shadow:0 0 0 8px #14281F,0 24px 48px -24px rgba(20,40,31,.6);margin:8px}
+.g-list.m .g-item{width:406px}
+.stage>.scr{transform-origin:0 0;position:absolute;top:0;left:0}
+.g-foot{max-width:1360px;margin:0 auto;padding:56px 24px 64px;color:#4B6158;font-size:14px}
+
+/* ---------- Pantallas ---------- */
+.scr{overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:15px;line-height:1.4;display:flex;flex-direction:column}
+.t-cub{--ink:#14281F;--bg:#F7F8F5;--card:#fff;--line:#C9D6CF;--mute:#4B6158;--acc:#E8A317;--acc-ink:#14281F;--brand:#1D4A3A;--brand-ink:#F2F6F3;--soft:#E4ECE7;--bad:#B83A27;--warn-bg:#FBF1D6;--warn-ink:#5A4204;--r:999px}
+.t-brezo{--ink:#2B2118;--bg:#FBFAF6;--card:#fff;--line:#E6DED2;--mute:#6B5A48;--acc:#C8553D;--acc-ink:#fff;--brand:#2B2118;--brand-ink:#F6EFE4;--soft:#F3E6CC;--bad:#A3301F;--warn-bg:#F3E6CC;--warn-ink:#5C4B39;--r:10px}
+.serif{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em}
+.scr h1,.scr h2,.scr h3,.scr p{margin:0}
+.scr h1{font-weight:750;letter-spacing:-.03em;line-height:1.05}
+.scr h2{letter-spacing:-.02em;line-height:1.15}
+.scr a{color:var(--brand);text-decoration:underline;text-underline-offset:3px;font-weight:650}
+.mute{color:var(--mute)}
+.small{font-size:13px}
+.b{font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:var(--r);border:2px solid var(--ink);background:transparent;color:var(--ink);font:inherit;font-weight:650;font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.soft{border:1px solid var(--line);background:var(--card)}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:14px}
+.btn.lg{min-height:52px;font-size:17px}
+.btn.block{width:100%}
+.btn.off{background:var(--line);border-color:var(--line);color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.t-brezo .card{border-radius:14px}
+.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;line-height:1.3}
+.p-ok{background:#DDEEE4;color:#1D4A3A}.p-warn{background:#FBF1D6;color:#5A4204}.p-bad{background:#F6DCD7;color:#8E2A1B}.p-mute{background:var(--soft);color:var(--mute)}.p-dark{background:var(--ink);color:var(--bg)}.p-line{border:1.5px solid var(--line);color:var(--mute)}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:14px;white-space:nowrap}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip .n{font-variant-numeric:tabular-nums;opacity:.7}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>span:first-child{font-weight:650;font-size:14px}
+.inp{white-space:nowrap;overflow:hidden;min-height:46px;padding:0 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);display:flex;align-items:center;gap:8px}
+.inp.ph{color:var(--mute)}
+.inp.ta{white-space:normal;min-height:84px;align-items:flex-start;padding-top:11px}
+.inp.focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(232,163,23,.35)}
+.t-brezo .inp{border-radius:10px;border-width:1.5px;border-color:#D8CFC2}
+.t-brezo .inp.focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(200,85,61,.22)}
+.hint{font-size:13px;color:var(--mute);line-height:1.4}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stack{display:flex;flex-direction:column}
+.wrap{flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.list{list-style:none;margin:0;padding:0}
+.list>li{border-bottom:1px solid var(--line)}
+.sw{width:52px;height:32px;padding:4px;border-radius:999px;background:var(--line);display:flex;flex:none}
+.sw::after{content:'';width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw.on{background:var(--brand);justify-content:flex-end}
+.sw.red.on{background:var(--bad)}
+.bar{height:10px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--brand);border-radius:999px}
+.bar>i.acc{background:var(--acc)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:13px;font-weight:650;color:var(--mute);padding:10px 12px;border-bottom:2px solid var(--ink);white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr.grp td{background:var(--soft);font-weight:700;font-size:13.5px;padding:7px 12px}
+.tbl tr.sel td{background:#FBF1D6}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs>span{padding:10px 14px;font-weight:650;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs>span.on{color:var(--ink);border-color:var(--acc)}
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:var(--soft)}
+.seg>span{padding:7px 14px;border-radius:999px;font-weight:650;font-size:14px;color:var(--mute)}
+.seg>span.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.al{display:inline-flex;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:#EFE8DD;color:#4A3B2C;white-space:nowrap}
+.t-cub .al{background:var(--soft);color:var(--brand)}
+.als{display:flex;flex-wrap:wrap;gap:4px}
+.check{width:22px;height:22px;border-radius:6px;border:2px solid var(--mute);flex:none;display:inline-flex;align-items:center;justify-content:center;background:var(--card)}
+.check.on{background:var(--ink);border-color:var(--ink)}
+.check.on::after{content:'';width:10px;height:5px;border-left:2.5px solid var(--bg);border-bottom:2.5px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--mute);flex:none;background:var(--card)}
+.radio.on{border:7px solid var(--ink)}
+.note{font-size:13px;padding:4px 10px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);display:inline-block;line-height:1.4}
+.banner{padding:12px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink);border:1.5px solid var(--acc)}
+.t-brezo .banner{border-color:#E2CFA8}
+.img{background:repeating-linear-gradient(135deg,#E9DFD0 0 14px,#E3D8C7 14px 28px);display:flex;align-items:flex-end;padding:12px 14px;color:#6B5A48;font-size:13px;font-weight:650;border-radius:14px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.cnt{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--acc);color:var(--acc-ink);font-size:12px;font-weight:750;align-items:center;justify-content:center;margin-left:auto}
+.kbd{font-size:12px;padding:1px 6px;border-radius:5px;border:1px solid var(--line);background:var(--card)}
+.dim{position:absolute;inset:0;background:rgba(20,40,31,.45)}
+.t-brezo .dim{background:rgba(43,33,24,.5)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:10px 20px 22px;box-shadow:0 -12px 30px rgba(0,0,0,.18)}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.modal{position:absolute;background:var(--card);border-radius:20px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Panel en ordenador */
+.pn{flex-direction:row}
+.side{width:232px;flex:none;background:var(--brand);color:var(--brand-ink);padding:22px 14px;display:flex;flex-direction:column;gap:24px}
+.side .logo{display:flex;align-items:center;gap:10px;font-weight:750;font-size:21px;letter-spacing:-.03em;padding:0 8px}
+.side .loc{padding:10px 12px;border-radius:10px;border:1px solid rgba(242,246,243,.25)}
+.side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;font-weight:550;font-size:15px}
+.side li{padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:10px}
+.side li.on{background:rgba(242,246,243,.13);box-shadow:inset 4px 0 0 var(--acc)}
+.side .who{margin-top:auto;padding:0 12px;font-size:13px;line-height:1.45;opacity:.88}
+.main{flex:1;min-width:0;padding:28px 36px;display:flex;flex-direction:column;gap:22px;overflow:hidden;position:relative}
+.phd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.phd h1{font-size:34px}
+.phd p{color:var(--mute);margin-top:4px}
+
+/* Superadmin */
+.sa-top{background:#14281F;color:#F2F6F3;padding:14px 32px;display:flex;align-items:center;gap:28px}
+.sa-top .logo{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.03em}
+.sa-top nav{display:flex;gap:22px;font-weight:600;font-size:15px;color:#C9D6CF}
+.sa-top nav .on{color:#F2F6F3;text-decoration:underline;text-decoration-color:#E8A317;text-decoration-thickness:3px;text-underline-offset:7px}
+.sa-badge{font-size:12.5px;padding:2px 10px;border-radius:999px;background:rgba(232,163,23,.2);color:#F5C766;font-weight:650}
+
+/* Panel en móvil */
+.mtop{background:var(--brand);color:var(--brand-ink);padding:14px 20px 14px}
+.mtab{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--card);padding:8px 4px 18px;flex:none}
+.mtab>span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:650;color:var(--mute);position:relative}
+.mtab>span .ic{width:24px;height:24px}
+.mtab>span.on{color:var(--brand)}
+.mtab>span.on::before{content:'';position:absolute;top:-9px;width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--acc)}
+.mbody{flex:1;min-height:0;overflow:hidden;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.fab{position:absolute;right:20px;bottom:92px;min-height:54px;padding:0 22px;border-radius:999px;background:var(--acc);color:var(--acc-ink);font-weight:750;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px rgba(20,40,31,.5)}
+.back{display:inline-flex;align-items:center;gap:6px;font-weight:650;font-size:15px}
+
+/* Web del local */
+.wnav{display:flex;align-items:center;gap:28px;padding:18px 48px;background:var(--brand);color:var(--brand-ink)}
+.wnav .nm{font-family:Fraunces,Georgia,serif;font-weight:650;font-size:26px;margin-right:auto}
+.wnav a{color:#DCCFBD;text-decoration:none;font-weight:600}
+.wfoot{background:#2B2118;color:#DCCFBD;padding:22px 48px;display:flex;gap:24px;font-size:13.5px;align-items:center}
+.wfoot a{color:#DCCFBD;font-weight:500}
+@media (max-width:700px){.g-nav{position:static}.g-nav .other{margin-left:0}}
+
+</style>
+</head>
+<body>
+<header class="g-head"><div class="lg"><span data-logo="#1D4A3A,#F2F6F3,30"></span>cubierto</div><h1>Todas las vistas en ordenador</h1><p>Cada pantalla a 1280 px de ancho, reducida si tu ventana es más estrecha. Arriba lo que ve el comensal, con los colores de un local de ejemplo; después el panel del restaurante, y al final tu panel de Cubierto. Usa los códigos (D1, D2…) para pedir cambios.</p></header>
+<nav class="g-nav" aria-label="Secciones"><div class="in"><a href="#comensal">Lo que ve el comensal (4)</a><a href="#local">Lo que usa el restaurante (15)</a><a href="#cubierto">Tu panel de Cubierto (3)</a><a class="other" href="vistas-movil.html">Ver las vistas en móvil</a></div></nav>
+<main><section class="g-group" id="comensal"><h2>Lo que ve el comensal</h2><p>La web, la carta y las reservas del restaurante en un ordenador. Cada local las ve con sus colores; aquí, el tema rústico de Casa Brezo.</p><div class="g-list d">
+
+<figure class="g-item" id="D1"><figcaption class="g-cap"><div class="t"><span class="g-id">D1</span><span class="g-name">Web del local: inicio</span></div><p class="g-why">La web que sustituye a la de plantilla. Reservar y la carta en la primera pantalla; horario y dirección siempre visibles para Google y para el cliente.</p></figcaption><div class="stage" data-w="1280" data-h="1080"><div class="scr t-brezo">
+<nav class="wnav"><span class="nm">Casa Brezo</span><a>Carta</a><a>Menú del día</a><a>Dónde estamos</a><a>Contacto</a><span class="btn pri">Reservar mesa</span></nav>
+<section style="display:grid;grid-template-columns:1.05fr 1fr;gap:56px;padding:56px 48px 48px;align-items:center">
+  <div class="stack" style="gap:22px">
+    <h1 class="serif" style="font-size:64px;font-weight:650;line-height:1.02;letter-spacing:-.02em">Cocina de mercado en la Calle Mayor</h1>
+    <p style="font-size:19px;line-height:1.55;color:var(--mute);max-width:46ch">Guisos de cuchara, verdura de la vega del Henares y una bodega pequeña pero bien elegida. Abrimos de martes a domingo.</p>
+    <div class="row" style="gap:10px"><span class="btn pri lg">Reservar mesa</span><span class="btn lg">Ver la carta</span></div>
+  </div>
+  <div class="img" style="height:400px">Foto del comedor</div>
+</section>
+<section style="display:grid;grid-template-columns:repeat(3,1fr);margin:0 48px;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)">
+  <div style="padding:20px 24px 20px 0"><p class="small mute b">Horario</p><p style="margin-top:6px;line-height:1.5">Martes a sábado, de 13:00 a 16:00 y de 20:30 a 23:30. Domingo, solo comidas.</p></div>
+  <div style="padding:20px 24px;border-left:1px solid var(--line)"><p class="small mute b">Dirección</p><p style="margin-top:6px;line-height:1.5">Calle Mayor 12, Alcalá de Henares<br><a href="#">Cómo llegar</a></p></div>
+  <div style="padding:20px 24px;border-left:1px solid var(--line)"><p class="small mute b">Teléfono</p><p class="num" style="margin-top:6px;font-size:22px;font-weight:700">918 000 000</p></div>
+</section>
+<section style="display:grid;grid-template-columns:1fr 1.4fr;gap:40px;padding:44px 48px">
+  <div style="padding:26px;border-radius:14px;background:var(--soft)">
+    <div class="between"><h2 class="serif" style="font-size:30px">Menú del día</h2><b class="num" style="font-size:24px">14,50 €</b></div>
+    <p class="small" style="margin:6px 0 16px;color:#5C4B39">De lunes a viernes al mediodía. Pan, bebida y postre o café.</p>
+    <p style="line-height:1.7"><b>Primeros</b><br>Crema de calabaza asada<br>Ensalada de garbanzos y bacalao<br><b>Segundos</b><br>Carrillera al vino tinto<br>Merluza a la romana</p>
+  </div>
+  <div class="stack" style="gap:6px"><div class="between"><h2 class="serif" style="font-size:30px">De la carta</h2><a href="#">Ver la carta completa</a></div>
+    <ul class="list" style="margin-top:8px">
+      <li class="between" style="padding:16px 0"><span><b style="font-size:17px">Tomate de la huerta con ventresca</b><br><span class="mute">Aceite de Toledo y cebolleta</span></span><b class="num">11,00 €</b></li>
+      <li class="between" style="padding:16px 0"><span><b style="font-size:17px">Carrillera al vino tinto</b><br><span class="mute">Con puré de patata de la casa</span></span><b class="num">18,50 €</b></li>
+      <li class="between" style="padding:16px 0"><span><b style="font-size:17px">Tarta de queso al horno</b><br><span class="mute">Cremosa por dentro</span></span><b class="num">6,50 €</b></li>
+    </ul></div>
+</section>
+<footer class="wfoot" style="margin-top:auto"><span>Casa Brezo, Calle Mayor 12, Alcalá de Henares</span><a>Aviso legal</a><a>Privacidad</a><a>Cookies</a><span style="margin-left:auto;opacity:.7">Web hecha con Cubierto</span></footer>
+</div></div></figure>
+
+<figure class="g-item" id="D2"><figcaption class="g-cap"><div class="t"><span class="g-id">D2</span><span class="g-name">Carta en ordenador</span></div><p class="g-why">La misma carta que el QR, enlazada desde la web. Secciones a la izquierda y filtros de alérgenos arriba.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-brezo">
+<nav class="wnav"><span class="nm">Casa Brezo</span><a style="color:#F6EFE4;text-decoration:underline;text-decoration-color:#E8A317;text-decoration-thickness:3px;text-underline-offset:8px">Carta</a><a>Menú del día</a><a>Dónde estamos</a><a>Contacto</a><span class="btn pri">Reservar mesa</span></nav>
+<div style="display:grid;grid-template-columns:220px 1fr;gap:48px;padding:40px 48px;flex:1;overflow:hidden">
+  <aside class="stack" style="gap:4px;font-weight:600">
+    <h1 class="serif" style="font-size:40px;font-weight:650;margin-bottom:16px">La carta</h1>
+    <span style="padding:8px 12px;border-radius:8px;background:var(--soft)">Para compartir</span><span style="padding:8px 12px">Principales</span><span style="padding:8px 12px">Postres</span><span style="padding:8px 12px">Bebidas</span><span style="padding:8px 12px">Menú del día</span>
+    <div class="seg" style="margin-top:20px;align-self:flex-start"><span class="on">Español</span><span>English</span></div>
+  </aside>
+  <main class="stack" style="gap:18px;min-width:0">
+    <div class="row wrap" style="gap:8px"><span class="small b mute" style="margin-right:4px">Ocultar platos con</span><span class="chip on">Gluten</span><span class="chip">Leche</span><span class="chip">Huevo</span><span class="chip">Frutos de cáscara</span><span class="chip">Marisco</span><span class="chip">Más alérgenos</span></div>
+    <p class="small mute">Ocultando 4 platos con gluten. Si tienes una alergia grave, avisa siempre al personal.</p>
+    <h2 class="serif" style="font-size:30px">Para compartir</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px">Tomate de la huerta con ventresca</b><b class="num">11,00 €</b></div><p class="mute" style="margin:2px 0 8px">Aceite de Toledo y cebolleta</p><div class="als"><span class="al">Pescado</span></div></div>
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px">Torreznos crujientes</b><b class="num">7,50 €</b></div><p class="mute" style="margin:2px 0 8px">Con pimentón de la Vera</p><div class="als"><span class="al">Sin alérgenos declarados</span></div></div>
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px">Pulpo a la gallega</b><b class="num">18,00 €</b></div><p class="mute" style="margin:2px 0 8px">Patata cocida y pimentón</p><div class="als"><span class="al">Moluscos</span></div></div>
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px">Pimientos de Padrón</b><b class="num">8,00 €</b></div><p class="mute" style="margin:2px 0 8px">Unos pican y otros no</p><div class="als"><span class="al">Sin alérgenos declarados</span></div></div>
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px">Ensaladilla de la casa</b><b class="num">9,00 €</b></div><p class="mute" style="margin:2px 0 8px">Con atún y huevo de corral</p><div class="als"><span class="al">Huevo</span><span class="al">Pescado</span></div></div>
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)"><div class="between"><b style="font-size:17px;color:#8C7E70;text-decoration:line-through">Alcachofas confitadas</b><b class="num" style="color:#8C7E70;text-decoration:line-through">12,00 €</b></div><p class="small b" style="color:var(--bad);margin:2px 0 8px">Agotado hoy</p><div class="als"><span class="al">Sulfitos</span></div></div>
+    </div>
+    <h2 class="serif" style="font-size:30px;margin-top:8px">Principales</h2>
+  </main>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="D3"><figcaption class="g-cap"><div class="t"><span class="g-id">D3</span><span class="g-name">Reservar desde la web</span></div><p class="g-why">Los datos a la izquierda y el resumen siempre visible a la derecha, con las condiciones claras antes de confirmar.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-brezo">
+<nav class="wnav"><span class="nm">Casa Brezo</span><a>Carta</a><a>Menú del día</a><a>Dónde estamos</a><a>Contacto</a><span class="btn pri">Reservar mesa</span></nav>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:56px;padding:40px 48px 0;flex:1">
+  <main class="stack" style="gap:20px">
+    <div class="row" style="gap:10px;font-weight:650;font-size:14px"><span class="row" style="gap:8px;color:var(--mute)"><span style="width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:inline-flex;align-items:center;justify-content:center">1</span>Día y hora</span><span style="width:40px;height:2px;background:var(--line)"></span><span class="row" style="gap:8px"><span style="width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;display:inline-flex;align-items:center;justify-content:center">2</span>Tus datos</span></div>
+    <h1 class="serif" style="font-size:44px;font-weight:650">Tus datos</h1>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <label class="fld"><span>Nombre</span><span class="inp">Carmen Sanz</span></label>
+      <label class="fld"><span>Teléfono</span><span class="inp num">612 345 678</span></label>
+      <label class="fld" style="grid-column:span 2"><span>Email</span><span class="inp focus">c.sanz@correo.es<span style="width:2px;height:20px;background:var(--ink)"></span></span><span class="hint">Te mandamos aquí la confirmación y el enlace para cambiarla o cancelarla.</span></label>
+      <label class="fld" style="grid-column:span 2"><span>¿Algo que debamos saber? <span class="mute" style="font-weight:500">(opcional)</span></span><span class="inp ta ph">Alergias, trona, una celebración…</span></label>
+    </div>
+    <span class="row" style="gap:10px"><i class="check on"></i><span>He leído la <a href="#">política de privacidad</a></span></span>
+    <span class="row" style="gap:10px"><i class="check"></i><span>Quiero recibir novedades de Casa Brezo, como menús especiales y jornadas</span></span>
+    <div class="row" style="gap:12px;margin-top:4px"><span class="btn pri lg" style="padding:0 32px">Confirmar reserva</span><a href="#">Volver al paso anterior</a></div>
+  </main>
+  <aside class="stack" style="gap:16px;padding:26px;border-radius:14px;background:var(--soft);align-self:flex-start">
+    <p class="small b" style="color:#5C4B39">Tu reserva</p>
+    <p class="serif" style="font-size:28px;line-height:1.1">Sábado 14 de noviembre, 21:30</p>
+    <p style="font-size:17px">4 personas</p>
+    <a href="#" style="align-self:flex-start">Cambiar día, hora o personas</a>
+    <div style="height:1px;background:#E2CFA8"></div>
+    <ul class="small" style="margin:0;padding-left:18px;line-height:1.7;color:#5C4B39">
+      <li>Confirmación al momento por email.</li>
+      <li>Te guardamos la mesa 15 minutos.</li>
+      <li>Puedes cancelar gratis hasta 2 horas antes.</li>
+    </ul>
+  </aside>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="D4"><figcaption class="g-cap"><div class="t"><span class="g-id">D4</span><span class="g-name">Email de confirmación</span></div><p class="g-why">Lo que recibe el comensal. Va con la imagen del local y desde su dirección; el enlace de gestionar abre la pantalla M9.</p></figcaption><div class="stage" data-w="1280" data-h="900"><div class="scr t-brezo">
+<div style="background:#EEF0F2;flex:1;display:flex;flex-direction:column;font-family:system-ui,-apple-system,'Segoe UI',sans-serif">
+  <div class="row" style="padding:14px 28px;background:#fff;border-bottom:1px solid #DADDE1;gap:14px;font-size:14px;color:#3C4043"><span style="width:34px;height:34px;border-radius:50%;background:#2B2118;color:#F6EFE4;display:inline-flex;align-items:center;justify-content:center;font-weight:700">C</span><span><b style="color:#202124">Casa Brezo</b> &lt;reservas@casabrezo.es&gt;<br>para c.sanz@correo.es</span><span style="margin-left:auto">sáb, 14 nov, 11:42</span></div>
+  <p style="padding:16px 28px 0;font-size:22px;color:#202124;font-weight:500">Reserva confirmada: sábado 14, 21:30, 4 personas</p>
+  <div style="width:600px;margin:20px auto;background:#FBFAF6;border-radius:8px;overflow:hidden;font-family:'Bricolage Grotesque',system-ui,sans-serif;color:#2B2118;box-shadow:0 1px 3px rgba(0,0,0,.12)">
+    <div style="background:#2B2118;color:#F6EFE4;padding:22px 32px" class="serif"><span style="font-size:26px">Casa Brezo</span></div>
+    <div class="stack" style="padding:30px 32px;gap:18px">
+      <h1 class="serif" style="font-size:30px;font-weight:650">Te esperamos, Carmen</h1>
+      <div style="padding:18px 20px;border-radius:12px;background:#F3E6CC;line-height:1.7"><b style="font-size:18px">Sábado 14 de noviembre, 21:30</b><br>4 personas<br>Calle Mayor 12, Alcalá de Henares</div>
+      <div class="row" style="gap:10px"><span class="btn dark">Añadir al calendario</span><span class="btn">Cambiar o cancelar</span></div>
+      <p class="small" style="color:#6B5A48;line-height:1.6">Te guardamos la mesa 15 minutos. Si no puedes venir, cancela desde el botón de arriba hasta 2 horas antes, así otra persona podrá disfrutarla.</p>
+    </div>
+    <div class="small" style="padding:16px 32px;border-top:1px solid #E6DED2;color:#6B5A48">918 000 000. Reservas gestionadas con Cubierto.</div>
+  </div>
+</div>
+</div></div></figure>
+</div></section>
+<section class="g-group" id="local"><h2>Lo que usa el restaurante</h2><p>El panel del local en el ordenador de la barra o del despacho. Solo aparecen las secciones de los módulos contratados: un local con solo la carta no ve Reservas ni Sala.</p><div class="g-list d">
+
+<figure class="g-item" id="D5"><figcaption class="g-cap"><div class="t"><span class="g-id">D5</span><span class="g-name">Entrar al panel</span></div><p class="g-why">Sin contraseñas que olvidar: escribe su email y le llega un enlace.</p></figcaption><div class="stage" data-w="1280" data-h="800"><div class="scr t-cub">
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+  <div class="stack" style="background:var(--brand);color:var(--brand-ink);padding:48px 56px;gap:24px">
+    <div class="row" style="gap:10px;font-weight:750;font-size:24px;letter-spacing:-.03em"><span data-logo="#F2F6F3,#1D4A3A,34"></span>cubierto</div>
+    <p style="margin-top:auto;font-size:44px;font-weight:750;letter-spacing:-.035em;line-height:1.05;max-width:13ch">El panel de tu restaurante.</p>
+    <p style="font-size:18px;opacity:.85;max-width:38ch;line-height:1.5">Reservas, sala, carta y web en un mismo sitio.</p>
+  </div>
+  <div class="stack" style="padding:48px 72px;justify-content:center;gap:20px;max-width:560px">
+    <h1 style="font-size:38px">Entra en tu panel</h1>
+    <p class="mute" style="font-size:16px;line-height:1.5">Escribe tu email y te mandamos un enlace para entrar. No hace falta contraseña.</p>
+    <label class="fld"><span>Email</span><span class="inp focus">lucia@casabrezo.es<span style="width:2px;height:20px;background:var(--ink)"></span></span></label>
+    <span class="btn pri lg block">Enviarme el enlace</span>
+    <p class="hint">El enlace caduca en 15 minutos. ¿No tienes acceso? Pídeselo a quien gestiona el panel en tu local.</p>
+  </div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="D6"><figcaption class="g-cap"><div class="t"><span class="g-id">D6</span><span class="g-name">Hoy</span></div><p class="g-why">Pantalla de inicio. Cómo van los turnos, quién llega en la próxima hora, lo que espera una decisión y lo agotado.</p></figcaption><div class="stage" data-w="1280" data-h="880"><div class="scr t-cub pn">
+<nav data-side="Hoy"></nav>
+<main class="main" style="gap:28px">
+  <div class="phd"><div><h1 style="font-size:40px">Sábado, 14 de noviembre</h1><p style="font-size:17px">Comidas de 13:00 a 16:00 y cenas de 20:30 a 23:30</p></div><div class="row" style="gap:10px"><span class="btn">Sentar sin reserva</span><span class="btn pri">Nueva reserva</span></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="card stack" style="padding:20px 22px;gap:12px"><div class="between"><b style="font-size:20px">Comidas</b><span class="small mute">13:00 a 16:00</span></div><span><b class="num" style="font-size:34px;letter-spacing:-.03em">64</b> <span class="mute">de 80 cubiertos</span></span><div class="bar"><i style="width:80%"></i></div><span class="small mute">18 reservas, 2 sin mesa asignada</span></div>
+    <div class="card stack" style="padding:20px 22px;gap:12px"><div class="between"><b style="font-size:20px">Cenas</b><span class="small mute">20:30 a 23:30</span></div><span><b class="num" style="font-size:34px;letter-spacing:-.03em">78</b> <span class="mute">de 90 cubiertos</span></span><div class="bar"><i class="acc" style="width:87%"></i></div><span class="small mute">22 reservas, 4 en lista de espera</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:32px">
+    <section><div class="between" style="margin-bottom:8px"><h2 style="font-size:24px">Llegan en la próxima hora</h2><a href="#">Ver la sala</a></div>
+      <ul class="list" style="border-top:2px solid var(--ink)">
+        <li class="row" style="padding:12px 0;gap:16px"><b class="num" style="font-size:19px;width:56px">13:30</b><span class="grow"><b>Andrea Ruiz</b><br><span class="small mute">2 personas, mesa 1, terraza</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+        <li class="row" style="padding:12px 0;gap:16px"><b class="num" style="font-size:19px;width:56px">13:30</b><span class="grow"><b>Familia Ortega</b><br><span class="small mute">3 personas, mesa 9</span><br><span class="note" style="margin-top:5px">Necesitan trona</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+        <li class="row" style="padding:12px 0;gap:16px"><b class="num" style="font-size:19px;width:56px">14:00</b><span class="grow"><b>Carmen Sanz</b><br><span class="small mute">4 personas, mesa 7</span><br><span class="note" style="margin-top:5px">Cumpleaños: sacar la tarta con vela</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+        <li class="row" style="padding:12px 0;gap:16px"><b class="num" style="font-size:19px;width:56px">14:00</b><span class="grow"><b>Luis Martín</b><br><span class="small mute">2 personas, sin mesa asignada</span></span><span class="btn sm" style="border-color:var(--brand);color:var(--brand)">Sentar</span></li>
+      </ul></section>
+    <aside class="stack" style="gap:22px"><section><h2 style="font-size:24px;margin-bottom:8px">Pendiente de ti</h2>
+      <div class="stack" style="gap:8px">
+        <div class="card" style="padding:14px 16px"><b>2 reservas esperan tu confirmación</b><p class="small mute" style="margin-top:2px">Grupos de 10 y 12 para el sábado 21</p><a href="#" class="small" style="display:inline-block;margin-top:6px">Revisar solicitudes</a></div>
+        <div class="card" style="padding:14px 16px"><b>Carta en inglés lista para revisar</b><p class="small mute" style="margin-top:2px">12 platos traducidos con IA. No se publican hasta que los apruebes.</p><a href="#" class="small" style="display:inline-block;margin-top:6px">Revisar traducción</a></div>
+        <div class="card" style="padding:14px 16px"><b>1 mensaje nuevo desde tu web</b><p class="small mute" style="margin-top:2px">Andrea pregunta por un menú de empresa para 20</p><a href="#" class="small" style="display:inline-block;margin-top:6px">Leer mensaje</a></div>
+      </div></section>
+      <section><h2 style="font-size:20px;margin-bottom:6px">Agotado hoy</h2>
+        <ul class="list" style="border-top:1px solid var(--line)"><li class="between" style="padding:8px 0"><span><b style="color:var(--bad)">Agotado</b> Croquetas caseras de jamón</span><span class="btn sm soft">Reponer</span></li><li class="between" style="padding:8px 0"><span><b style="color:var(--bad)">Agotado</b> Pulpo a la gallega</span><span class="btn sm soft">Reponer</span></li></ul></section>
+    </aside>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D7"><figcaption class="g-cap"><div class="t"><span class="g-id">D7</span><span class="g-name">Reservas</span></div><p class="g-why">El listado del día por turnos. Al tocar una reserva se abre su ficha a la derecha sin perder la lista.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-cub pn">
+<nav data-side="Reservas"></nav>
+<main class="main" style="padding-right:0;flex-direction:row;gap:0">
+  <div class="stack grow" style="gap:16px;padding-right:28px">
+    <div class="phd"><div><h1>Reservas</h1></div><div class="row" style="gap:8px"><span class="seg"><span class="on">Día</span><span>Semana</span></span><span class="btn pri">Nueva reserva</span></div></div>
+    <div class="between"><div class="row" style="gap:6px"><span class="btn sm soft" aria-label="Día anterior">‹</span><b style="font-size:17px">Hoy, sábado 14</b><span class="btn sm soft" aria-label="Día siguiente">›</span></div><span class="inp ph" style="width:240px;min-height:40px">Buscar nombre o teléfono</span></div>
+    <div class="row wrap" style="gap:6px"><span class="chip on">Todas <span class="n">40</span></span><span class="chip">Comidas <span class="n">18</span></span><span class="chip">Cenas <span class="n">22</span></span><span class="chip">Por confirmar <span class="n">2</span></span><span class="chip">Lista de espera <span class="n">4</span></span><span class="chip">Canceladas <span class="n">3</span></span></div>
+    <table class="tbl">
+      <thead><tr><th>Hora</th><th>Nombre</th><th>Pers.</th><th>Mesa</th><th>Estado</th><th>Origen</th></tr></thead>
+      <tbody>
+        <tr class="grp"><td colspan="6">Comidas, 64 de 80 cubiertos</td></tr>
+        <tr><td class="num b">13:00</td><td>Pedro Gil</td><td class="num">2</td><td>3</td><td><span class="pill p-dark">En mesa</span></td><td class="mute">Teléfono</td></tr>
+        <tr><td class="num b">13:30</td><td>Andrea Ruiz</td><td class="num">2</td><td>1</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Web</td></tr>
+        <tr><td class="num b">13:30</td><td>Familia Ortega <span class="note" style="padding:1px 7px;margin-left:4px">Trona</span></td><td class="num">3</td><td>9</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Web</td></tr>
+        <tr class="sel"><td class="num b">14:00</td><td><b>Carmen Sanz</b> <span class="note" style="padding:1px 7px;margin-left:4px">Cumpleaños</span></td><td class="num">4</td><td>7</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Web</td></tr>
+        <tr><td class="num b">14:00</td><td>Luis Martín</td><td class="num">2</td><td><span class="pill p-warn">Sin mesa</span></td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Google</td></tr>
+        <tr><td class="num b">14:30</td><td>Taller Henares</td><td class="num">6</td><td>11</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Teléfono</td></tr>
+        <tr><td class="num b">15:00</td><td style="color:var(--mute);text-decoration:line-through">Sergio Prado</td><td class="num mute">2</td><td class="mute">–</td><td><span class="pill p-mute">Cancelada</span></td><td class="mute">Web</td></tr>
+        <tr class="grp"><td colspan="6">Cenas, 78 de 90 cubiertos</td></tr>
+        <tr><td class="num b">20:30</td><td>Raúl Ibáñez</td><td class="num">2</td><td>4</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Web</td></tr>
+        <tr><td class="num b">21:00</td><td>Cumpleaños de Lucía</td><td class="num">8</td><td>9 + 10</td><td><span class="pill p-ok">Confirmada</span></td><td class="mute">Teléfono</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <aside class="stack" style="width:340px;flex:none;border-left:1px solid var(--line);background:#fff;padding:24px;gap:16px;margin:-28px 0">
+    <div class="between"><span class="pill p-ok">Confirmada</span><span class="small mute">Cerrar</span></div>
+    <div><h2 style="font-size:28px">Carmen Sanz</h2><p class="mute" style="margin-top:2px">4 personas, hoy a las 14:00</p></div>
+    <span class="note" style="font-size:14px;padding:8px 12px">Cumpleaños: sacar la tarta con vela a los postres</span>
+    <ul class="list" style="border-top:1px solid var(--line)">
+      <li class="between" style="padding:11px 0"><span class="mute">Mesa</span><span><b>7, en sala</b> <a href="#" class="small">Cambiar</a></span></li>
+      <li class="between" style="padding:11px 0"><span class="mute">Teléfono</span><b class="num">612 345 678</b></li>
+      <li class="between" style="padding:11px 0"><span class="mute">Email</span><b>c.sanz@correo.es</b></li>
+      <li class="between" style="padding:11px 0"><span class="mute">Reservó</span><b>Web, el martes 10</b></li>
+      <li style="padding:11px 0"><span class="mute">Historial</span><br><b>3.ª visita.</b> La última, el 20 de septiembre. Nunca ha faltado.</li>
+    </ul>
+    <div class="stack" style="gap:8px;margin-top:auto"><span class="btn pri block">Ha llegado: sentar</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span class="btn sm">Cambiar</span><span class="btn sm bad">No vino</span></div><a href="#" style="align-self:center;color:var(--bad);padding:6px" class="small">Cancelar reserva</a></div>
+  </aside>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D8"><figcaption class="g-cap"><div class="t"><span class="g-id">D8</span><span class="g-name">Nueva reserva</span></div><p class="g-why">Para apuntar una llamada. Muestra las plazas libres de cada hora y reconoce al cliente por el teléfono.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-cub pn">
+<nav data-side="Reservas"></nav>
+<main class="main"><div class="phd"><h1>Reservas</h1></div><table class="tbl"><thead><tr><th>Hora</th><th>Nombre</th><th>Pers.</th><th>Mesa</th><th>Estado</th></tr></thead><tbody><tr><td>13:00</td><td>Pedro Gil</td><td>2</td><td>3</td><td>En mesa</td></tr><tr><td>13:30</td><td>Andrea Ruiz</td><td>2</td><td>1</td><td>Confirmada</td></tr><tr><td>13:30</td><td>Familia Ortega</td><td>3</td><td>9</td><td>Confirmada</td></tr><tr><td>14:00</td><td>Carmen Sanz</td><td>4</td><td>7</td><td>Confirmada</td></tr></tbody></table></main>
+<div class="dim"></div>
+<div class="modal stack" style="left:290px;right:58px;top:40px;bottom:40px;padding:28px 32px;gap:18px">
+  <div class="between"><h2 style="font-size:28px">Nueva reserva</h2><span class="small mute b">Cerrar</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1">
+    <div class="stack" style="gap:18px">
+      <div class="between"><b>Personas</b><span class="row" style="gap:0;border:2px solid var(--line);border-radius:999px"><span style="width:44px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px">−</span><b class="num" style="width:34px;text-align:center;font-size:19px">4</b><span style="width:44px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px">+</span></span></div>
+      <div class="stack" style="gap:8px"><b>Día</b><div class="row" style="gap:6px"><span class="chip on">Hoy, sáb 14</span><span class="chip">Domingo 15</span><span class="chip">Otra fecha</span></div></div>
+      <div class="stack" style="gap:8px"><b>Hora <span class="small mute" style="font-weight:500">(plazas libres para 4 o más)</span></b>
+        <p class="small mute b">Comidas</p>
+        <div class="num" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+          <span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>13:00</b><span class="small mute">16</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px;opacity:.5;text-decoration:line-through"><b>13:30</b><span class="small">0</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px;opacity:.5;text-decoration:line-through"><b>14:00</b><span class="small">2</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>14:30</b><span class="small mute">8</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>15:00</b><span class="small mute">20</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>15:30</b><span class="small mute">26</span></span></div>
+        <p class="small mute b" style="margin-top:4px">Cenas</p>
+        <div class="num" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+          <span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>20:30</b><span class="small mute">12</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px;opacity:.5;text-decoration:line-through"><b>21:00</b><span class="small">0</span></span><span class="btn dark sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>21:30</b><span class="small">8</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>22:00</b><span class="small mute">14</span></span><span class="btn soft sm stack" style="min-height:50px;gap:0;border-radius:12px"><b>22:30</b><span class="small mute">22</span></span></div></div>
+      <div class="stack" style="gap:8px"><b>Mesa</b><div class="row" style="gap:16px"><span class="row" style="gap:8px"><i class="radio on"></i>Asignar sola</span><span class="row" style="gap:8px"><i class="radio"></i>Elegir en el plano</span></div><p class="hint">Si no hay una mesa para 4, propone juntar dos que se puedan unir.</p></div>
+    </div>
+    <div class="stack" style="gap:14px">
+      <label class="fld"><span>Teléfono</span><span class="inp focus num">612 345 6<span style="width:2px;height:20px;background:var(--ink)"></span></span></label>
+      <div class="between" style="padding:12px 14px;border-radius:12px;background:var(--soft);margin-top:-6px"><span><b>Carmen Sanz</b><br><span class="small mute">612 345 678, 3 visitas, nunca ha faltado</span></span><span class="btn sm dark">Usar sus datos</span></div>
+      <label class="fld"><span>Nombre</span><span class="inp ph">Nombre de la reserva</span></label>
+      <label class="fld"><span>Email <span class="mute" style="font-weight:500">(opcional)</span></span><span class="inp ph">Para enviarle la confirmación</span></label>
+      <label class="fld"><span>Nota <span class="mute" style="font-weight:500">(opcional)</span></span><span class="inp ta ph">Alergias, trona, celebración…</span></label>
+    </div>
+  </div>
+  <div class="between" style="border-top:1px solid var(--line);padding-top:16px"><span class="mute"><b style="color:var(--ink)">4 personas</b>, hoy a las 21:30, mesa asignada al guardar</span><div class="row" style="gap:8px"><span class="btn">Cancelar</span><span class="btn pri">Guardar reserva</span></div></div>
+</div>
+</div></div></figure>
+
+<figure class="g-item" id="D9"><figcaption class="g-cap"><div class="t"><span class="g-id">D9</span><span class="g-name">Sala en servicio</span></div><p class="g-why">El plano real del local con el estado de cada mesa a la hora elegida. Las mesas juntas se ven y se reservan como una sola.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-cub pn">
+<nav data-side="Sala"></nav>
+<main class="main" style="gap:18px">
+  <div class="phd" style="align-items:center"><div><h1>Sala</h1><p><b style="color:var(--ink)">A las 21:00:</b> 5 de 12 mesas en uso, 20 personas sentadas y 2 reservas llegan en la próxima hora</p></div>
+    <div class="row num" style="gap:6px"><span class="chip">20:30</span><span class="chip on">21:00</span><span class="chip">21:30</span><span class="chip">22:00</span><span class="btn pri sm">Juntar mesas</span></div></div>
+  <div class="row" style="gap:24px;align-items:flex-start">
+    <section class="card grow" style="padding:16px;border-radius:20px">
+      <div class="row wrap small mute" style="gap:6px 18px;margin:0 4px 8px"><span class="row" style="gap:8px"><i style="width:14px;height:14px;border-radius:4px;border:2px solid #4B6158;background:#fff"></i>Libre</span><span class="row" style="gap:8px"><i style="width:14px;height:14px;border-radius:4px;border:2px solid #E8A317;background:#F7DFA6"></i>Llega en menos de 1 h</span><span class="row" style="gap:8px"><i style="width:14px;height:14px;border-radius:4px;background:#1D4A3A"></i>En mesa</span><span class="row" style="gap:8px"><i style="width:22px;height:14px;border-radius:4px;background:#1D4A3A;outline:3px solid #14281F"></i>Mesas juntas seleccionadas</span></div>
+      <div data-plan="service"></div>
+    </section>
+    <aside class="stack" style="width:290px;flex:none;gap:16px">
+      <section style="padding:18px;border-radius:16px;background:var(--soft)"><h2 style="font-size:22px">Mesas 9 + 10</h2><p class="small mute">Juntas para esta reserva, 8 plazas</p><p class="b" style="margin-top:12px;font-size:17px">Cumpleaños de Lucía</p><p class="num">21:00, 8 personas, sentados a las 21:04</p><p class="small" style="margin-top:10px;padding:8px 10px;border-radius:8px;background:#fff">Traen su propia tarta: sacarla con vela a los postres.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><span class="btn sm dark">Completar</span><span class="btn sm">Separar mesas</span></div></section>
+      <section><h2 style="font-size:18px">Sin mesa asignada</h2><p class="small mute" style="margin:2px 0 8px">Arrástralas a una mesa libre.</p>
+        <div class="stack" style="gap:8px"><span class="between card" style="padding:11px 14px;border:2px dashed var(--line)"><span><b>21:30</b> Elena Vidal</span><span class="mute">4 pers.</span></span><span class="between card" style="padding:11px 14px;border:2px dashed var(--line)"><span><b>21:45</b> Mario y Ana</span><span class="mute">2 pers.</span></span></div></section>
+      <a href="#">Editar el plano del local</a>
+    </aside>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D10"><figcaption class="g-cap"><div class="t"><span class="g-id">D10</span><span class="g-name">Editor del plano</span></div><p class="g-why">Se usa una vez al dar de alta el local y cuando cambia la sala. Se dibuja arrastrando mesas sobre una cuadrícula y se marca qué mesas se pueden juntar.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-cub pn">
+<nav data-side="Sala"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Editar el plano</h1><p>Los cambios no afectan a las reservas hasta que guardes.</p></div><div class="row" style="gap:8px"><span class="btn">Descartar</span><span class="btn pri">Guardar plano</span></div></div>
+  <div class="row" style="gap:16px;align-items:flex-start">
+    <aside class="card stack" style="width:170px;flex:none;padding:14px;gap:8px"><b class="small mute">Añadir</b>
+      <span class="row" style="gap:10px;padding:8px;border-radius:10px;border:1px solid var(--line)"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="#fff" stroke="#4B6158" stroke-width="2"/></svg><span class="small"><b>Redonda</b><br>2 plazas</span></span>
+      <span class="row" style="gap:10px;padding:8px;border-radius:10px;border:1px solid var(--line)"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="3" y="3" width="20" height="20" rx="4" fill="#fff" stroke="#4B6158" stroke-width="2"/></svg><span class="small"><b>Cuadrada</b><br>4 plazas</span></span>
+      <span class="row" style="gap:10px;padding:8px;border-radius:10px;border:1px solid var(--line)"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="7" width="24" height="12" rx="3" fill="#fff" stroke="#4B6158" stroke-width="2"/></svg><span class="small"><b>Larga</b><br>6 u 8 plazas</span></span>
+      <b class="small mute" style="margin-top:8px">Sala</b>
+      <span class="small" style="padding:6px 8px">Zona</span><span class="small" style="padding:6px 8px">Barra</span><span class="small" style="padding:6px 8px">Pared o columna</span>
+    </aside>
+    <section class="card grow" style="padding:12px;border-radius:16px"><div data-plan="editor"></div><p class="hint" style="margin:8px 4px 0">Arrastra para mover. Usa el tirador de arriba para girar. Suprimir borra la mesa.</p></section>
+    <aside class="card stack" style="width:270px;flex:none;padding:18px;gap:14px">
+      <h2 style="font-size:20px">Mesa 11</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label class="fld"><span>Mínimo</span><span class="inp num">4</span></label><label class="fld"><span>Máximo</span><span class="inp num">6</span></label></div>
+      <label class="fld"><span>Zona</span><span class="inp between">Sala<span class="mute">▾</span></span></label>
+      <div class="stack" style="gap:8px"><b class="small">Se puede juntar con</b><div class="row wrap" style="gap:6px"><span class="chip on">12</span><span class="chip">8</span><span class="chip">+ Añadir</span></div><p class="hint">Al reservar, el sistema solo une mesas de esta lista.</p></div>
+      <div class="between"><span class="small b">Reservable desde la web</span><i class="sw on"></i></div>
+      <div class="between"><span class="small b">Solo para grupos</span><i class="sw"></i></div>
+      <span class="btn sm bad" style="margin-top:4px">Quitar mesa</span>
+    </aside>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D11"><figcaption class="g-cap"><div class="t"><span class="g-id">D11</span><span class="g-name">Carta: editor</span></div><p class="g-why">Platos por sección, con precio, alérgenos y agotado a la vista. A la derecha, la ficha del plato con los 14 alérgenos.</p></figcaption><div class="stage" data-w="1280" data-h="900"><div class="scr t-cub pn">
+<nav data-side="Carta"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Carta</h1><p>Los cambios se ven al momento en la carta del QR y en tu web.</p></div><div class="row" style="gap:8px"><span class="btn">Ver como cliente</span><span class="btn pri">Añadir plato</span></div></div>
+  <div class="tabs"><span class="on">Carta</span><span>Menú del día</span><span>Bebidas</span><span>Idiomas</span><span>Códigos QR</span></div>
+  <div class="banner between"><span><b>Carta en inglés lista para revisar.</b> 12 platos traducidos con IA. No se publican hasta que los apruebes.</span><a href="#">Revisar</a></div>
+  <div class="row" style="gap:24px;align-items:flex-start">
+    <section class="grow stack" style="gap:6px">
+      <div class="between"><h2 style="font-size:20px">Para compartir</h2><span class="small mute">6 platos</span></div>
+      <ul class="list card" style="padding:0 16px">
+        <li class="row" style="padding:12px 0;gap:14px"><span class="mute" aria-hidden="true">⋮⋮</span><span class="grow"><b style="color:var(--mute);text-decoration:line-through">Croquetas caseras de jamón</b><div class="als" style="margin-top:4px"><span class="al">Gluten</span><span class="al">Huevo</span><span class="al">Leche</span></div></span><b class="num">9,50 €</b><span class="pill p-bad">Agotado</span></li>
+        <li class="row" style="padding:12px 0;gap:14px;background:#FBF1D6;margin:0 -16px;padding-left:16px;padding-right:16px"><span class="mute" aria-hidden="true">⋮⋮</span><span class="grow"><b>Tomate de la huerta con ventresca</b><div class="als" style="margin-top:4px"><span class="al">Pescado</span></div></span><b class="num">11,00 €</b><span class="pill p-ok">Disponible</span></li>
+        <li class="row" style="padding:12px 0;gap:14px"><span class="mute" aria-hidden="true">⋮⋮</span><span class="grow"><b>Torreznos crujientes</b><div class="small mute" style="margin-top:4px">Sin alérgenos declarados</div></span><b class="num">7,50 €</b><span class="pill p-ok">Disponible</span></li>
+        <li class="row" style="padding:12px 0;gap:14px"><span class="mute" aria-hidden="true">⋮⋮</span><span class="grow"><b style="color:var(--mute);text-decoration:line-through">Pulpo a la gallega</b><div class="als" style="margin-top:4px"><span class="al">Moluscos</span></div></span><b class="num">18,00 €</b><span class="pill p-bad">Agotado</span></li>
+      </ul>
+      <div class="between" style="margin-top:12px"><h2 style="font-size:20px">Principales</h2><span class="small mute">8 platos</span></div>
+      <ul class="list card" style="padding:0 16px"><li class="row" style="padding:12px 0;gap:14px;border:0"><span class="mute" aria-hidden="true">⋮⋮</span><span class="grow"><b>Carrillera al vino tinto</b><div class="als" style="margin-top:4px"><span class="al">Sulfitos</span><span class="al">Apio</span></div></span><b class="num">18,50 €</b><span class="pill p-ok">Disponible</span></li></ul>
+    </section>
+    <aside class="card stack" style="width:380px;flex:none;padding:20px;gap:14px">
+      <h2 style="font-size:20px">Tomate de la huerta con ventresca</h2>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px"><label class="fld"><span>Nombre</span><span class="inp">Tomate de la huerta con ventresca</span></label><label class="fld"><span>Precio</span><span class="inp num">11,00 €</span></label></div>
+      <label class="fld"><span>Descripción</span><span class="inp">Aceite de Toledo y cebolleta</span></label>
+      <div class="stack" style="gap:8px"><b class="small">Alérgenos</b>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:14px">
+          <span class="row" style="gap:8px"><i class="check"></i>Gluten</span><span class="row" style="gap:8px"><i class="check"></i>Crustáceos</span><span class="row" style="gap:8px"><i class="check"></i>Huevo</span><span class="row" style="gap:8px"><i class="check on"></i>Pescado</span><span class="row" style="gap:8px"><i class="check"></i>Cacahuetes</span><span class="row" style="gap:8px"><i class="check"></i>Soja</span><span class="row" style="gap:8px"><i class="check"></i>Leche</span><span class="row" style="gap:8px"><i class="check"></i>Frutos de cáscara</span><span class="row" style="gap:8px"><i class="check"></i>Apio</span><span class="row" style="gap:8px"><i class="check"></i>Mostaza</span><span class="row" style="gap:8px"><i class="check"></i>Sésamo</span><span class="row" style="gap:8px"><i class="check"></i>Sulfitos</span><span class="row" style="gap:8px"><i class="check"></i>Altramuces</span><span class="row" style="gap:8px"><i class="check"></i>Moluscos</span>
+        </div><p class="hint">Los alérgenos los marcas tú. La IA nunca los rellena.</p></div>
+      <div class="between"><span class="small b">Agotado hoy</span><i class="sw red"></i></div>
+      <span class="btn dark block">Guardar plato</span>
+    </aside>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D12"><figcaption class="g-cap"><div class="t"><span class="g-id">D12</span><span class="g-name">Carta: revisar la traducción</span></div><p class="g-why">La IA propone el inglés y el local lo revisa frase a frase. Nada se publica sin su aprobación.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-cub pn">
+<nav data-side="Carta"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Carta en inglés</h1><p>Traducida con IA el 13 de noviembre. Revisa y corrige lo que haga falta.</p></div><div class="row" style="gap:8px"><span class="btn">Volver a traducir</span><span class="btn pri">Aprobar y publicar</span></div></div>
+  <div class="row" style="gap:16px"><div class="grow"><div class="between small" style="margin-bottom:6px"><b>9 de 12 platos revisados</b><span class="mute">Los alérgenos no pasan por la IA: salen de la ficha de cada plato.</span></div><div class="bar"><i style="width:75%"></i></div></div></div>
+  <table class="tbl" style="font-size:15px">
+    <thead><tr><th style="width:36%">Español</th><th style="width:44%">Inglés</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">Para compartir</td></tr>
+      <tr><td><b>Croquetas caseras de jamón</b></td><td>Homemade ham croquettes</td><td><span class="pill p-ok">Revisado</span></td></tr>
+      <tr><td><b>Tomate de la huerta con ventresca</b><br><span class="small mute">Aceite de Toledo y cebolleta</span></td><td>Garden tomato with tuna belly<br><span class="small mute">Toledo olive oil and spring onion</span></td><td><span class="pill p-ok">Revisado</span></td></tr>
+      <tr class="sel"><td><b>Torreznos crujientes</b><br><span class="small mute">Con pimentón de la Vera</span></td><td><span class="inp focus" style="min-height:40px">Crispy pork belly bites</span><span class="small" style="display:block;margin-top:6px;color:var(--warn-ink)">La IA avisa: «torreznos» no tiene traducción exacta. Puedes dejar el nombre en español.</span></td><td><span class="pill p-warn">Por revisar</span></td></tr>
+      <tr><td><b>Pulpo a la gallega</b></td><td>Galician-style octopus</td><td><span class="pill p-warn">Por revisar</span></td></tr>
+      <tr class="grp"><td colspan="3">Principales</td></tr>
+      <tr><td><b>Carrillera al vino tinto</b></td><td>Pork cheek braised in red wine</td><td><span class="pill p-ok">Revisado</span></td></tr>
+      <tr><td><b>Merluza a la romana</b></td><td>Battered hake</td><td><span class="pill p-warn">Por revisar</span></td></tr>
+    </tbody>
+  </table>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D13"><figcaption class="g-cap"><div class="t"><span class="g-id">D13</span><span class="g-name">Carta: códigos QR</span></div><p class="g-why">Un código por mesa para que la carta sepa dónde está el cliente. Se descargan listos para imprimir.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-cub pn">
+<nav data-side="Carta"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Códigos QR</h1><p>Uno por mesa. Si cambias la carta, los códigos siguen valiendo.</p></div><div class="row" style="gap:8px"><span class="btn">Descargar imágenes</span><span class="btn pri">Descargar PDF para imprimir</span></div></div>
+  <div class="tabs"><span>Carta</span><span>Menú del día</span><span>Bebidas</span><span>Idiomas</span><span class="on">Códigos QR</span></div>
+  <div class="row" style="gap:28px;align-items:flex-start">
+    <div class="grow" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="1" style="width:100%"></div><b>Mesa 1</b><span class="small mute">Terraza</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="2" style="width:100%"></div><b>Mesa 2</b><span class="small mute">Terraza</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="3" style="width:100%"></div><b>Mesa 3</b><span class="small mute">Terraza</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="4" style="width:100%"></div><b>Mesa 4</b><span class="small mute">Terraza</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="5" style="width:100%"></div><b>Mesa 5</b><span class="small mute">Terraza</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="6" style="width:100%"></div><b>Mesa 6</b><span class="small mute">Sala</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center;outline:3px solid var(--acc);outline-offset:-2px"><div data-qr="7" style="width:100%"></div><b>Mesa 7</b><span class="small mute">Sala</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="8" style="width:100%"></div><b>Mesa 8</b><span class="small mute">Sala</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center"><div data-qr="9" style="width:100%"></div><b>Mesa 9</b><span class="small mute">Sala</span></div>
+      <div class="card stack" style="padding:14px;gap:8px;align-items:center;border:2px dashed var(--line)"><div data-qr="99" style="width:100%"></div><b>Barra</b><span class="small mute">Sin mesa</span></div>
+    </div>
+    <aside class="stack" style="width:300px;flex:none;gap:12px"><b>Así queda impreso</b>
+      <div class="stack" style="padding:26px 24px;gap:12px;align-items:center;background:#FBFAF6;border-radius:6px;box-shadow:0 10px 30px -12px rgba(0,0,0,.35);text-align:center;color:#2B2118">
+        <span class="serif" style="font-size:26px">Casa Brezo</span><div data-qr="7" style="width:170px"></div><b style="font-size:17px">Escanea para ver la carta</b><span class="small" style="color:#6B5A48">Mesa 7. Also in English.</span></div>
+      <p class="hint">Sale con los colores y la tipografía de tu web. Tamaño A6, para un portacartas de mesa.</p></aside>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D14"><figcaption class="g-cap"><div class="t"><span class="g-id">D14</span><span class="g-name">Web: editor</span></div><p class="g-why">El local cambia textos, fotos y horario por secciones. La carta y el menú del día se actualizan solos desde el módulo de carta.</p></figcaption><div class="stage" data-w="1280" data-h="860"><div class="scr t-cub pn">
+<nav data-side="Web"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Tu web</h1><p><a href="#">casabrezo.es</a>, publicada el 2 de noviembre</p></div><div class="row" style="gap:8px"><span class="pill p-warn">2 cambios sin publicar</span><span class="btn pri">Publicar cambios</span></div></div>
+  <div class="row" style="gap:24px;align-items:flex-start;flex:1;min-height:0">
+    <aside class="stack" style="width:270px;flex:none;gap:6px">
+      <span class="card between" style="padding:12px 14px;outline:3px solid var(--acc);outline-offset:-2px"><b>Portada</b><span class="pill p-warn">Sin publicar</span></span>
+      <span class="card between" style="padding:12px 14px"><span><b>Menú del día</b><br><span class="small mute">Se actualiza solo</span></span></span>
+      <span class="card between" style="padding:12px 14px"><span><b>Carta</b><br><span class="small mute">Se actualiza sola</span></span></span>
+      <span class="card between" style="padding:12px 14px"><b>Horario y dirección</b><span class="pill p-warn">Sin publicar</span></span>
+      <span class="card between" style="padding:12px 14px"><b>Fotos</b><span class="small mute">8</span></span>
+      <span class="card between" style="padding:12px 14px"><b>Contacto</b></span>
+      <div class="card stack" style="padding:14px;gap:6px;margin-top:10px"><b class="small">Así te ve Google</b><span style="color:#1a0dab;font-size:16px;line-height:1.3">Casa Brezo: cocina de mercado en Alcalá de Henares</span><span class="small" style="color:#4d5156;line-height:1.45">Guisos de cuchara y verdura de la vega del Henares en la Calle Mayor. Menú del día a 14,50 €. Reserva online.</span></div>
+    </aside>
+    <section class="stack grow" style="gap:14px">
+      <div class="card stack" style="padding:18px;gap:14px"><h2 style="font-size:20px">Portada</h2>
+        <label class="fld"><span>Título</span><span class="inp focus">Cocina de mercado en la Calle Mayor</span></label>
+        <label class="fld"><span>Texto</span><span class="inp ta" style="min-height:68px">Guisos de cuchara, verdura de la vega del Henares y una bodega pequeña pero bien elegida. Abrimos de martes a domingo.</span></label>
+        <div class="row" style="gap:12px"><div class="img" style="width:120px;height:80px;flex:none">Foto</div><span class="btn sm soft">Cambiar foto</span><span class="hint">La comprimimos para que la web cargue rápido.</span></div></div>
+      <div class="card" style="padding:12px;overflow:hidden"><div class="between small mute" style="margin:0 4px 8px"><b>Vista previa</b><span class="seg"><span class="on">Ordenador</span><span>Móvil</span></span></div>
+        <div style="height:250px;overflow:hidden;border-radius:8px;border:1px solid var(--line)"><div class="t-brezo" style="width:1280px;transform:scale(.56);transform-origin:0 0;background:#FBFAF6;color:#2B2118">
+          <div class="wnav"><span class="nm">Casa Brezo</span><a>Carta</a><a>Menú del día</a><a>Dónde estamos</a><span class="btn pri">Reservar mesa</span></div>
+          <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:56px;padding:56px 48px;align-items:center"><div class="stack" style="gap:20px"><p class="serif" style="font-size:64px;line-height:1.02">Cocina de mercado en la Calle Mayor</p><p style="font-size:19px;color:#6B5A48">Guisos de cuchara, verdura de la vega del Henares y una bodega pequeña pero bien elegida.</p><div class="row" style="gap:10px"><span class="btn pri lg">Reservar mesa</span><span class="btn lg">Ver la carta</span></div></div><div class="img" style="height:340px">Foto del comedor</div></div>
+        </div></div></div>
+    </section>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D15"><figcaption class="g-cap"><div class="t"><span class="g-id">D15</span><span class="g-name">Mensajes</span></div><p class="g-why">Lo que llega desde el formulario de la web. Se responde desde aquí y, si es una reserva, se convierte en una con un clic.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-cub pn">
+<nav data-side="Mensajes"></nav>
+<main class="main" style="padding:0;flex-direction:row;gap:0">
+  <section class="stack" style="width:360px;flex:none;border-right:1px solid var(--line)">
+    <div style="padding:28px 24px 14px"><h1 style="font-size:34px">Mensajes</h1><div class="row" style="gap:6px;margin-top:12px"><span class="chip on">Sin contestar <span class="n">1</span></span><span class="chip">Todos</span></div></div>
+    <ul class="list">
+      <li style="padding:14px 24px;background:#fff;box-shadow:inset 4px 0 0 var(--acc)"><div class="between"><b>Andrea Ruiz</b><span class="small mute">10:12</span></div><p class="small b" style="margin-top:2px">Menú de empresa para 20</p><p class="small mute" style="margin-top:2px">Hola, somos un equipo de 20 y queríamos saber si…</p></li>
+      <li style="padding:14px 24px"><div class="between"><span>Jorge Calvo</span><span class="small mute">Ayer</span></div><p class="small" style="margin-top:2px">¿Tenéis opciones veganas?</p><p class="small mute" style="margin-top:2px">Contestado por Javi</p></li>
+      <li style="padding:14px 24px"><div class="between"><span>Proveedor de vinos</span><span class="small mute">Jue</span></div><p class="small" style="margin-top:2px">Catálogo de otoño</p><p class="small mute" style="margin-top:2px">Archivado</p></li>
+    </ul>
+  </section>
+  <section class="stack grow" style="padding:28px 32px;gap:18px">
+    <div class="between"><div><h2 style="font-size:26px">Menú de empresa para 20</h2><p class="mute" style="margin-top:2px">Andrea Ruiz, andrea.ruiz@estudiohenares.es, 600 111 222</p></div><span class="btn pri">Convertir en reserva</span></div>
+    <div class="card" style="padding:18px 20px;line-height:1.6;max-width:68ch">Hola, somos un equipo de 20 y queríamos hacer la comida de Navidad el viernes 12 de diciembre. ¿Tenéis algún menú cerrado para grupos? Dos personas son celíacas. ¡Gracias!</div>
+    <p class="small mute">Recibido hoy a las 10:12 desde el formulario de casabrezo.es</p>
+    <div class="stack" style="gap:8px;margin-top:auto"><span class="inp ta ph" style="min-height:120px">Escribe tu respuesta…</span><div class="between"><span class="small mute">Se envía desde reservas@casabrezo.es</span><div class="row" style="gap:8px"><span class="btn">Archivar</span><span class="btn dark">Enviar respuesta</span></div></div></div>
+  </section>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D16"><figcaption class="g-cap"><div class="t"><span class="g-id">D16</span><span class="g-name">Clientes</span></div><p class="g-why">Quién ha venido, cuántas veces y si suele faltar. Se rellena solo con las reservas; las notas ayudan a atender mejor.</p></figcaption><div class="stage" data-w="1280" data-h="800"><div class="scr t-cub pn">
+<nav data-side="Clientes"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><div><h1>Clientes</h1><p>412 personas han reservado contigo. 96 aceptan recibir novedades.</p></div><div class="row" style="gap:8px"><span class="inp ph" style="width:260px">Buscar nombre o teléfono</span><span class="btn">Exportar</span></div></div>
+  <div class="row" style="gap:6px"><span class="chip on">Todos</span><span class="chip">Habituales</span><span class="chip">Han faltado alguna vez</span><span class="chip">Aceptan novedades</span></div>
+  <table class="tbl"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Visitas</th><th>Última visita</th><th>No vino</th><th>Nota del local</th><th>Novedades</th></tr></thead>
+    <tbody>
+      <tr><td><b>Carmen Sanz</b></td><td class="num">612 345 678</td><td class="num">3</td><td>20 sep</td><td class="num mute">0</td><td><span class="note">Le gusta la mesa 7</span></td><td><span class="pill p-ok">Sí</span></td></tr>
+      <tr><td><b>Taller Henares</b></td><td class="num">918 222 333</td><td class="num">11</td><td>31 oct</td><td class="num mute">0</td><td><span class="note">Factura a nombre de la empresa</span></td><td><span class="pill p-mute">No</span></td></tr>
+      <tr><td><b>Andrea Ruiz</b></td><td class="num">600 111 222</td><td class="num">5</td><td>8 nov</td><td class="num mute">0</td><td class="mute">–</td><td><span class="pill p-ok">Sí</span></td></tr>
+      <tr><td><b>Sergio Prado</b></td><td class="num">655 444 999</td><td class="num">4</td><td>2 oct</td><td><span class="pill p-bad">2</span></td><td><span class="note">Pedir confirmación por teléfono</span></td><td><span class="pill p-mute">No</span></td></tr>
+      <tr><td><b>Familia Ortega</b></td><td class="num">699 888 777</td><td class="num">2</td><td>13 sep</td><td class="num mute">0</td><td><span class="note">Necesitan trona</span></td><td><span class="pill p-ok">Sí</span></td></tr>
+      <tr><td><b>Luis Martín</b></td><td class="num">644 555 111</td><td class="num">1</td><td>Primera vez hoy</td><td class="num mute">0</td><td class="mute">–</td><td><span class="pill p-mute">No</span></td></tr>
+    </tbody></table>
+  <p class="hint">Si un cliente te pide ver o borrar sus datos, ábrelo y usa «Descargar sus datos» o «Borrar cliente».</p>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D17"><figcaption class="g-cap"><div class="t"><span class="g-id">D17</span><span class="g-name">Ajustes: reservas</span></div><p class="g-why">Turnos, capacidad y reglas. De aquí salen las horas que ve el comensal al reservar.</p></figcaption><div class="stage" data-w="1280" data-h="780"><div class="scr t-cub pn">
+<nav data-side="Ajustes"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><h1>Ajustes</h1><span class="btn pri">Guardar cambios</span></div>
+  <div class="tabs"><span>El local</span><span class="on">Reservas</span><span>Equipo</span><span>Plan y factura</span></div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:start">
+    <section class="card stack" style="padding:20px;gap:12px"><div class="between"><h2 style="font-size:20px">Turnos</h2><span class="btn sm soft">Añadir turno</span></div>
+      <table class="tbl" style="white-space:nowrap"><thead><tr><th>Turno</th><th>Días</th><th>Horario</th><th>Horas de llegada</th><th>Cubiertos</th></tr></thead><tbody>
+        <tr><td><b>Comidas</b></td><td>Mar a dom</td><td class="num">13:00 a 16:00</td><td>Cada 30 min</td><td class="num">80</td></tr>
+        <tr><td><b>Cenas</b></td><td>Mar a sáb</td><td class="num">20:30 a 23:30</td><td>Cada 30 min</td><td class="num">90</td></tr></tbody></table>
+      <h3 style="font-size:17px;margin-top:8px">Días especiales</h3>
+      <ul class="list"><li class="between" style="padding:10px 0"><span><b>24 de diciembre</b> <span class="mute">Solo comidas</span></span><a href="#" class="small">Editar</a></li><li class="between" style="padding:10px 0"><span><b>25 de diciembre</b> <span class="mute">Cerrado</span></span><a href="#" class="small">Editar</a></li><li class="between" style="padding:10px 0;border:0"><span><b>Vacaciones</b> <span class="mute">del 12 al 26 de enero</span></span><a href="#" class="small">Editar</a></li></ul>
+    </section>
+    <section class="card stack" style="padding:20px;gap:14px"><h2 style="font-size:20px">Reglas</h2>
+      <div class="between"><span>Tiempo de mesa para 2</span><span class="inp num" style="min-height:40px">1 h 45 min</span></div>
+      <div class="between"><span>Tiempo de mesa para 5 o más</span><span class="inp num" style="min-height:40px">2 h 15 min</span></div>
+      <div class="between"><span>Reservar con al menos</span><span class="inp num" style="min-height:40px">2 h de antelación</span></div>
+      <div class="between"><span>Grupos de más de 8</span><span class="inp" style="min-height:40px">Piden solicitud</span></div>
+      <div class="between"><span>Cancelación gratis hasta</span><span class="inp num" style="min-height:40px">2 h antes</span></div>
+      <div class="between"><span>Lista de espera</span><i class="sw on"></i></div>
+      <div class="between"><span>Recordatorio por email el día antes</span><i class="sw on"></i></div>
+      <p class="hint">Cuando una hora se llena, deja de aparecer en la web al momento.</p>
+    </section>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D18"><figcaption class="g-cap"><div class="t"><span class="g-id">D18</span><span class="g-name">Ajustes: plan y factura</span></div><p class="g-why">Qué módulos tiene el local, lo que paga y sus facturas. Sin permanencia, y se dice claro.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-cub pn">
+<nav data-side="Ajustes"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><h1>Ajustes</h1></div>
+  <div class="tabs"><span>El local</span><span>Reservas</span><span>Equipo</span><span class="on">Plan y factura</span></div>
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:start">
+    <section class="stack" style="gap:12px">
+      <div class="card stack" style="padding:22px;gap:6px;background:var(--brand);color:var(--brand-ink);border:0"><span class="small" style="opacity:.85">Tu plan</span><div class="between"><b style="font-size:26px;letter-spacing:-.02em">Pack completo</b><span><b class="num" style="font-size:26px">39,50 €</b> <span class="small" style="opacity:.85">al mes + IVA</span></span></div><p class="small" style="opacity:.9">Precio de piloto hasta el 14 de enero. Después, 79 € al mes. Sin permanencia.</p></div>
+      <div class="card" style="padding:4px 20px"><ul class="list">
+        <li class="between" style="padding:14px 0"><span><b>Web</b><br><span class="small mute">casabrezo.es, con mantenimiento</span></span><span class="pill p-ok">Incluido</span></li>
+        <li class="between" style="padding:14px 0"><span><b>Carta QR</b><br><span class="small mute">Carta, menú del día, agotados e idiomas</span></span><span class="pill p-ok">Incluido</span></li>
+        <li class="between" style="padding:14px 0;border:0"><span><b>Reservas</b><br><span class="small mute">Reservas online, sala y lista de espera</span></span><span class="pill p-ok">Incluido</span></li></ul></div>
+      <p class="hint">¿Quieres quitar un módulo o darte de baja? Hazlo desde aquí cuando quieras; deja de cobrarse a final de mes.</p>
+    </section>
+    <section class="stack" style="gap:12px">
+      <div class="card stack" style="padding:18px 20px;gap:8px"><b>Forma de pago</b><div class="between"><span>Visa terminada en 4242</span><a href="#" class="small">Cambiar</a></div><span class="small mute">Próximo cobro: 1 de diciembre, 47,80 € con IVA</span></div>
+      <div class="card" style="padding:16px 20px"><b>Facturas</b><ul class="list" style="margin-top:6px">
+        <li class="between" style="padding:10px 0"><span>Noviembre 2026</span><span class="row" style="gap:12px"><span class="num">47,80 €</span><a href="#" class="small">PDF</a></span></li>
+        <li class="between" style="padding:10px 0"><span>Octubre 2026</span><span class="row" style="gap:12px"><span class="num">47,80 €</span><a href="#" class="small">PDF</a></span></li>
+        <li class="between" style="padding:10px 0;border:0"><span>Alta de la web</span><span class="row" style="gap:12px"><span class="num">726,00 €</span><a href="#" class="small">PDF</a></span></li></ul></div>
+    </section>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D19"><figcaption class="g-cap"><div class="t"><span class="g-id">D19</span><span class="g-name">Ajustes: equipo</span></div><p class="g-why">Quién entra al panel y qué puede tocar. Tres papeles sencillos, explicados al lado de cada uno.</p></figcaption><div class="stage" data-w="1280" data-h="740"><div class="scr t-cub pn">
+<nav data-side="Ajustes"></nav>
+<main class="main" style="gap:16px">
+  <div class="phd" style="align-items:center"><h1>Ajustes</h1><span class="btn pri">Invitar a alguien</span></div>
+  <div class="tabs"><span>El local</span><span>Reservas</span><span class="on">Equipo</span><span>Plan y factura</span></div>
+  <table class="tbl"><thead><tr><th>Persona</th><th>Papel</th><th>Qué puede hacer</th><th>Último acceso</th><th></th></tr></thead><tbody>
+    <tr><td><b>Lucía Brezo</b><br><span class="small mute">lucia@casabrezo.es</span></td><td><span class="pill p-dark">Propietaria</span></td><td>Todo, incluido el plan y la factura</td><td>Ahora</td><td></td></tr>
+    <tr><td><b>Javi Gómez</b><br><span class="small mute">javi@casabrezo.es</span></td><td><span class="pill p-ok">Encargado</span></td><td>Reservas, sala, carta, web y mensajes</td><td>Hoy, 12:40</td><td><a href="#" class="small">Cambiar</a></td></tr>
+    <tr><td><b>Marta León</b><br><span class="small mute">marta.cocina@gmail.com</span></td><td><span class="pill p-mute">Personal</span></td><td>Ver la sala, sentar reservas y marcar agotados</td><td>Ayer</td><td><a href="#" class="small">Cambiar</a></td></tr>
+    <tr><td><b>Pablo Ruiz</b><br><span class="small mute">pablo.r@gmail.com</span></td><td><span class="pill p-line">Invitación enviada</span></td><td>Personal</td><td class="mute">Aún no ha entrado</td><td><a href="#" class="small">Reenviar</a></td></tr>
+  </tbody></table>
+  <p class="hint">Cada persona entra con su propio email. Si alguien deja el local, quítalo y deja de tener acceso al momento.</p>
+</main>
+</div></div></figure>
+</div></section>
+
+<section class="g-group" id="cubierto"><h2>Tu panel de Cubierto</h2><p>Lo que ves tú como administrador de la plataforma: todos los locales, sus pagos y dominios, el gasto de IA y el alta de clientes nuevos.</p><div class="g-list d">
+
+<figure class="g-item" id="D20"><figcaption class="g-cap"><div class="t"><span class="g-id">D20</span><span class="g-name">Locales</span></div><p class="g-why">La lista de todos tus clientes. Arriba, lo que necesita tu atención hoy.</p></figcaption><div class="stage" data-w="1280" data-h="800"><div class="scr t-cub">
+<header data-sa="Locales"></header>
+<main class="stack" style="padding:28px 32px;gap:22px">
+  <div class="phd"><div><h1>Locales</h1><p>5 locales, 3 en piloto</p></div><div class="row" style="gap:10px"><span class="inp ph" style="width:260px">Buscar por nombre</span><span class="btn pri">Dar de alta un local</span></div></div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+    <div class="banner"><b>Necesita tu atención</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.6"><li>El dominio <b>labodegadesanta.es</b> sigue esperando que el cliente cambie los DNS (3 días).</li><li>El pago de <b>Taberna El Arco</b> falló el 10/11. Sigue funcionando en periodo de gracia hasta el 24/11.</li></ul></div>
+    <div class="card stack" style="padding:16px 18px;gap:8px"><b>Gasto de IA este mes</b><span><b class="num" style="font-size:28px">4,20 €</b> <span class="mute">de 50 € de tope</span></span><div class="bar"><i style="width:8%"></i></div><span class="small mute">Casi todo en traducciones de carta</span></div>
+  </div>
+  <div class="card" style="overflow:hidden"><table class="tbl"><thead><tr><th style="padding-left:18px">Local</th><th>Módulos</th><th>Pago</th><th>Dominio</th><th style="text-align:right">IA del mes</th><th></th></tr></thead><tbody>
+    <tr><td style="padding-left:18px"><b>Casa Brezo</b><br><span class="small mute">Alta en octubre</span></td><td><div class="als"><span class="al">Web</span><span class="al">Carta</span><span class="al">Reservas</span></div></td><td><span class="pill p-warn">Piloto</span></td><td>casabrezo.es</td><td class="num" style="text-align:right">1,85 € de 2 €</td><td style="text-align:right;padding-right:18px"><a href="#">Ver ficha</a></td></tr>
+    <tr><td style="padding-left:18px"><b>Taberna El Arco</b><br><span class="small mute">Alta en octubre</span></td><td><div class="als"><span class="al">Carta</span><span class="al">Reservas</span></div></td><td><span class="pill p-bad">Pago pendiente</span></td><td>el-arco.cubierto.es</td><td class="num" style="text-align:right">0,40 € de 2 €</td><td style="text-align:right;padding-right:18px"><a href="#">Ver ficha</a></td></tr>
+    <tr><td style="padding-left:18px"><b>La Bodega de Santa</b><br><span class="small mute">Alta en noviembre</span></td><td><div class="als"><span class="al">Web</span><span class="al">Carta</span></div></td><td><span class="pill p-warn">Piloto</span></td><td>Esperando DNS</td><td class="num" style="text-align:right">1,10 € de 2 €</td><td style="text-align:right;padding-right:18px"><a href="#">Ver ficha</a></td></tr>
+    <tr><td style="padding-left:18px"><b>Café Cervantes</b><br><span class="small mute">Alta en noviembre</span></td><td><div class="als"><span class="al">Carta</span></div></td><td><span class="pill p-ok">Al día</span></td><td>cervantes.cubierto.es</td><td class="num" style="text-align:right">0,85 € de 2 €</td><td style="text-align:right;padding-right:18px"><a href="#">Ver ficha</a></td></tr>
+    <tr><td style="padding-left:18px"><b>Mesón del Henares</b><br><span class="small mute">Alta en noviembre</span></td><td><div class="als"><span class="al">Reservas</span></div></td><td><span class="pill p-ok">Al día</span></td><td>mesonhenares.com</td><td class="num" style="text-align:right">0,00 € de 2 €</td><td style="text-align:right;padding-right:18px"><a href="#">Ver ficha</a></td></tr>
+  </tbody></table></div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D21"><figcaption class="g-cap"><div class="t"><span class="g-id">D21</span><span class="g-name">Ficha de un local</span></div><p class="g-why">Todo lo de un cliente en una página: módulos, dominio, cobros, gasto de IA y lo último que ha pasado. «Entrar como el local» sirve para dar soporte y queda registrado.</p></figcaption><div class="stage" data-w="1280" data-h="780"><div class="scr t-cub">
+<header data-sa="Locales"></header>
+<main class="stack" style="padding:24px 32px;gap:18px">
+  <span class="small mute b">Locales</span>
+  <div class="phd" style="align-items:center"><div><h1>Casa Brezo</h1><p>Calle Mayor 12, Alcalá. Propietaria: Lucía Brezo, lucia@casabrezo.es</p></div><div class="row" style="gap:8px"><span class="btn">Entrar como el local</span><span class="btn bad">Pausar local</span></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <div class="card stack" style="padding:18px;gap:10px"><b>Módulos</b><div class="between"><span>Web</span><i class="sw on"></i></div><div class="between"><span>Carta QR</span><i class="sw on"></i></div><div class="between"><span>Reservas</span><i class="sw on"></i></div><p class="hint">Activar o quitar un módulo cambia la suscripción en Stripe.</p></div>
+    <div class="card stack" style="padding:18px;gap:10px"><b>Dominio</b><div class="between"><span>casabrezo.es</span><span class="pill p-ok">Activo</span></div><div class="between small"><span class="mute">DNS</span><span>Correcto</span></div><div class="between small"><span class="mute">Certificado</span><span>Válido, se renueva solo</span></div><div class="between small"><span class="mute">Dirección de respaldo</span><span>casa-brezo.cubierto.es</span></div></div>
+    <div class="card stack" style="padding:18px;gap:10px"><b>Cobro</b><div class="between"><span>Pack completo</span><span class="pill p-warn">Piloto</span></div><div class="between small"><span class="mute">Cuota ahora</span><span class="num">39,50 € + IVA</span></div><div class="between small"><span class="mute">Precio normal desde</span><span>14 de enero</span></div><div class="between small"><span class="mute">Último pago</span><span>1 nov, correcto</span></div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:16px">
+    <div class="card stack" style="padding:18px;gap:10px"><div class="between"><b>IA este mes</b><span class="num"><b>1,85 €</b> de 2 €</span></div><div class="bar"><i class="acc" style="width:92%"></i></div>
+      <ul class="list small"><li class="between" style="padding:8px 0"><span>Traducir la carta al inglés</span><span class="num">1,60 €</span></li><li class="between" style="padding:8px 0"><span>Descripciones de platos</span><span class="num">0,25 €</span></li></ul>
+      <div class="between"><span class="small">Tope mensual</span><span class="inp num" style="min-height:38px">2,00 €</span></div><p class="hint">Al llegar al tope, las tareas de IA esperan al mes siguiente y se te avisa.</p></div>
+    <div class="card stack" style="padding:18px;gap:6px"><b>Actividad reciente</b><ul class="list small">
+      <li class="between" style="padding:9px 0"><span>Javi marcó agotado «Pulpo a la gallega»</span><span class="mute">20:52</span></li>
+      <li class="between" style="padding:9px 0"><span>Reserva nueva desde la web, 4 personas</span><span class="mute">11:42</span></li>
+      <li class="between" style="padding:9px 0"><span>Traducción al inglés terminada, 12 platos</span><span class="mute">Ayer</span></li>
+      <li class="between" style="padding:9px 0"><span>Lucía publicó cambios en la web</span><span class="mute">2 nov</span></li>
+      <li class="between" style="padding:9px 0;border:0"><span>Manuel entró como el local para soporte</span><span class="mute">28 oct</span></li></ul></div>
+  </div>
+</main>
+</div></div></figure>
+
+<figure class="g-item" id="D22"><figcaption class="g-cap"><div class="t"><span class="g-id">D22</span><span class="g-name">Alta de un local</span></div><p class="g-why">El asistente para un cliente nuevo, en cuatro pasos. Aquí, el de elegir módulos y precio.</p></figcaption><div class="stage" data-w="1280" data-h="820"><div class="scr t-cub">
+<header data-sa="Locales"></header>
+<main class="stack" style="padding:28px 32px;gap:20px;max-width:980px;width:100%;margin:0 auto">
+  <div class="row" style="gap:10px;font-weight:650;font-size:14px">
+    <span class="row" style="gap:8px;color:var(--mute)"><span style="width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:inline-flex;align-items:center;justify-content:center">1</span>Datos del local</span><span style="width:32px;height:2px;background:var(--line)"></span>
+    <span class="row" style="gap:8px"><span style="width:26px;height:26px;border-radius:50%;background:var(--acc);display:inline-flex;align-items:center;justify-content:center">2</span>Módulos y precio</span><span style="width:32px;height:2px;background:var(--line)"></span>
+    <span class="row" style="gap:8px;color:var(--mute)"><span style="width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center">3</span>Dominio</span><span style="width:32px;height:2px;background:var(--line)"></span>
+    <span class="row" style="gap:8px;color:var(--mute)"><span style="width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center">4</span>Invitar al dueño</span></div>
+  <h1 style="font-size:34px">¿Qué va a usar Bar La Plaza?</h1>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    <div class="card stack" style="padding:18px;gap:8px"><div class="between"><b style="font-size:18px">Web</b><i class="check"></i></div><span class="mute small">Web propia con mantenimiento</span><span><b class="num">39 €</b> <span class="small mute">al mes, alta desde 600 €</span></span></div>
+    <div class="card stack" style="padding:18px;gap:8px"><div class="between"><b style="font-size:18px">Carta QR</b><i class="check"></i></div><span class="mute small">Carta, menú del día e idiomas</span><span><b class="num">24 €</b> <span class="small mute">al mes</span></span></div>
+    <div class="card stack" style="padding:18px;gap:8px;outline:3px solid var(--ink);outline-offset:-2px"><div class="between"><b style="font-size:18px">Reservas</b><i class="check on"></i></div><span class="mute small">Reservas online y plano de sala</span><span><b class="num">44 €</b> <span class="small mute">al mes</span></span></div>
+  </div>
+  <p class="hint">Con los tres módulos se aplica el pack: 79 € al mes en lugar de 107 €.</p>
+  <div class="card stack" style="padding:18px;gap:12px"><div class="between"><span><b>Precio de piloto</b><br><span class="small mute">50 % durante los 3 primeros meses</span></span><i class="sw"></i></div></div>
+  <div class="between" style="border-top:1px solid var(--line);padding-top:16px"><span><span class="mute">Cuota mensual</span> <b class="num" style="font-size:22px">44 €</b> <span class="small mute">+ IVA, sin permanencia</span></span><div class="row" style="gap:8px"><span class="btn">Atrás</span><span class="btn pri">Siguiente: dominio</span></div></div>
+</main>
+</div></div></figure>
+</div></section>
+</main>
+<footer class="g-foot">Maqueta de diseño de Cubierto, noviembre de 2026. Locales, platos, personas y cifras son de ejemplo.</footer>
+<script>
+(function () {
+  var LOGO = function (bg, fg, s) {
+    s = s || 28;
+    return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="' + bg + '"/><path d="M10 9v14M22 9c-4 2-4 6 0 7v7" fill="none" stroke="' + fg + '" stroke-width="2.6" stroke-linecap="round"/></svg>';
+  };
+  var ICONS = {
+    hoy: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    reservas: '<path d="M10 7h10M10 12h10M10 17h10"/><path d="M4.5 7h.01M4.5 12h.01M4.5 17h.01" stroke-width="3"/>',
+    sala: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="16" height="7" rx="2"/>',
+    carta: '<path d="M6 4h9a4 4 0 0 1 4 4v12H10a4 4 0 0 1-4-4z"/><path d="M10 9h5M10 13h5"/>',
+    mas: '<path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3.2"/>'
+  };
+  var ic = function (n) { return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[n] + '</svg>'; };
+
+  // Barra lateral del panel del local
+  document.querySelectorAll('[data-side]').forEach(function (el) {
+    var on = el.getAttribute('data-side');
+    var items = ['Hoy', 'Reservas', 'Sala', 'Carta', 'Web', 'Mensajes', 'Clientes', 'Ajustes'];
+    el.classList.add('side');
+    el.innerHTML = '<div class="logo">' + LOGO('#F2F6F3', '#1D4A3A') + '<span>cubierto</span></div>' +
+      '<div class="loc"><div style="font-weight:700">Casa Brezo</div><div class="small" style="opacity:.8">Calle Mayor 12, Alcalá</div></div>' +
+      '<ul>' + items.map(function (i) {
+        return '<li class="' + (i === on ? 'on' : '') + '">' + i + (i === 'Mensajes' ? '<span class="cnt">1</span>' : '') + '</li>';
+      }).join('') + '</ul>' +
+      '<div class="who"><div style="font-weight:650">Lucía Brezo</div><div>Propietaria</div></div>';
+  });
+
+  // Barra inferior del panel en móvil
+  document.querySelectorAll('[data-mtab]').forEach(function (el) {
+    var on = el.getAttribute('data-mtab');
+    var items = [['hoy', 'Hoy'], ['reservas', 'Reservas'], ['sala', 'Sala'], ['carta', 'Carta'], ['mas', 'Más']];
+    el.classList.add('mtab');
+    el.innerHTML = items.map(function (i) {
+      return '<span class="' + (i[0] === on ? 'on' : '') + '">' + ic(i[0]) + i[1] + '</span>';
+    }).join('');
+  });
+
+  // Cabecera del superadmin
+  document.querySelectorAll('[data-sa]').forEach(function (el) {
+    var on = el.getAttribute('data-sa');
+    el.classList.add('sa-top');
+    el.innerHTML = '<div class="logo">' + LOGO('#E8A317', '#14281F') + '<span>cubierto</span><span class="sa-badge">Superadmin</span></div>' +
+      '<nav>' + ['Locales', 'Dominios', 'Uso de IA', 'Avisos'].map(function (i) {
+        return '<span class="' + (i === on ? 'on' : '') + '">' + i + '</span>';
+      }).join('') + '</nav><span style="margin-left:auto;font-size:14px;color:#C9D6CF">Manuel</span>';
+  });
+
+  document.querySelectorAll('[data-logo]').forEach(function (el) {
+    var p = el.getAttribute('data-logo').split(',');
+    el.innerHTML = LOGO(p[0], p[1], +(p[2] || 28));
+  });
+
+  // Plano de sala (SVG)
+  function plan(mode) {
+    var T = [
+      { id: 1, s: 'r', x: 85, y: 130, st: 'free' }, { id: 2, s: 'r', x: 175, y: 130, st: 'seated' },
+      { id: 3, s: 'r', x: 85, y: 245, st: 'free' }, { id: 4, s: 'r', x: 175, y: 245, st: 'seated' },
+      { id: 5, s: 'q', x: 130, y: 370, st: 'free' }, { id: 6, s: 'q', x: 320, y: 180, st: 'soon' },
+      { id: 7, s: 'q', x: 440, y: 180, st: 'free' }, { id: 8, s: 'q', x: 560, y: 180, st: 'soon' },
+      { id: 9, s: 'q', x: 320, y: 300, st: 'join' }, { id: 10, s: 'q', x: 440, y: 300, st: 'join' },
+      { id: 11, s: 'l', n: 6, x: 650, y: 300, st: 'free' }, { id: 12, s: 'l', n: 8, x: 400, y: 410, st: 'seated' }
+    ];
+    var edit = mode === 'editor';
+    var look = {
+      free: { f: '#FFFFFF', s: '#4B6158', i: '#14281F', c: '#C9D6CF' },
+      soon: { f: '#F7DFA6', s: '#E8A317', i: '#14281F', c: '#C9D6CF' },
+      seated: { f: '#1D4A3A', s: '#1D4A3A', i: '#F2F6F3', c: '#7E9B8E' }
+    };
+    var o = '<svg viewBox="0 0 800 500" role="img" aria-label="Plano de sala de Casa Brezo" style="display:block;width:100%;height:auto;font-family:\'Bricolage Grotesque\',system-ui,sans-serif">';
+    if (edit) {
+      o += '<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#E1E8E4" stroke-width="1"/></pattern></defs><rect x="0" y="0" width="800" height="500" fill="url(#grid)"/>';
+    }
+    o += '<rect x="20" y="20" width="760" height="460" rx="14" fill="' + (edit ? 'rgba(247,248,245,.6)' : '#F7F8F5') + '" stroke="#14281F" stroke-width="3"/>' +
+      '<rect x="20" y="20" width="210" height="460" rx="14" fill="#E4ECE7" stroke="#C9D6CF" stroke-width="2" stroke-dasharray="8 6"/>' +
+      '<text x="40" y="52" font-size="18" font-weight="700" fill="#4B6158">Terraza</text><text x="252" y="52" font-size="18" font-weight="700" fill="#4B6158">Sala</text>' +
+      '<rect x="600" y="20" width="180" height="120" fill="#E4ECE7" stroke="#14281F" stroke-width="2"/><text x="690" y="86" font-size="15" font-weight="600" fill="#4B6158" text-anchor="middle">Cocina</text>' +
+      '<rect x="300" y="64" width="260" height="34" rx="6" fill="#E4ECE7" stroke="#4B6158" stroke-width="2"/><text x="430" y="86" font-size="15" font-weight="600" fill="#4B6158" text-anchor="middle">Barra</text>' +
+      '<line x1="520" y1="480" x2="600" y2="480" stroke="#E8A317" stroke-width="8"/><text x="560" y="470" font-size="13" font-weight="600" fill="#4B6158" text-anchor="middle">Entrada</text>';
+    var chairs = '', tables = '';
+    var cw = 22, ch = 10, g = 6;
+    T.forEach(function (t) {
+      var st = edit ? 'free' : t.st;
+      if (st === 'join') return;
+      var l = look[st];
+      var w = t.s === 'r' ? 52 : t.s === 'q' ? 64 : (t.n === 8 ? 220 : 150);
+      var h = t.s === 'r' ? 52 : t.s === 'q' ? 64 : 58;
+      var C = function (x, y, ww, hh) { chairs += '<rect x="' + x + '" y="' + y + '" width="' + ww + '" height="' + hh + '" rx="4" fill="' + l.c + '"/>'; };
+      if (t.s === 'r') { C(t.x - w / 2 - g - ch, t.y - cw / 2, ch, cw); C(t.x + w / 2 + g, t.y - cw / 2, ch, cw); }
+      else if (t.s === 'q') { C(t.x - cw / 2, t.y - h / 2 - g - ch, cw, ch); C(t.x - cw / 2, t.y + h / 2 + g, cw, ch); C(t.x - w / 2 - g - ch, t.y - cw / 2, ch, cw); C(t.x + w / 2 + g, t.y - cw / 2, ch, cw); }
+      else { var per = t.n / 2; for (var i = 0; i < per; i++) { var cx = t.x - w / 2 + (w / per) * (i + .5); C(cx - cw / 2, t.y - h / 2 - g - ch, cw, ch); C(cx - cw / 2, t.y + h / 2 + g, cw, ch); } }
+      var selected = edit && t.id === 11;
+      var stroke = selected ? '#E8A317' : l.s, sw = selected ? 4 : 2.5;
+      if (t.s === 'r') tables += '<circle cx="' + t.x + '" cy="' + t.y + '" r="26" fill="' + l.f + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+      else tables += '<rect x="' + (t.x - w / 2) + '" y="' + (t.y - h / 2) + '" width="' + w + '" height="' + h + '" rx="8" fill="' + l.f + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+      tables += '<text x="' + t.x + '" y="' + (t.y + 6) + '" font-size="18" font-weight="750" fill="' + l.i + '" text-anchor="middle">' + t.id + '</text>';
+      if (selected) {
+        var x0 = t.x - w / 2 - 14, y0 = t.y - h / 2 - 26, x1 = t.x + w / 2 + 14, y1 = t.y + h / 2 + 26;
+        tables += '<rect x="' + x0 + '" y="' + y0 + '" width="' + (x1 - x0) + '" height="' + (y1 - y0) + '" fill="none" stroke="#E8A317" stroke-width="2" stroke-dasharray="6 4"/>';
+        [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].forEach(function (p) { tables += '<rect x="' + (p[0] - 6) + '" y="' + (p[1] - 6) + '" width="12" height="12" fill="#fff" stroke="#14281F" stroke-width="2"/>'; });
+        tables += '<circle cx="' + t.x + '" cy="' + (y0 - 18) + '" r="7" fill="#fff" stroke="#14281F" stroke-width="2"/><line x1="' + t.x + '" y1="' + (y0 - 11) + '" x2="' + t.x + '" y2="' + y0 + '" stroke="#14281F" stroke-width="2"/>';
+      }
+    });
+    if (!edit) {
+      [320, 440].forEach(function (x) { chairs += '<rect x="' + (x - 11) + '" y="252" width="22" height="10" rx="4" fill="#7E9B8E"/><rect x="' + (x - 11) + '" y="338" width="22" height="10" rx="4" fill="#7E9B8E"/>'; });
+      chairs += '<rect x="272" y="289" width="10" height="22" rx="4" fill="#7E9B8E"/><rect x="478" y="289" width="10" height="22" rx="4" fill="#7E9B8E"/>';
+      tables += '<rect x="288" y="268" width="184" height="64" rx="8" fill="#1D4A3A" stroke="#14281F" stroke-width="5"/><text x="320" y="306" font-size="18" font-weight="750" fill="#F2F6F3" text-anchor="middle">9</text><text x="440" y="306" font-size="18" font-weight="750" fill="#F2F6F3" text-anchor="middle">10</text>';
+    } else {
+      // Mesas 9 y 10 sueltas en el editor
+      [320, 440].forEach(function (x, k) {
+        chairs += '<rect x="' + (x - 11) + '" y="252" width="22" height="10" rx="4" fill="#C9D6CF"/><rect x="' + (x - 11) + '" y="338" width="22" height="10" rx="4" fill="#C9D6CF"/><rect x="' + (x - 48) + '" y="289" width="10" height="22" rx="4" fill="#C9D6CF"/><rect x="' + (x + 38) + '" y="289" width="10" height="22" rx="4" fill="#C9D6CF"/>';
+        tables += '<rect x="' + (x - 32) + '" y="268" width="64" height="64" rx="8" fill="#fff" stroke="#4B6158" stroke-width="2.5"/><text x="' + x + '" y="306" font-size="18" font-weight="750" fill="#14281F" text-anchor="middle">' + (9 + k) + '</text>';
+      });
+      tables += '<path d="M371 300h18" stroke="#1D4A3A" stroke-width="2.5" stroke-dasharray="3 3"/><text x="380" y="262" font-size="12" font-weight="650" fill="#1D4A3A" text-anchor="middle">se juntan</text>';
+    }
+    return o + chairs + tables + '</svg>';
+  }
+  document.querySelectorAll('[data-plan]').forEach(function (el) { el.innerHTML = plan(el.getAttribute('data-plan')); });
+
+  // Códigos QR de muestra (dibujo, no escaneables)
+  function qr(seed, size) {
+    var n = 25, s = size / n, r = seed * 9301 + 49297, o = '';
+    var rnd = function () { r = (r * 9301 + 49297) % 233280; return r / 233280; };
+    var finder = function (x, y) { return (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7); };
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) { if (!finder(x, y) && rnd() > .52) o += '<rect x="' + x * s + '" y="' + y * s + '" width="' + s + '" height="' + s + '"/>'; }
+    var F = function (x, y) { return '<rect x="' + (x * s + s / 2) + '" y="' + (y * s + s / 2) + '" width="' + 6 * s + '" height="' + 6 * s + '" fill="none" stroke="#14281F" stroke-width="' + s + '"/><rect x="' + (x + 2) * s + '" y="' + (y + 2) * s + '" width="' + 3 * s + '" height="' + 3 * s + '"/>'; };
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" aria-hidden="true" style="display:block"><g fill="#14281F">' + o + F(0, 0) + F(n - 7, 0) + F(0, n - 7) + '</g></svg>';
+  }
+  document.querySelectorAll('[data-qr]').forEach(function (el) { el.innerHTML = qr(+el.getAttribute('data-qr'), 200); });
+
+  // Escalado de cada pantalla al ancho disponible
+  function fit() {
+    document.querySelectorAll('.stage').forEach(function (st) {
+      var w = +st.getAttribute('data-w'), h = +st.getAttribute('data-h');
+      var avail = st.parentElement.clientWidth - (st.closest('.g-list.m') ? 16 : 0);
+      var k = Math.min(1, avail / w);
+      st.style.width = (w * k) + 'px';
+      st.style.height = (h * k) + 'px';
+      var scr = st.firstElementChild;
+      scr.style.width = w + 'px';
+      scr.style.height = h + 'px';
+      scr.style.transform = k < 1 ? 'scale(' + k + ')' : '';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+
+</script>
+</body>
+</html>

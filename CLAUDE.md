@@ -1,0 +1,171 @@
+# CLAUDE.md
+
+Guía de trabajo para Claude Code en este repositorio. Léela entera antes de cada sesión.
+
+> **Este archivo NO es la spec.** Aquí están las reglas de cómo se trabaja en el repo.
+> Qué hay que construir y cómo debe comportarse está en `specs/modulos/`. Si este archivo y una spec se contradicen en comportamiento de producto, manda la spec; en convenciones de código, manda este archivo.
+
+---
+
+## 1. Qué es este proyecto
+
+Plataforma SaaS **multi-tenant** para hostelería (restaurantes y bares) con tres módulos que se venden por separado o en pack:
+
+| Módulo | Enum | Spec |
+|---|---|---|
+| Web + mantenimiento | `SITE` | `specs/modulos/01-webs.md` |
+| Carta digital y QR | `MENU` | `specs/modulos/02-carta-qr.md` |
+| Reservas | `RESERVATIONS` | `specs/modulos/03-reservas.md` |
+
+Todo lo compartido (tenancy, auth, billing, notificaciones, locales y mesas) está en `specs/modulos/00-plataforma.md`. El servicio de IA, que usan todos los módulos, está en `specs/modulos/04-ia.md`.
+
+**En la primera sesión lee, por este orden:** `specs/README.md`, `specs/00-necesidades.md` (qué hace falta, decisiones tomadas y pendientes), `specs/01-contexto.md` (producto, precios, forma de trabajar) y `specs/02-arquitectura.md` (dominios, acceso al panel, monorepo). Las maquetas de las pantallas y el logo están en `specs/diseno/`.
+
+**Dominios:** `PLATFORM_DOMAIN = cubierto.site`. La raíz y `www` son de la web comercial (otro proyecto). Esta app atiende `app.cubierto.site` (panel, superadmin, carta y reservas públicas), `<slug>.cubierto.site` y los dominios propios de los locales.
+
+**Modelo de tenancy:** un código, un despliegue, una base de datos. Cada fila de datos de cliente lleva `tenantId`. No hay un proyecto ni una base de datos por cliente.
+
+## 2. Specs: cómo usarlas
+
+- Antes de tocar un módulo, lee su spec y `00-plataforma.md`.
+- Cada requisito tiene un ID (`PLT-03`, `WEB-07`, `MENU-04`, `RES-12`). Referéncialo en commits, PRs y tests: `test("RES-12: no permite overbooking en el último hueco", ...)`.
+- Si una tarea exige un comportamiento que la spec no cubre o contradice: **para y pregunta**. No inventes reglas de negocio.
+- Si cambia el comportamiento, la spec se actualiza en el mismo PR.
+- Las dudas sin resolver van a la sección "Preguntas abiertas" de la spec correspondiente.
+
+## 3. Stack
+
+- **Next.js 15** (App Router, Server Components, Server Actions), **TypeScript** estricto
+- **Prisma** + **PostgreSQL en Neon** (región Frankfurt)
+- **Auth.js** (magic link por email vía Resend)
+- **Tailwind + shadcn/ui**, **TanStack Query** (solo en vistas con refresco, p. ej. sala de reservas), **Zustand** (solo estado de UI local)
+- **Zod** para toda validación de entrada
+- **Stripe** (Billing + webhooks), **Resend** (email), **n8n** autoalojado (WhatsApp y tareas programadas)
+- **Vercel AI SDK** (`ai` + `@ai-sdk/anthropic`) dentro de `packages/ai`; Claude por defecto, otros proveedores por configuración
+- **Vercel Pro** (funciones en `fra1`), **Vercel Blob** o **Cloudflare R2** para imágenes
+- **Vitest** (unit/integration), **Playwright** (e2e), **Sentry** (errores)
+- **pnpm** + **Turborepo**
+
+## 4. Estructura del monorepo
+
+```
+apps/
+  platform/                 # Única app Next.js
+    src/app/
+      (sites)/              # Webs de clientes, resueltas por dominio
+      (public)/c/[slug]/    # Carta pública
+      (public)/r/[slug]/    # Reservas públicas + widget
+      (panel)/panel/        # Panel del restaurante (OWNER/STAFF)
+      (admin)/admin/        # Superadmin (Manuel)
+      api/webhooks/         # Stripe, n8n
+      api/cron/             # Endpoints llamados por Vercel Cron / n8n
+    src/modules/            # Un directorio por bounded context
+      tenancy/ identity/ billing/ notifications/ venue/
+      sites/ menu/ reservations/ ai/
+    src/middleware.ts       # Resolución de tenant por host/ruta
+packages/
+  db/                       # schema.prisma, migraciones, cliente con tenant scope
+  ai/                       # conexión con proveedores de IA (runTask, modelos, precios, mock)
+  ui/                       # componentes shadcn compartidos
+  brand/                    # logo SVG, colores y tipografía (originales en specs/diseno/marca/)
+  config/                   # eslint, tsconfig, tailwind preset
+specs/                      # Fuente de verdad de producto (índice en specs/README.md)
+```
+
+`apps/landing` (la web comercial en Astro) se incorporará al monorepo como otro proyecto de Vercel; tiene su propio `CLAUDE.md` y no comparte despliegue con `apps/platform`.
+
+Cada módulo en `src/modules/<context>/` sigue:
+
+```
+domain/        # tipos, reglas puras, sin imports de Next ni Prisma
+application/   # casos de uso (funciones), orquestan domain + infra
+infra/         # repositorios Prisma, clientes externos
+ui/            # componentes del módulo
+actions.ts     # Server Actions públicas del módulo (finas: validan y llaman a application/)
+```
+
+## 5. Comandos
+
+```bash
+pnpm install
+pnpm dev                       # app en http://localhost:3000
+pnpm db:migrate:dev            # prisma migrate dev
+pnpm db:migrate:deploy         # solo en CI
+pnpm db:seed                   # datos de demo: 2 tenants, 1 superadmin
+pnpm lint && pnpm typecheck
+pnpm test                      # vitest
+pnpm test:e2e                  # playwright
+```
+
+Desarrollo local de dominios: `casa-brezo.localhost:3000` simula la web de un local; `app.localhost:3000` es el panel, el superadmin y la carta y reservas públicas.
+
+## 6. Reglas de arquitectura (obligatorias)
+
+1. **Aislamiento por tenant.** Todo acceso a datos de cliente pasa por `getTenantDb(tenantId)` de `packages/db`, que añade `tenantId` a cada consulta. RLS en PostgreSQL es la segunda barrera.
+2. **El `tenantId` del panel sale de la sesión** (membresía activa), nunca de la URL, de un parámetro ni del body.
+3. **El `tenantId` público sale del middleware** (host o slug), nunca del cliente.
+4. **Módulos contratados:** toda ruta y Server Action de un módulo comprueba `requireModule(tenant, "RESERVATIONS")`. Sin módulo activo → 404 en público, pantalla de upsell en panel.
+5. **Efectos externos por outbox.** Emails, WhatsApp y llamadas a n8n se escriben como `OutboxEvent` en la misma transacción que el cambio de datos. Nunca se llama a Resend o n8n dentro de una transacción ni directamente desde una acción.
+6. **Webhooks idempotentes.** Todo webhook se registra en `ProcessedWebhook` antes de procesarse.
+7. **Dinero en céntimos** (`Int`), moneda `EUR`. Fechas en UTC en BD; zona horaria del local (`Venue.timezone`, por defecto `Europe/Madrid`) solo para mostrar y calcular disponibilidad.
+8. **Caché pública por tags:** las páginas públicas usan `revalidateTag("tenant:<id>:<module>")` al guardar en el panel.
+9. Los bounded contexts no importan el `infra/` de otro contexto. Se comunican por funciones de `application/` exportadas o por eventos.
+10. **IA solo a través del módulo `ai`.** Cualquier uso de un modelo es una tarea registrada en `modules/ai/tasks/` y se ejecuta con `runAiTask` o `enqueueAiJob`, que aplican presupuesto, límites, registro de coste y validación de la salida. Lo que vea un comensal se guarda como borrador hasta que el OWNER lo acepta.
+
+## 7. Convenciones de código
+
+- Nombres de código, variables, tablas y commits técnicos **en inglés**. Textos de UI **en español** vía diccionario i18n (`es` por defecto, `en` preparado).
+- Server Components por defecto; `"use client"` solo cuando haga falta interacción.
+- Validación Zod en el borde: cada Server Action y route handler parsea su input con un schema.
+- Errores de dominio como resultados tipados (`{ ok: false, code: "SLOT_FULL" }`), no excepciones para flujo normal.
+- Fechas con `date-fns` + `date-fns-tz`. Nada de `new Date()` sin zona en lógica de reservas.
+- Componentes accesibles (labels, foco, contraste AA). Las páginas públicas deben funcionar bien en móvil de gama baja.
+
+## 8. Base de datos y migraciones
+
+- Un único `schema.prisma` en `packages/db`. Toda tabla de datos de cliente tiene `tenantId String` + índice que empieza por `tenantId`.
+- Migraciones **compatibles hacia atrás** (expand → migrate → contract). Nunca renombrar o borrar una columna en el mismo despliegue que deja de usarla.
+- Cada PR tiene su rama de Neon para las previews.
+- Seeds deterministas; nunca datos reales de clientes en seeds ni en tests.
+
+## 9. Definition of Done
+
+Una tarea está terminada cuando:
+
+- [ ] Cumple los criterios de aceptación de los IDs de la spec que toca
+- [ ] Tiene tests que nombran esos IDs (unit para dominio, integration para casos de uso con BD, e2e para flujos públicos críticos)
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` en verde
+- [ ] Incluye un test de aislamiento si añade una consulta nueva a datos de cliente (el tenant B no ve datos del tenant A)
+- [ ] La spec está actualizada si cambió el comportamiento
+- [ ] El PR describe cómo probarlo a mano en la preview
+
+## 10. Git y commits
+
+- Ramas: `feat/<id>-descripcion`, `fix/<id>-descripcion`.
+- Conventional Commits: `feat(reservations): RES-12 lock per venue/day`.
+- **Los commits salen solo a nombre de Manuel: no añadir trailers `Co-Authored-By: Claude` ni `Claude-Session` en ningún commit.**
+- PRs pequeños, uno por historia o grupo pequeño de historias. Manuel revisa todos los PRs antes de fusionar.
+
+## 11. Qué NO hacer
+
+- **No** consultar Prisma directamente con el cliente global para datos de cliente; siempre `getTenantDb`.
+- **No** aceptar `tenantId` desde el navegador (query, body, headers propios).
+- **No** crear un proyecto, despliegue o base de datos por cliente.
+- **No** servir el panel dentro del dominio de un local: `/panel` allí solo redirige a `app.<PLATFORM_DOMAIN>` (PLT-11).
+- **No** cambiar la dirección pública de la carta una vez impresos QR de clientes reales.
+- **No** llamar a servicios externos (Resend, n8n, Stripe) dentro de una transacción.
+- **No** guardar precios como `Float`.
+- **No** usar `localStorage` para estado que importe (carrito, reservas, sesión).
+- **No** añadir dependencias nuevas sin justificarlo en el PR (tamaño, mantenimiento, alternativa nativa).
+- **No** introducir funcionalidades marcadas como "Fuera de alcance MVP" en las specs.
+- **No** integrar con TPV, impresoras térmicas ni Reserve with Google en el MVP.
+- **No** escribir textos legales nuevos inventados: usar las plantillas de `src/modules/sites/legal/` y marcar lo que falte.
+- **No** guardar datos de salud de comensales salvo en el campo previsto y con consentimiento explícito (ver `03-reservas.md`).
+- **No** borrar datos de forma permanente desde el panel: soft delete (`deletedAt`) salvo en los procesos RGPD documentados.
+- **No** importar SDKs de proveedores de IA (`@anthropic-ai/sdk`, `openai`, `@ai-sdk/*`) fuera de `packages/ai`, ni escribir prompts sueltos fuera de `modules/ai/tasks/`.
+- **No** llamar a un modelo dentro de una transacción ni durante el render de una página pública; ni usar proveedores reales en tests, CI o previews (siempre `mock`).
+- **No** enviar datos personales de comensales a un modelo salvo en tareas `personalData: minimal`, y nunca datos de salud.
+- **No** dejar que la IA decida sola sobre alérgenos, precios o reservas: solo sugiere.
+- **No** instalar skills sin leer su `SKILL.md`; preferir fuentes oficiales y subirlas a `.claude/skills/`.
+- **No** desactivar tests que fallan para que pase el CI.
+- **No** usar `any`, `@ts-ignore` ni `eslint-disable` sin un comentario que explique por qué.

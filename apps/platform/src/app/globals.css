@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Colores de marca (specs/diseno/README.md). Los tokens definitivos llegan con packages/ui. */
+:root {
+  --paper: #f7f8f5;
+  --ink: #14281f;
+  --bottle: #1d4a3a;
+  --saffron: #e8a317;
+  --tomato: #b83a27;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-bottle: var(--bottle);
+  --color-saffron: var(--saffron);
+  --color-tomato: var(--tomato);
+  --font-sans: "Bricolage Grotesque Variable", system-ui, sans-serif;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
