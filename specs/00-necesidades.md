@@ -70,7 +70,9 @@ Lista de partida; se completa en cada PR que añada una.
 | Variable | Para qué | Fase |
 |---|---|---|
 | `PLATFORM_DOMAIN` | `cubierto.site`; base del mapa de dominios | F0 |
-| `DATABASE_URL`, `DIRECT_URL` | Neon (con pool y directa para migraciones) | F0 |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Neon: con pool (app) y directa (migraciones). Nombres de la integración de Vercel con Neon | F0 |
+| `TEST_DATABASE_URL` | Rama `test` de Neon para `pnpm test` (directa) | F0 |
+| `SEED_SUPERADMIN_EMAIL` | Email del superadmin de `pnpm db:seed` (opcional) | F0 |
 | `AUTH_SECRET` | Sesiones de Auth.js | F0 |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Envío de emails y remitente | F0 |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Cobros y webhook (`05-pagos.md`) | F0 |
@@ -115,6 +117,9 @@ Lista de partida; se completa en cada PR que añada una.
 | 19/11/2026 | Alojamiento a largo plazo en VPS de Hostinger con Coolify; la web comercial sigue en Vercel Pro hasta la mudanza | `anexos/alojamiento-vps.md`, `anexos/plan-vps-hostinger.md` |
 | 21/11/2026 | Webs de los locales: **Astro a medida, cada una en su repositorio y con su proyecto de Vercel**, fuera de la plataforma. Solo información, enlaces a carta y reservas y formulario. **Los cambios los hace Manuel** (no hay editor en el panel ni recompilación automática). Los paneles siguen juntos en la plataforma | `modulos/01-webs.md` v0.3, `02-arquitectura.md` §1 |
 | 21/11/2026 | Monorepo de la plataforma en `cubiertoPlataform` (pnpm + Turborepo, Next.js 15.5, React 19.3) | `CONTEXTO-CHAT.md` §6 |
+| 21/11/2026 | Prisma 7 estable (7.10.1) con el adaptador `pg`; Neon con una rama por entorno: `main` producción, `dev` desarrollo, `test` para los tests y una por preview | `packages/db` |
+| 21/11/2026 | La dirección del local (`addressLine`, `city`, `postalCode`) es opcional hasta que el dueño la rellene (PLT-04) | `modulos/00-plataforma.md` §7 |
+| 21/11/2026 | Webs de los locales: vale `modulos/01-webs.md` v0.3 (Astro, una por local) | `modulos/01-webs.md` |
 
 ## 8. Decisiones pendientes
 

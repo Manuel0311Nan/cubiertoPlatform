@@ -13,6 +13,8 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "test": {}
+    "test": {
+      "passThroughEnv": ["TEST_DATABASE_URL"]
+    }
   }
 }

@@ -146,9 +146,9 @@ model Venue {
   id        String @id @default(cuid())
   tenantId  String
   name      String
-  addressLine String
-  city      String
-  postalCode String
+  addressLine String?                     // opcionales hasta que el dueño los rellene (PLT-04): el alta crea el local vacío (PLT-01)
+  city      String?
+  postalCode String?
   phone     String?
   whatsappPhone String?                    // E.164; con valor, la web y las reservas muestran "Reservar por WhatsApp" (RES-18)
   email     String?

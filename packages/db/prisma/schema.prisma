@@ -1,0 +1,292 @@
+// Esquema único de la plataforma (CLAUDE.md §8). Modelos de specs/modulos/00-plataforma.md §7.
+// Toda tabla con datos de un cliente lleva `tenantId`, un índice que empieza por `tenantId`,
+// RLS (migración `*_rls`) y su nombre en TENANT_SCOPED_MODELS (src/tenant.ts).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum DomainStatus {
+  PENDING_DNS
+  VERIFIED
+  ERROR
+}
+
+enum ModuleKey {
+  SITE
+  MENU
+  RESERVATIONS
+}
+
+enum ModuleStatus {
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELED
+}
+
+enum Role {
+  OWNER
+  STAFF
+}
+
+enum TableShape {
+  ROUND
+  SQUARE
+  RECT
+}
+
+enum OutboxStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ─── Plataforma (sin RLS: las usa systemDb) ────────────────────────────────
+
+model Tenant {
+  id               String       @id @default(cuid())
+  /// Usado en app.<PLATFORM_DOMAIN>/c/<slug>, /r/<slug> y <slug>.<PLATFORM_DOMAIN> (PLT-01)
+  slug             String       @unique
+  name             String
+  status           TenantStatus @default(ACTIVE)
+  stripeCustomerId String?      @unique
+  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
+  deletedAt        DateTime?    @db.Timestamptz(3)
+
+  domains       Domain[]
+  modules       TenantModule[]
+  subscriptions Subscription[]
+  memberships   Membership[]
+  invitations   Invitation[]
+  venues        Venue[]
+  tables        Table[]
+  floorZones    FloorZone[]
+  outboxEvents  OutboxEvent[]
+  auditLogs     AuditLog[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  isSuperadmin Boolean  @default(false)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  memberships Membership[]
+  auditLogs   AuditLog[]
+}
+
+model ProcessedWebhook {
+  /// Id del evento del proveedor (CLAUDE.md §6.6)
+  id          String   @id
+  /// "stripe" | "n8n"
+  source      String
+  processedAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+// ─── Datos de cada tenant (RLS) ────────────────────────────────────────────
+
+/// MVP: sin uso (el dominio de cada local va en el proyecto de Vercel de su web, WEB-08).
+model Domain {
+  id         String       @id @default(cuid())
+  tenantId   String
+  /// En minúsculas, sin www si se redirige
+  hostname   String       @unique
+  isPrimary  Boolean      @default(false)
+  status     DomainStatus @default(PENDING_DNS)
+  verifiedAt DateTime?    @db.Timestamptz(3)
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+}
+
+model TenantModule {
+  tenantId       String
+  module         ModuleKey
+  status         ModuleStatus
+  /// Obligatorio si el superadmin lo activa sin pago (PLT-09)
+  overrideReason String?
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@id([tenantId, module])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  stripeSubscriptionId String   @unique
+  stripeStatus         String
+  currentPeriodEnd     DateTime @db.Timestamptz(3)
+  /// price ids → módulos
+  items                Json
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+}
+
+model Membership {
+  userId    String
+  tenantId  String
+  role      Role
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user   User   @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@id([userId, tenantId])
+  @@index([tenantId])
+}
+
+model Invitation {
+  id         String    @id @default(cuid())
+  tenantId   String
+  email      String
+  role       Role
+  tokenHash  String    @unique
+  /// 7 días desde el envío (PLT-02)
+  expiresAt  DateTime  @db.Timestamptz(3)
+  acceptedAt DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+}
+
+model Venue {
+  id            String   @id @default(cuid())
+  tenantId      String
+  name          String
+  /// Opcionales hasta que el dueño los rellene (PLT-04): el alta crea el local vacío (PLT-01)
+  addressLine   String?
+  city          String?
+  postalCode    String?
+  phone         String?
+  /// E.164; con valor, la web y las reservas muestran "Reservar por WhatsApp" (RES-18)
+  whatsappPhone String?
+  email         String?
+  timezone      String   @default("Europe/Madrid")
+  /// Por día de la semana, varias franjas (PLT-04)
+  openingHours  Json     @default("{}")
+  lat           Float?
+  lng           Float?
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  tables     Table[]
+  floorZones FloorZone[]
+
+  /// Permite claves foráneas (id, tenantId): una mesa no puede colgar del local de otro tenant
+  @@unique([id, tenantId])
+  @@index([tenantId])
+}
+
+model Table {
+  id          String     @id @default(cuid())
+  tenantId    String
+  venueId     String
+  /// "5", "Terraza 2"
+  label       String
+  /// "Sala", "Terraza"
+  zone        String?
+  minSeats    Int        @default(1)
+  maxSeats    Int
+  /// Usado en la URL del QR, no adivinable (PLT-05)
+  qrToken     String     @unique
+  active      Boolean    @default(true)
+  // Posición en el plano de sala (RES-15/16). null = "Sin colocar".
+  floorZoneId String?
+  shape       TableShape @default(SQUARE)
+  /// Centro, en coordenadas lógicas 0..1000
+  x           Int?
+  y           Int?
+  width       Int        @default(60)
+  height      Int        @default(60)
+  /// Grados, múltiplos de 15
+  rotation    Int        @default(0)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  venue     Venue      @relation(fields: [venueId, tenantId], references: [id, tenantId])
+  floorZone FloorZone? @relation(fields: [floorZoneId, tenantId], references: [id, tenantId], onDelete: Restrict)
+
+  @@unique([venueId, label])
+  @@index([tenantId])
+}
+
+/// "Sala", "Terraza", "Planta alta"
+model FloorZone {
+  id        String   @id @default(cuid())
+  tenantId  String
+  venueId   String
+  name      String
+  position  Int
+  /// Barra, cocina, paredes, puertas: [{ type, x, y, width, height, rotation, label }]
+  fixtures  Json     @default("[]")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  venue  Venue   @relation(fields: [venueId, tenantId], references: [id, tenantId])
+  tables Table[]
+
+  @@unique([id, tenantId])
+  @@index([tenantId, venueId])
+}
+
+/// Efectos externos (CLAUDE.md §6.5). `tenantId` null = evento de plataforma.
+model OutboxEvent {
+  id            String       @id @default(cuid())
+  tenantId      String?
+  /// "reservation.confirmed", "invitation.created"…
+  type          String
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  nextAttemptAt DateTime     @default(now()) @db.Timestamptz(3)
+  lastError     String?
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+  sentAt        DateTime?    @db.Timestamptz(3)
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@index([status, nextAttemptAt])
+  @@index([tenantId, createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String?
+  actorUserId String?
+  /// "module.override", "impersonation.start"…
+  action      String
+  data        Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  actor  User?   @relation(fields: [actorUserId], references: [id])
+
+  @@index([tenantId, createdAt])
+}

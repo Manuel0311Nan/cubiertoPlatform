@@ -92,6 +92,7 @@ pnpm install
 pnpm dev                       # app en http://localhost:3000
 pnpm db:migrate:dev            # prisma migrate dev
 pnpm db:migrate:deploy         # solo en CI
+pnpm db:migrate:test           # migra TEST_DATABASE_URL (rama `test` de Neon) antes de pnpm test
 pnpm db:seed                   # datos de demo: 2 tenants, 1 superadmin
 pnpm lint && pnpm typecheck
 pnpm test                      # vitest
@@ -102,7 +103,7 @@ Desarrollo local de dominios: `casa-brezo.localhost:3000` simula `<slug>.cubiert
 
 ## 6. Reglas de arquitectura (obligatorias)
 
-1. **Aislamiento por tenant.** Todo acceso a datos de cliente pasa por `getTenantDb(tenantId)` de `packages/db`, que añade `tenantId` a cada consulta. RLS en PostgreSQL es la segunda barrera.
+1. **Aislamiento por tenant.** Todo acceso a datos de cliente pasa por `getTenantDb(tenantId)` de `packages/db`, que añade `tenantId` a cada consulta. RLS en PostgreSQL es la segunda barrera: cada consulta corre con `app.tenant_id` y el rol `cubierto_app`, sin BYPASSRLS. Para varias operaciones atómicas, `$tenantTransaction`. `getSystemDb()` solo para tablas de plataforma (`Tenant`, `User`, `ProcessedWebhook`), resolver el slug, el superadmin y los procesos que recorren todos los locales (`packages/db/README.md`).
 2. **El `tenantId` del panel sale de la sesión** (membresía activa), nunca de la URL, de un parámetro ni del body.
 3. **El `tenantId` público sale del middleware** (host o slug), nunca del cliente.
 4. **Módulos contratados:** toda ruta y Server Action de un módulo comprueba `requireModule(tenant, "RESERVATIONS")`. Sin módulo activo → 404 en público, pantalla de upsell en panel.
