@@ -78,6 +78,7 @@ Las vistas se hicieron antes de algunas decisiones o van un paso por delante. Ha
 
 - [ ] **WhatsApp (RES-18):** falta el botón "Reservar por WhatsApp" en M1, M5, D1 y D3, y "Copiar enlace de reserva" en D7.
 - [ ] **Acceso del equipo (PLT-11):** falta el enlace en el pie de D1.
+- [ ] **Borde de los campos:** las vistas usan `#C9D6CF` (Línea), que no llega al contraste 3:1 de WCAG para controles. En la plataforma, los campos llevan borde Gris `#4B6158` (22/11/2026).
 - [ ] **Roles (D19):** la vista muestra Propietaria, Encargado y Personal; la spec solo tiene `OWNER` y `STAFF`. O se añade el rol en PLT o la vista pasa a dos papeles.
 - [ ] **Grupos grandes (M5, D17):** la vista dice "envía una solicitud"; RES-01 dice "llámanos" con el teléfono (y WhatsApp si lo hay).
 - [ ] **Cambiar la reserva (M9):** la vista ofrece cambiar día, hora y personas; RES-06 solo permite cancelar. En el MVP, cambiar = cancelar y reservar de nuevo, salvo que se amplíe la spec.

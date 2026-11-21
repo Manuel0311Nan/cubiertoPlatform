@@ -9,5 +9,5 @@ export {
   type TenantTransaction,
 } from "./tenant.ts";
 export * from "./generated/prisma/enums.ts";
-export type * from "./generated/prisma/models.ts";
+export type * from "./generated/prisma/client.ts";
 export { Prisma } from "./generated/prisma/client.ts";

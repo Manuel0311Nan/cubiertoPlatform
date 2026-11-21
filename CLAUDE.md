@@ -37,7 +37,7 @@ Todo lo compartido (tenancy, auth, notificaciones, locales y mesas) está en `sp
 
 - **Next.js 15** (App Router, Server Components, Server Actions), **TypeScript** estricto
 - **Prisma** + **PostgreSQL en Neon** (región Frankfurt)
-- **Auth.js** (magic link por email vía Resend)
+- **Better Auth** (plugin `magic-link`, enlace por email vía Resend y el outbox). Sustituye a Auth.js desde el 22/11/2026: Auth.js está en modo mantenimiento y su v5 sigue en beta
 - **Tailwind + shadcn/ui**, **TanStack Query** (solo en vistas con refresco, p. ej. sala de reservas), **Zustand** (solo estado de UI local)
 - **Zod** para toda validación de entrada
 - **Stripe** (Billing + webhooks), **Resend** (email), **n8n** autoalojado (WhatsApp y tareas programadas)

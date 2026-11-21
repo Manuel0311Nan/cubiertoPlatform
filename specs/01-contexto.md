@@ -35,7 +35,7 @@ Resumen de todo lo decidido antes de empezar a programar la plataforma. Léelo j
 | Base de datos | Neon PostgreSQL en Frankfurt: plan Launch en desarrollo y piloto, **Scale** al tener clientes (es el que da SLA y SOC 2) | Ramas por PR para previews |
 | Hosting | Vercel Pro, funciones en `fra1`. El dominio de cada local va en el proyecto de Vercel de su web | Vercel no da SLA hasta Enterprise; el SLA comercial que prometemos es 99,5 % |
 | Hosting a largo plazo | VPS propio (Hostinger o IONOS) con Coolify, por fases | Guía y plan en `anexos/alojamiento-vps.md`. Desde F0, nada exclusivo de Vercel fuera de un adaptador |
-| Auth | Auth.js con magic link (Resend) | Personal de sala sin contraseñas |
+| Auth | Better Auth con enlace por email (Resend); antes Auth.js, cambiado el 22/11/2026 | Personal de sala sin contraseñas |
 | Pagos | Stripe Billing: un precio por módulo + precio pack; alta de web como pago único | Estado de suscripción → estado del módulo |
 | Efectos externos | Patrón outbox; webhooks idempotentes | Ver `CLAUDE.md` §6 |
 | Automatizaciones | n8n autoalojado en un VPS (WhatsApp, recordatorios, informes) | Pendiente: el VPS aún no está creado |
@@ -78,7 +78,7 @@ Monorepo con pnpm + Turborepo: `apps/platform` (Next.js), `apps/landing` (la web
 
 ## 7. Orden de construcción
 
-1. **F0 Fundaciones** (PLT-01 a PLT-12 + AI-01 a AI-05 y AI-08). Primer hito en `00-necesidades.md` §3: monorepo pnpm + Turborepo, Prisma + Neon, `getTenantDb` y RLS, middleware de tenant, Auth.js, roles, Stripe, outbox, superadmin y la base del servicio de IA con el proveedor simulado. Sin esto no arranca nada.
+1. **F0 Fundaciones** (PLT-01 a PLT-12 + AI-01 a AI-05 y AI-08). Primer hito en `00-necesidades.md` §3: monorepo pnpm + Turborepo, Prisma + Neon, `getTenantDb` y RLS, middleware de tenant, Better Auth, roles, Stripe, outbox, superadmin y la base del servicio de IA con el proveedor simulado. Sin esto no arranca nada.
 2. **F1** Webs (WEB-* y FORM-*): repositorio plantilla, primera web, API pública y ficha de la web en el superadmin.
 3. **F2** Carta QR (MENU-*), con la traducción como primer uso real de la IA. Desde aquí ya se puede vender.
 4. **F3** Reservas (RES-*), empezando por **RES-12** (concurrencia) y después el plano (RES-15/16/17).

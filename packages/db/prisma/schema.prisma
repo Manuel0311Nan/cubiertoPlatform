@@ -79,15 +79,70 @@ model Tenant {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  isSuperadmin Boolean  @default(false)
-  createdAt    DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  /// Lo pone Better Auth al entrar con el enlace (PLT-02)
+  emailVerified Boolean  @default(false)
+  image         String?
+  isSuperadmin  Boolean  @default(false)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
 
   memberships Membership[]
   auditLogs   AuditLog[]
+  sessions    Session[]
+  accounts    Account[]
+}
+
+// ─── Sesiones (Better Auth, PLT-02; sin RLS: las usa systemDb) ─────────────
+
+model Session {
+  id        String   @id
+  token     String   @unique
+  userId    String
+  expiresAt DateTime @db.Timestamptz(3)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Better Auth la necesita aunque solo se entre con enlace (sin contraseñas ni proveedores)
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Enlaces de entrada pendientes: token guardado con hash, caduca a los 15 minutos (PLT-02)
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([identifier])
 }
 
 model ProcessedWebhook {
