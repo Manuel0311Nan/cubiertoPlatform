@@ -260,6 +260,8 @@ Detalle y lista completa de eventos en `05-pagos.md` (BILL-08 y BILL-09).
 
 ### PLT-08 · Outbox de notificaciones
 - Un proceso (cron cada minuto) toma eventos `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`.
+- Los que no pueden esperar al cron (el enlace de entrada, PLT-02) se intentan enviar al guardarlos, fuera de la transacción; si falla, siguen los reintentos del cron (22/11/2026). Cada proceso reserva el evento antes de enviarlo, para no mandarlo dos veces.
+- Al enviarse o fallar del todo, del evento se borra lo que no debe quedarse guardado (el enlace de entrada).
 - Reintentos con backoff exponencial (1, 5, 15, 60 minutos); tras 5 fallos → `FAILED` y alerta al superadmin.
 - Canales: email (Resend), WhatsApp (webhook a n8n) y Deploy Hooks de Vercel para recompilar la web de un local cuando Manuel lo pide (`website.rebuild`, WEB-14). Plantillas en español con variables tipadas.
 
@@ -309,3 +311,4 @@ Como encargado quiero tener el panel en la pantalla de inicio de la tablet de sa
 - [ ] ¿Periodo de prueba gratuito? ¿De cuántos días y para qué módulos?
 - [ ] ¿Precio anual con descuento desde el MVP o más adelante?
 - [ ] Impago del módulo `SITE`: la web es un despliegue aparte y no se apaga sola. ¿Se pausa a mano su proyecto de Vercel, se muestra un aviso o se deja la web y solo se corta el mantenimiento?
+- [ ] ¿Cuánto dura la sesión del panel? Hoy, 7 días desde el último uso (lo que trae Better Auth). En la tablet de sala quizá convenga más.

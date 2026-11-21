@@ -73,8 +73,8 @@ Lista de partida; se completa en cada PR que añada una.
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Neon: con pool (app) y directa (migraciones). Nombres de la integración de Vercel con Neon | F0 |
 | `TEST_DATABASE_URL` | Rama `test` de Neon para `pnpm test` (directa) | F0 |
 | `SEED_SUPERADMIN_EMAIL` | Email del superadmin de `pnpm db:seed` (opcional) | F0 |
-| `AUTH_SECRET` | Sesiones de Auth.js | F0 |
-| `RESEND_API_KEY`, `EMAIL_FROM` | Envío de emails y remitente | F0 |
+| `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` | Sesiones y enlaces de entrada de Better Auth. La URL es la de `app.` (`http://app.localhost:3000` en local) | F0 |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Envío de emails y remitente. Sin clave, en local los emails salen en la consola; en producción es obligatoria | F0 |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Cobros y webhook (`05-pagos.md`) | F0 |
 | `STRIPE_PORTAL_CONFIGURATION_ID` | Configuración del portal de cliente (BILL-07) | F0 |
 | `VERCEL_API_TOKEN`, `VERCEL_TEAM_ID` | Comprobar el dominio del proyecto de Vercel de cada web (WEB-08) | F1 |
@@ -120,6 +120,8 @@ Lista de partida; se completa en cada PR que añada una.
 | 21/11/2026 | Prisma 7 estable (7.10.1) con el adaptador `pg`; Neon con una rama por entorno: `main` producción, `dev` desarrollo, `test` para los tests y una por preview | `packages/db` |
 | 21/11/2026 | La dirección del local (`addressLine`, `city`, `postalCode`) es opcional hasta que el dueño la rellene (PLT-04) | `modulos/00-plataforma.md` §7 |
 | 21/11/2026 | Webs de los locales: vale `modulos/01-webs.md` v0.3 (Astro, una por local) | `modulos/01-webs.md` |
+| 22/11/2026 | Entrada con Better Auth en lugar de Auth.js (en modo mantenimiento, v5 en beta) | `CLAUDE.md` §3 |
+| 22/11/2026 | Los emails de entrada salen por el outbox y se envían al momento; si fallan, los reintenta el cron mientras el enlace no caduque | `modulos/00-plataforma.md` PLT-08 |
 
 ## 8. Decisiones pendientes
 

@@ -85,7 +85,7 @@ El panel no vive dentro del dominio de cada local; hay un solo panel en `app.cub
 2. **Enlace discreto** en el pie de cada web: "Acceso del equipo".
 3. **Uso diario:** el panel es instalable como app (PWA). En la visita de alta se deja instalado en la tablet de sala y en el móvil del encargado.
 
-Por qué un solo panel: una sesión y una configuración de Auth.js en vez de una por dominio; una sola puerta que vigilar (más difícil colar una página falsa); si el dominio de un local caduca o le cambian las DNS, el local sigue entrando a su panel. Esconder el enlace no protege nada: la protección es la invitación y los roles.
+Por qué un solo panel: una sesión y una configuración de Better Auth en vez de una por dominio; una sola puerta que vigilar (más difícil colar una página falsa); si el dominio de un local caduca o le cambian las DNS, el local sigue entrando a su panel. Esconder el enlace no protege nada: la protección es la invitación y los roles.
 
 ## 6. DNS y certificados
 
