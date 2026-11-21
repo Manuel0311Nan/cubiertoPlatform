@@ -259,11 +259,17 @@ Detalle y lista completa de eventos en `05-pagos.md` (BILL-08 y BILL-09).
 - Firma inválida → 400 y registro en Sentry.
 
 ### PLT-08 · Outbox de notificaciones
-- Un proceso (cron cada minuto) toma eventos `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`.
+- Un proceso (cron cada minuto) toma eventos `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`. Frecuencia real del cron: ver "Frecuencia del cron del outbox" más abajo.
 - Los que no pueden esperar al cron (el enlace de entrada, PLT-02) se intentan enviar al guardarlos, fuera de la transacción; si falla, siguen los reintentos del cron (22/11/2026). Cada proceso reserva el evento antes de enviarlo, para no mandarlo dos veces.
 - Al enviarse o fallar del todo, del evento se borra lo que no debe quedarse guardado (el enlace de entrada).
 - Reintentos con backoff exponencial (1, 5, 15, 60 minutos); tras 5 fallos → `FAILED` y alerta al superadmin.
 - Canales: email (Resend), WhatsApp (webhook a n8n) y Deploy Hooks de Vercel para recompilar la web de un local cuando Manuel lo pide (`website.rebuild`, WEB-14). Plantillas en español con variables tipadas.
+
+**Frecuencia del cron del outbox (22/11/2026).** El cron solo recoge lo que falló al enviarse y lo programado para más tarde; lo normal sale al momento.
+
+- **Mientras la plataforma esté en Vercel Hobby (hasta tenerla completa): una vez al día** (`0 3 * * *`, UTC), porque Hobby no admite crons más frecuentes. Consecuencia: si un envío falla, el reintento llega al día siguiente; un enlace de entrada ya habrá caducado y la persona tendrá que pedir otro.
+- **Al pasar a Vercel Pro (antes del piloto): cada minuto solo de día**, `* 7-23 * * *` en UTC (8:00 a 00:59 en Madrid en invierno, 9:00 a 01:59 en verano). Un cron cada minuto las 24 horas no deja que Neon se suspenda (lo hace tras 5 minutos sin uso): unos 19 $/mes de cómputo a 0,25 CU en Launch sin clientes, unos 6 $/mes de más con ellos (solo las horas de noche). El cron en Vercel cuesta céntimos.
+- **En F3 (reservas):** valorar quitar el sondeo y programar cada reintento en una cola con retraso (Vercel Queues) cuando un envío falla: coste cero si no falla nada. Los recordatorios de reservas necesitan una hora concreta, que un cron diario no da.
 
 ### PLT-09 · Superadmin
 - Lista de tenants con estado, módulos, dominio y fecha de alta; búsqueda por nombre o slug.

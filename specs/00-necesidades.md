@@ -49,7 +49,7 @@ Antes de contratar, comprobar el precio vigente de cada plan.
 |---|---|---|---|---|
 | Dominio `cubierto.site` | Web comercial, panel, webs de locales | — | Ya | En uso en la web comercial. Confirmar titularidad y renovación automática |
 | GitHub | Repositorio `cubierto` y CI | — | F0 | Pendiente |
-| Vercel | Web comercial hasta la mudanza al VPS; la plataforma, según `anexos/plan-vps-hostinger.md` §7 | Pro | Ya | Decidido pasar a Pro el 19/11/2026 (Hobby no admite uso comercial) |
+| Vercel | Web comercial hasta la mudanza al VPS; la plataforma, según `anexos/plan-vps-hostinger.md` §7 | Pro | Ya | Decidido pasar a Pro el 19/11/2026 (Hobby no admite uso comercial). El proyecto de la plataforma sigue en Hobby hasta tenerla completa (22/11/2026): cron del outbox diario, ver `modulos/00-plataforma.md` PLT-08 |
 | Neon | Base de datos PostgreSQL en Fráncfort, ramas por PR | Launch; Scale al tener clientes (SLA) | F0 | Hoy en plan gratuito. Subir a Launch antes del piloto |
 | Resend | Emails: entrada al panel, invitaciones, reservas | El que cubra el volumen | F0 | Pendiente. Verificar `cubierto.site` (SPF, DKIM) |
 | Stripe | Cuotas por módulo y pack, altas (web y pack, 499 € IVA incluido cada una), facturas | Sin cuota; comisión por cobro y por Billing | F0 (modo prueba) | Pendiente. Catálogo con `pnpm stripe:seed` (BILL-01) |
@@ -122,6 +122,7 @@ Lista de partida; se completa en cada PR que añada una.
 | 21/11/2026 | Webs de los locales: vale `modulos/01-webs.md` v0.3 (Astro, una por local) | `modulos/01-webs.md` |
 | 22/11/2026 | Entrada con Better Auth en lugar de Auth.js (en modo mantenimiento, v5 en beta) | `CLAUDE.md` §3 |
 | 22/11/2026 | Los emails de entrada salen por el outbox y se envían al momento; si fallan, los reintenta el cron mientras el enlace no caduque | `modulos/00-plataforma.md` PLT-08 |
+| 22/11/2026 | La plataforma sigue en Vercel Hobby hasta estar completa, con el cron del outbox una vez al día; en Pro, cada minuto solo de día | `modulos/00-plataforma.md` PLT-08 |
 
 ## 8. Decisiones pendientes
 
@@ -134,6 +135,9 @@ Las que condicionan el arranque o algo que luego cuesta cambiar. El resto está 
 - [ ] ¿Precio anual con descuento desde el MVP? (PLT)
 - [ ] IA: ¿incluida con presupuesto por local o como extra? (`modulos/04-ia.md`)
 - [ ] ¿Quién compra y renueva el dominio de cada local: el cliente o Cubierto? (`modulos/01-webs.md`)
+
+**Antes del piloto**
+- [ ] Pasar el proyecto de la plataforma a Vercel Pro y el cron del outbox a cada minuto de día (`* 7-23 * * *`). (`modulos/00-plataforma.md` PLT-08)
 
 **Antes de F1 (webs)**
 - [ ] Propiedad del código de la web si un local se da de baja. (`modulos/01-webs.md` §9)
