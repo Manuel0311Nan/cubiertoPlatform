@@ -1,6 +1,6 @@
 # 00 · Plataforma común
 
-**Estado:** Borrador v0.3 · **Fase:** F0 Fundaciones · **Owner:** Manuel
+**Estado:** Borrador v0.4 · **Fase:** F0 Fundaciones · **Owner:** Manuel
 
 ## 1. Objetivo
 
@@ -45,15 +45,17 @@ El middleware decide el contexto a partir del host y la ruta:
 | `app.<PLATFORM_DOMAIN>` | `/admin/**` | Superadmin | Ninguno (elige tenant) |
 | `app.<PLATFORM_DOMAIN>` | `/c/<slug>/**` | Carta pública | Por `slug` |
 | `app.<PLATFORM_DOMAIN>` | `/r/<slug>/**`, `/embed.js` | Reservas públicas y widget | Por `slug` |
-| Dominio propio (`elmeson.es`) | `/**` | Web del cliente | Por `Domain.hostname` |
-| `<slug>.<PLATFORM_DOMAIN>` | `/**` | Web del cliente (sin dominio propio) | Por `slug` |
-| Dominio propio o `<slug>.<PLATFORM_DOMAIN>` | `/panel` | Redirección 302 a `app.<PLATFORM_DOMAIN>/panel` (PLT-11) | — |
+| `app.<PLATFORM_DOMAIN>` | `/api/public/v1/**` | API pública para las webs de los locales (WEB-13) y recepción de sus mensajes (FORM-07) | Por `slug` o por `SiteKey` |
+| `<slug>.<PLATFORM_DOMAIN>` | `/**` | Página mínima del local o redirección 301 a su web (WEB-16) | Por `slug` |
+| `<slug>.<PLATFORM_DOMAIN>` | `/panel` | Redirección 302 a `app.<PLATFORM_DOMAIN>/panel` (PLT-11) | — |
+
+**Las webs de los locales no las sirve la plataforma** (21/11/2026): son webs Astro a medida, cada una con su repositorio y su proyecto de Vercel, donde vive su dominio (`01-webs.md`). La plataforma les da datos públicos (WEB-13), guarda su ficha y permite recompilarlas desde el superadmin (WEB-14), y recibe sus mensajes en la fase 2 (FORM-07).
 
 `<PLATFORM_DOMAIN>` y `www` (la raíz) son de la web comercial, otro proyecto: la plataforma no los atiende.
 
 **Provisional:** carta y reservas públicas cuelgan de `app.` porque la raíz es de la web comercial. Confirmar antes de F2 (los QR impresos no cambian); alternativa en `../02-arquitectura.md` §4.
 
-- La búsqueda host → tenant se cachea (tag `tenancy:domains`) y se invalida al cambiar dominios.
+- La búsqueda slug → tenant se cachea (tag `tenancy:slugs`) y se invalida al cambiar el slug o el estado del local.
 - Host desconocido → página 404 genérica de la plataforma, sin filtrar nombres de otros clientes.
 - Tenant suspendido → página "Servicio temporalmente no disponible" (HTTP 503) en público.
 
@@ -87,7 +89,7 @@ model Tenant {
   deletedAt   DateTime?
 }
 
-model Domain {
+model Domain {                           // MVP: sin uso (el dominio de cada local va en el proyecto de Vercel de su web, WEB-08). Se reserva por si la plataforma vuelve a servir dominios propios.
   id        String  @id @default(cuid())
   tenantId  String
   hostname  String  @unique               // en minúsculas, sin www si se redirige
@@ -259,7 +261,7 @@ Detalle y lista completa de eventos en `05-pagos.md` (BILL-08 y BILL-09).
 ### PLT-08 · Outbox de notificaciones
 - Un proceso (cron cada minuto) toma eventos `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`.
 - Reintentos con backoff exponencial (1, 5, 15, 60 minutos); tras 5 fallos → `FAILED` y alerta al superadmin.
-- Canales: email (Resend) y WhatsApp (webhook a n8n). Plantillas en español con variables tipadas.
+- Canales: email (Resend), WhatsApp (webhook a n8n) y Deploy Hooks de Vercel para recompilar la web de un local cuando Manuel lo pide (`website.rebuild`, WEB-14). Plantillas en español con variables tipadas.
 
 ### PLT-09 · Superadmin
 - Lista de tenants con estado, módulos, dominio y fecha de alta; búsqueda por nombre o slug.
@@ -274,8 +276,8 @@ Detalle y lista completa de eventos en `05-pagos.md` (BILL-08 y BILL-09).
 
 ### PLT-11 · Acceso al panel desde la web del local
 Como dueño o empleado quiero llegar al panel desde la web de mi local sin recordar otra dirección.
-- `/panel` en el dominio propio o en `<slug>.<PLATFORM_DOMAIN>` responde con una redirección 302 a `app.<PLATFORM_DOMAIN>/panel`. Funciona aunque el local no tenga `SITE` activo.
-- El pie de la web del local (y de la página mínima) muestra un enlace discreto "Acceso del equipo" a `app.<PLATFORM_DOMAIN>/panel`.
+- `/panel` en la web del local redirige a `app.<PLATFORM_DOMAIN>/panel`: la redirección viene en la plantilla de las webs (WEB-12). En `<slug>.<PLATFORM_DOMAIN>` la hace la plataforma con un 302, aunque el local no tenga `SITE` activo.
+- El pie de la web del local (`<TeamAccessLink />` de la plantilla) y el de la página mínima (WEB-16) muestran un enlace discreto "Acceso del equipo" a `app.<PLATFORM_DOMAIN>/panel`.
 - El panel nunca se sirve dentro del dominio de un local: la sesión, las cookies y el enlace de entrada son solo de `app.<PLATFORM_DOMAIN>`.
 - `/panel` en el dominio de un local no se indexa (`X-Robots-Tag: noindex` en la redirección).
 
@@ -306,3 +308,4 @@ Como encargado quiero tener el panel en la pantalla de inicio de la tablet de sa
 - [ ] Textos legales: condiciones del servicio, encargo de tratamiento, política de privacidad de la plataforma.
 - [ ] ¿Periodo de prueba gratuito? ¿De cuántos días y para qué módulos?
 - [ ] ¿Precio anual con descuento desde el MVP o más adelante?
+- [ ] Impago del módulo `SITE`: la web es un despliegue aparte y no se apaga sola. ¿Se pausa a mano su proyecto de Vercel, se muestra un aviso o se deja la web y solo se corta el mantenimiento?

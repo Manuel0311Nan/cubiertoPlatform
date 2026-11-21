@@ -28,7 +28,7 @@ Cómo se ve Cubierto y qué pantallas hay diseñadas. Si una vista y una spec no
 
 Tipografía única: **Bricolage Grotesque** (la misma que la web comercial y el logo).
 
-**Cada local (su web, su carta, su página de reservas, sus emails a comensales):** usa su tema (WEB-04: 3 temas y un color de marca con contraste AA). Las vistas usan de ejemplo a "Casa Brezo" con el tema rústico: marrón `#2B2118`, terracota `#C8553D`, fondo `#FBFAF6`, títulos en Fraunces. Casa Brezo y sus platos son inventados.
+**Cada local:** su web tiene diseño propio (es una web Astro a medida, `modulos/01-webs.md` v0.3). Su carta, su página de reservas y sus emails a comensales usan su color y su logo (pendiente de decidir dónde se fijan, ahora que WEB-04 está descartada: `modulos/01-webs.md` §9). Las vistas usan de ejemplo a "Casa Brezo" con el tema rústico: marrón `#2B2118`, terracota `#C8553D`, fondo `#FBFAF6`, títulos en Fraunces. Casa Brezo y sus platos son inventados.
 
 ## 3. Principios
 
@@ -62,14 +62,14 @@ Tipografía única: **Bricolage Grotesque** (la misma que la web comercial y el 
 | D11 | Carta: editor y alérgenos | MENU-02, MENU-03, MENU-05 |
 | D12 | Revisar la traducción con IA | MENU-07, AI-06 |
 | D13 | Códigos QR | MENU-08 |
-| D14 | Editor de la web | WEB-02, WEB-03, WEB-07 |
-| D15 | Mensajes de la web | WEB-06 |
+| D14 | ~~Editor de la web~~ → "Mi web" | WEB-15 (WEB-02 y 03 descartadas) |
+| D15 | Mensajes de la web | WEB-06, FORM-07 (fase 2) |
 | D16 | Clientes | RES-13, PLT-10 |
 | D17 | Ajustes: reservas | RES-11 |
 | D18 | Ajustes: plan y factura | PLT-06 |
 | D19 | Ajustes: equipo | PLT-03 |
 | M17, D20 | Superadmin: locales | PLT-09, AI-09 |
-| D21 | Superadmin: ficha de un local | PLT-09, WEB-08, AI-09 |
+| D21 | Superadmin: ficha de un local | PLT-09, WEB-08, WEB-14, AI-09 |
 | D22 | Superadmin: alta de un local | PLT-01 |
 
 ## 5. Diferencias conocidas entre vistas y specs
@@ -81,4 +81,5 @@ Las vistas se hicieron antes de algunas decisiones o van un paso por delante. Ha
 - [ ] **Roles (D19):** la vista muestra Propietaria, Encargado y Personal; la spec solo tiene `OWNER` y `STAFF`. O se añade el rol en PLT o la vista pasa a dos papeles.
 - [ ] **Grupos grandes (M5, D17):** la vista dice "envía una solicitud"; RES-01 dice "llámanos" con el teléfono (y WhatsApp si lo hay).
 - [ ] **Cambiar la reserva (M9):** la vista ofrece cambiar día, hora y personas; RES-06 solo permite cancelar. En el MVP, cambiar = cancelar y reservar de nuevo, salvo que se amplíe la spec.
+- [ ] **Webs de los locales (21/11/2026):** D1 y M1–M2 sirven como ejemplo de una web a medida, no como plantilla común. D14 (editor de bloques) se sustituye por "Mi web" (WEB-15): estado, visitas y "Pedir un cambio". D21 y D22 necesitan la ficha de la web (repositorio, dominio, Deploy Hook, "Datos cambiados" y "Recompilar web", WEB-14 y WEB-17).
 - [ ] **Cookies (M2):** WEB-09 no muestra banner mientras no haya servicios con cookies. La vista sirve para cuando haga falta.

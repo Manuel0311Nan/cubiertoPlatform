@@ -1,6 +1,6 @@
 # 00 · Necesidades del proyecto
 
-**Estado:** v0.2 · **Última actualización:** 19/11/2026
+**Estado:** v0.3 · **Última actualización:** 21/11/2026
 
 Todo lo que hace falta para construir, poner en marcha y vender Cubierto, en un solo sitio: qué se construye, qué cuentas y servicios hay que abrir, qué falta del lado del negocio y qué decisiones siguen pendientes. El detalle de producto está en `modulos/`; la arquitectura, en `02-arquitectura.md`.
 
@@ -12,12 +12,15 @@ Una plataforma para bares y restaurantes de Alcalá de Henares y el Corredor del
 
 | Pieza | Para quién | Spec | Fase | Estado |
 |---|---|---|---|---|
-| Plataforma común: locales, usuarios y roles, módulos, cobro, avisos, dominios | Todos | `modulos/00-plataforma.md` (PLT-01 a PLT-12) | F0 | Por empezar |
+| Plataforma común: locales, usuarios y roles, módulos, cobro, avisos, `<slug>.cubierto.site` | Todos | `modulos/00-plataforma.md` (PLT-01 a PLT-12) | F0 | Esqueleto del monorepo creado (21/11/2026) |
 | Pagos y suscripciones (Stripe) | Locales y Manuel | `modulos/05-pagos.md` (BILL-01 a BILL-13) | F0 (prueba) → antes del piloto | Spec v0.1 |
 | Servicio de IA (base y simulador) | Todos los módulos | `modulos/04-ia.md` (AI-01 a AI-05, AI-08) | F0 | Por empezar |
-| Superadmin: alta de locales, módulos, dominios, uso de IA | Manuel | PLT-01, PLT-09, AI-09 | F0 | Diseñado (D20–D22) |
+| Superadmin: alta de locales, módulos, ficha de su web, uso de IA | Manuel | PLT-01, PLT-09, AI-09 | F0 | Diseñado (D20–D22) |
 | Panel del local | Dueño y equipo | Cada spec de módulo | F0 → F3 | Diseñado (D5–D19, M10–M16) |
-| Web del local | Comensales | `modulos/01-webs.md` (WEB-01 a WEB-11) | F1 | Diseñado (D1, M1–M2) |
+| Webs de los locales: Astro a medida, un repositorio y un despliegue por local; información, enlaces a carta y reservas, formulario | Comensales | `modulos/01-webs.md` (WEB-01, WEB-05 a WEB-17) | F1 | Ejemplo diseñado (D1, M1–M2) |
+| Repositorio plantilla de las webs | Manuel | WEB-12 | F1 | Por empezar |
+| API pública de datos del local y ficha de cada web en el superadmin | Webs de los locales y Manuel | WEB-13, WEB-14 | F1 | Por empezar |
+| Formulario de contacto de las webs de los locales | Comensales y local | `modulos/06-formulario-contacto.md` (FORM-01 a FORM-08) | F1 | Probado en la web comercial |
 | Carta digital con QR | Comensales | `modulos/02-carta-qr.md` (MENU-01 a MENU-10) | F2 | Diseñado (D2, M3–M4) |
 | Reservas, plano de sala, mesas juntas, enlace de WhatsApp | Comensales y sala | `modulos/03-reservas.md` (RES-01 a RES-18) | F3 | Diseñado (D3–D4, D7–D10, M5–M9) |
 | Web comercial | Dueños de locales (venta) | Repo `zoenlab-web` | — | Hecha, con marca Cubierto |
@@ -33,7 +36,7 @@ Objetivo pequeño pero real, que se pueda enseñar:
 3. Entrada con enlace por email (en local, el enlace sale en la consola).
 4. Superadmin con "Dar de alta un local" (PLT-01): crea el local y envía la invitación.
 5. Panel vacío del local con su menú lateral, según los módulos activos.
-6. Resolución por dominio: `casa-brezo.localhost:3000` muestra la página mínima del local.
+6. Resolución por subdominio: `casa-brezo.localhost:3000` muestra la página mínima del local (WEB-16).
 7. Desplegado en Vercel con `app.cubierto.site` y base de datos en Neon.
 
 Hecho cuando: un local de prueba se da de alta desde el superadmin, su dueña entra con el enlace, ve su panel y no puede ver nada de otro local.
@@ -72,7 +75,8 @@ Lista de partida; se completa en cada PR que añada una.
 | `RESEND_API_KEY`, `EMAIL_FROM` | Envío de emails y remitente | F0 |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Cobros y webhook (`05-pagos.md`) | F0 |
 | `STRIPE_PORTAL_CONFIGURATION_ID` | Configuración del portal de cliente (BILL-07) | F0 |
-| `VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` | Alta de dominios de clientes (WEB-08) | F1 |
+| `VERCEL_API_TOKEN`, `VERCEL_TEAM_ID` | Comprobar el dominio del proyecto de Vercel de cada web (WEB-08) | F1 |
+| `DEPLOY_HOOK_ENCRYPTION_KEY` | Cifrar los Deploy Hooks de las webs guardados en la base de datos (WEB-14) | F1 |
 | `CRON_SECRET` | Proteger `/api/cron/*` | F0 |
 | `N8N_WEBHOOK_URL` | Avisos y automatizaciones | F0 |
 | `SENTRY_DSN` | Errores | F0 |
@@ -109,6 +113,8 @@ Lista de partida; se completa en cada PR que añada una.
 | 19/11/2026 | El alta del pack (499 € IVA incluido) incluye la primera cuota. Piloto: 250 € IVA incluido el primer mes con el pack completo y después la cuota normal con un 10 % de descuento el primer año | `modulos/05-pagos.md` BILL-03 y BILL-11 |
 | 19/11/2026 | Umami Cloud, región de la UE, para la web comercial | `00-necesidades.md` §4 |
 | 19/11/2026 | Alojamiento a largo plazo en VPS de Hostinger con Coolify; la web comercial sigue en Vercel Pro hasta la mudanza | `anexos/alojamiento-vps.md`, `anexos/plan-vps-hostinger.md` |
+| 21/11/2026 | Webs de los locales: **Astro a medida, cada una en su repositorio y con su proyecto de Vercel**, fuera de la plataforma. Solo información, enlaces a carta y reservas y formulario. **Los cambios los hace Manuel** (no hay editor en el panel ni recompilación automática). Los paneles siguen juntos en la plataforma | `modulos/01-webs.md` v0.3, `02-arquitectura.md` §1 |
+| 21/11/2026 | Monorepo de la plataforma en `cubiertoPlataform` (pnpm + Turborepo, Next.js 15.5, React 19.3) | `CONTEXTO-CHAT.md` §6 |
 
 ## 8. Decisiones pendientes
 
@@ -121,6 +127,12 @@ Las que condicionan el arranque o algo que luego cuesta cambiar. El resto está 
 - [ ] ¿Precio anual con descuento desde el MVP? (PLT)
 - [ ] IA: ¿incluida con presupuesto por local o como extra? (`modulos/04-ia.md`)
 - [ ] ¿Quién compra y renueva el dominio de cada local: el cliente o Cubierto? (`modulos/01-webs.md`)
+
+**Antes de F1 (webs)**
+- [ ] Propiedad del código de la web si un local se da de baja. (`modulos/01-webs.md` §9)
+- [ ] Qué pasa con la web si se suspende `SITE` por impago. (`modulos/00-plataforma.md` §10)
+- [ ] Dónde se fijan el color y el logo de la carta y las reservas de cada local, ahora que no hay temas de web. (`modulos/01-webs.md` §9)
+- [ ] Límites de proyectos y minutos de compilación de Vercel con 30 webs.
 
 **Antes de F2 (antes de imprimir el primer QR)**
 - [ ] Dirección pública de carta y reservas: `app.cubierto.site/c/<slug>` (provisional) o `<slug>.cubierto.site/carta`. (`02-arquitectura.md` §4)

@@ -17,13 +17,13 @@ Plataforma SaaS **multi-tenant** para hostelería (restaurantes y bares) con tre
 | Carta digital y QR | `MENU` | `specs/modulos/02-carta-qr.md` |
 | Reservas | `RESERVATIONS` | `specs/modulos/03-reservas.md` |
 
-Todo lo compartido (tenancy, auth, billing, notificaciones, locales y mesas) está en `specs/modulos/00-plataforma.md`. El servicio de IA, que usan todos los módulos, está en `specs/modulos/04-ia.md`.
+Todo lo compartido (tenancy, auth, notificaciones, locales y mesas) está en `specs/modulos/00-plataforma.md`; el cobro con Stripe, en `specs/modulos/05-pagos.md` (BILL-*). El servicio de IA, que usan todos los módulos, está en `specs/modulos/04-ia.md`. El formulario de contacto de las webs de los locales, en `specs/modulos/06-formulario-contacto.md` (FORM-*).
 
 **En la primera sesión lee, por este orden:** `specs/README.md`, `specs/00-necesidades.md` (qué hace falta, decisiones tomadas y pendientes), `specs/01-contexto.md` (producto, precios, forma de trabajar) y `specs/02-arquitectura.md` (dominios, acceso al panel, monorepo). Las maquetas de las pantallas y el logo están en `specs/diseno/`.
 
-**Dominios:** `PLATFORM_DOMAIN = cubierto.site`. La raíz y `www` son de la web comercial (otro proyecto). Esta app atiende `app.cubierto.site` (panel, superadmin, carta y reservas públicas), `<slug>.cubierto.site` y los dominios propios de los locales.
+**Dominios:** `PLATFORM_DOMAIN = cubierto.site`. La raíz y `www` son de la web comercial (otro proyecto). Esta app atiende `app.cubierto.site` (panel, superadmin, carta y reservas públicas, API pública) y `<slug>.cubierto.site` (página mínima o redirección). **Las webs de los locales no las sirve esta app ni viven en este repositorio:** son webs Astro a medida, cada una en su repositorio (`web-<slug>`) y con su proyecto de Vercel y su dominio (`specs/modulos/01-webs.md`).
 
-**Modelo de tenancy:** un código, un despliegue, una base de datos. Cada fila de datos de cliente lleva `tenantId`. No hay un proyecto ni una base de datos por cliente.
+**Modelo de tenancy:** la plataforma es un código, un despliegue y una base de datos para todos los locales. Cada fila de datos de cliente lleva `tenantId`. La única pieza por local es su web Astro de información, fuera de este repositorio (sin base de datos ni secretos de la plataforma).
 
 ## 2. Specs: cómo usarlas
 
@@ -52,11 +52,12 @@ Todo lo compartido (tenancy, auth, billing, notificaciones, locales y mesas) est
 apps/
   platform/                 # Única app Next.js
     src/app/
-      (sites)/              # Webs de clientes, resueltas por dominio
+      (sites)/              # <slug>.cubierto.site: página mínima del local o 301 a su web (WEB-16)
       (public)/c/[slug]/    # Carta pública
       (public)/r/[slug]/    # Reservas públicas + widget
       (panel)/panel/        # Panel del restaurante (OWNER/STAFF)
       (admin)/admin/        # Superadmin (Manuel)
+      api/public/v1/        # API pública para las webs de los locales (WEB-13) y sus mensajes (FORM-07)
       api/webhooks/         # Stripe, n8n
       api/cron/             # Endpoints llamados por Vercel Cron / n8n
     src/modules/            # Un directorio por bounded context
@@ -72,7 +73,7 @@ packages/
 specs/                      # Fuente de verdad de producto (índice en specs/README.md)
 ```
 
-`apps/landing` (la web comercial en Astro) se incorporará al monorepo como otro proyecto de Vercel; tiene su propio `CLAUDE.md` y no comparte despliegue con `apps/platform`.
+`apps/landing` (la web comercial en Astro) se incorporará al monorepo como otro proyecto de Vercel; tiene su propio `CLAUDE.md` y no comparte despliegue con `apps/platform`. Las webs de los locales nacen del repositorio plantilla `cubierto-web-plantilla` (WEB-12) y solo hablan con la plataforma por la API pública (WEB-13) y, en la fase 2 del formulario, con su `SiteKey` (FORM-07).
 
 Cada módulo en `src/modules/<context>/` sigue:
 
@@ -97,7 +98,7 @@ pnpm test                      # vitest
 pnpm test:e2e                  # playwright
 ```
 
-Desarrollo local de dominios: `casa-brezo.localhost:3000` simula la web de un local; `app.localhost:3000` es el panel, el superadmin y la carta y reservas públicas.
+Desarrollo local de dominios: `casa-brezo.localhost:3000` simula `<slug>.cubierto.site` (página mínima); `app.localhost:3000` es el panel, el superadmin, la carta y reservas públicas y la API pública. Las webs de los locales se arrancan desde su repositorio (`localhost:4321`) contra la API local.
 
 ## 6. Reglas de arquitectura (obligatorias)
 
@@ -150,7 +151,9 @@ Una tarea está terminada cuando:
 
 - **No** consultar Prisma directamente con el cliente global para datos de cliente; siempre `getTenantDb`.
 - **No** aceptar `tenantId` desde el navegador (query, body, headers propios).
-- **No** crear un proyecto, despliegue o base de datos por cliente.
+- **No** crear un proyecto, despliegue o base de datos de la plataforma por cliente. La excepción son las webs Astro de los locales, que viven fuera de este repositorio, son estáticas y no tienen base de datos ni secretos de la plataforma.
+- **No** servir las webs de los locales desde esta app ni añadir aquí un editor de su contenido: los cambios los hace Manuel en el repositorio de cada web (`01-webs.md`).
+- **No** añadir a la API pública datos de la carta, de las reservas ni datos personales: solo lo de WEB-13, y una versión nueva si cambia.
 - **No** servir el panel dentro del dominio de un local: `/panel` allí solo redirige a `app.<PLATFORM_DOMAIN>` (PLT-11).
 - **No** cambiar la dirección pública de la carta una vez impresos QR de clientes reales.
 - **No** llamar a servicios externos (Resend, n8n, Stripe) dentro de una transacción.
@@ -159,7 +162,7 @@ Una tarea está terminada cuando:
 - **No** añadir dependencias nuevas sin justificarlo en el PR (tamaño, mantenimiento, alternativa nativa).
 - **No** introducir funcionalidades marcadas como "Fuera de alcance MVP" en las specs.
 - **No** integrar con TPV, impresoras térmicas ni Reserve with Google en el MVP.
-- **No** escribir textos legales nuevos inventados: usar las plantillas de `src/modules/sites/legal/` y marcar lo que falte.
+- **No** escribir textos legales nuevos inventados: usar las plantillas que haya (las de las webs de los locales están en su repositorio plantilla) y marcar lo que falte.
 - **No** guardar datos de salud de comensales salvo en el campo previsto y con consentimiento explícito (ver `03-reservas.md`).
 - **No** borrar datos de forma permanente desde el panel: soft delete (`deletedAt`) salvo en los procesos RGPD documentados.
 - **No** importar SDKs de proveedores de IA (`@anthropic-ai/sdk`, `openai`, `@ai-sdk/*`) fuera de `packages/ai`, ni escribir prompts sueltos fuera de `modules/ai/tasks/`.

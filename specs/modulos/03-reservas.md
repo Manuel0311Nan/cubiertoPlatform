@@ -277,7 +277,7 @@ Como comensal que prefiere WhatsApp quiero escribir al local con un toque; como 
 - Dónde aparece:
   - Página pública de reservas y widget (RES-07): enlace secundario bajo el formulario, "¿Prefieres WhatsApp?". El formulario sigue siendo la vía principal.
   - Mensaje de grupos grandes (RES-01), junto al teléfono.
-  - Web del local (`SITE`): CTA del hero y bloque `reservationCta` (tabla de bloques de `01-webs.md`).
+  - Web del local (`SITE`): componentes `<ReserveButton />` y `<WhatsAppButton />` de la plantilla de las webs (WEB-12), con los datos de la API pública (WEB-13).
 - En `/panel/reservas`, botón "Copiar enlace de reserva" (URL pública de reservas del local) y un texto sugerido para pegar en la respuesta automática de WhatsApp Business: "Gracias por escribir a {local}. Puedes reservar en un minuto aquí: {enlace}. Si lo prefieres, dinos día, hora y cuántos sois."
 - Las reservas que se cierran en el chat las apunta el personal con origen WhatsApp (RES-09). Pasan por las mismas reglas de capacidad (RES-12).
 - La conversación ocurre en el WhatsApp del local: no se usa la API de Meta, no hay coste por mensaje y la plataforma no recibe el contenido del chat.

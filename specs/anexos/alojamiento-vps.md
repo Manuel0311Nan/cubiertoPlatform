@@ -111,7 +111,9 @@ Las copias semanales del proveedor **no bastan**: están en la misma empresa y p
 
 ### 5.3 Dominios propios de los locales (WEB-08)
 
-Hoy la spec usa la API de dominios de Vercel. En el VPS:
+> **Cambio del 21/11/2026:** las webs de los locales ya no las sirve la plataforma; cada una es una web Astro estática con su propio proyecto (`modulos/01-webs.md` v0.3). En el VPS, cada web sería un sitio estático de Coolify con su dominio y su certificado de Let's Encrypt, y la plataforma solo atiende `<slug>.cubierto.site`. Lo de On-Demand TLS de abajo solo haría falta si la plataforma volviera a servir dominios propios.
+
+Lo que se planteaba antes del cambio:
 
 - Los subdominios `<slug>.cubierto.site` los cubre el certificado comodín.
 - Para dominios propios (`casabrezo.es`), **Caddy con On-Demand TLS**: pide el certificado la primera vez que alguien entra, pero antes pregunta a la plataforma si ese dominio es de un cliente verificado.
