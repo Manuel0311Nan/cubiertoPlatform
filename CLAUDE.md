@@ -121,6 +121,8 @@ Desarrollo local de dominios: `casa-brezo.localhost:3000` simula `<slug>.cubiert
 - Errores de dominio como resultados tipados (`{ ok: false, code: "SLOT_FULL" }`), no excepciones para flujo normal.
 - Fechas con `date-fns` + `date-fns-tz`. Nada de `new Date()` sin zona en lógica de reservas.
 - Componentes accesibles (labels, foco, contraste AA). Las páginas públicas deben funcionar bien en móvil de gama baja.
+- **Frontend con la skill `modern-web-guidance`** (`.claude/skills/modern-web-guidance/`, oficial de Google Chrome): antes de escribir o cambiar HTML, CSS o JavaScript de cliente (diálogos, formularios, tablas, accesibilidad, rendimiento, fechas en el navegador…), busca y lee la guía con la skill, adáptala a React y Tailwind y comprueba el código con ella. No aplica a backend, Prisma, rutas de API ni tooling.
+- **Soporte de navegadores:** lo que sea Baseline *Widely available* se usa sin fallback; lo que no, con el fallback que indique la guía (el criterio por defecto de la skill).
 
 ## 8. Base de datos y migraciones
 
