@@ -37,7 +37,7 @@ Todo lo compartido (tenancy, auth, notificaciones, locales y mesas) está en `sp
 
 - **Next.js 15** (App Router, Server Components, Server Actions), **TypeScript** estricto
 - **Prisma** + **PostgreSQL en Neon** (región Frankfurt)
-- **Better Auth** (plugin `magic-link`, enlace por email vía Resend y el outbox). Sustituye a Auth.js desde el 22/11/2026: Auth.js está en modo mantenimiento y su v5 sigue en beta
+- **Better Auth** (plugin `magic-link`, enlace por email vía Resend, enviado directo sin outbox: PLT-02). Sustituye a Auth.js desde el 22/11/2026: Auth.js está en modo mantenimiento y su v5 sigue en beta
 - **Tailwind + shadcn/ui**, **TanStack Query** (solo en vistas con refresco, p. ej. sala de reservas), **Zustand** (solo estado de UI local)
 - **Zod** para toda validación de entrada
 - **Stripe** (Billing + webhooks), **Resend** (email), **n8n** autoalojado (WhatsApp y tareas programadas)
@@ -107,7 +107,7 @@ Desarrollo local de dominios: `casa-brezo.localhost:3000` simula `<slug>.cubiert
 2. **El `tenantId` del panel sale de la sesión** (membresía activa), nunca de la URL, de un parámetro ni del body.
 3. **El `tenantId` público sale del middleware** (host o slug), nunca del cliente.
 4. **Módulos contratados:** toda ruta y Server Action de un módulo comprueba `requireModule(tenant, "RESERVATIONS")`. Sin módulo activo → 404 en público, pantalla de upsell en panel.
-5. **Efectos externos por outbox.** Emails, WhatsApp y llamadas a n8n se escriben como `OutboxEvent` en la misma transacción que el cambio de datos. Nunca se llama a Resend o n8n dentro de una transacción ni directamente desde una acción.
+5. **Efectos externos por outbox.** Emails, WhatsApp y llamadas a n8n se escriben como `OutboxEvent` en la misma transacción que el cambio de datos. Nunca se llama a Resend o n8n dentro de una transacción ni directamente desde una acción. Única excepción: el enlace de entrada (PLT-02), que no acompaña a ningún cambio de datos y caduca en 15 minutos, se envía directo. Ningún envío depende de un cron cada minuto (PLT-08).
 6. **Webhooks idempotentes.** Todo webhook se registra en `ProcessedWebhook` antes de procesarse.
 7. **Dinero en céntimos** (`Int`), moneda `EUR`. Fechas en UTC en BD; zona horaria del local (`Venue.timezone`, por defecto `Europe/Madrid`) solo para mostrar y calcular disponibilidad.
 8. **Caché pública por tags:** las páginas públicas usan `revalidateTag("tenant:<id>:<module>")` al guardar en el panel.

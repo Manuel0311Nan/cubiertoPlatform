@@ -168,7 +168,7 @@ Como comensal quiero reservar en menos de un minuto.
 - Estado inicial: `CONFIRMED` si `autoConfirm`, si no `PENDING`.
 
 ### RES-03 · Email de confirmación
-- `OutboxEvent` `reservation.created` en la misma transacción.
+- `OutboxEvent` `reservation.created` en la misma transacción; se envía justo después del commit (`00-plataforma.md` PLT-08, "Envíos sin cron cada minuto").
 - Email con: local, fecha y hora local, personas, código, política del local, dirección con enlace a mapa, enlace para cancelar.
 - Si es `PENDING`: email "Hemos recibido tu solicitud" y otro al confirmarla o rechazarla.
 - WhatsApp equivalente si `whatsappEnabled` (fase 2, fuera del MVP).
@@ -178,8 +178,8 @@ Como comensal quiero reservar en menos de un minuto.
 - Las `PENDING` aparecen destacadas en el panel hasta que se aprueban o rechazan.
 
 ### RES-05 · Recordatorio
-- 24 h antes (o a las 10:00 del día anterior si la reserva es antes de las 12:00 — ver preguntas abiertas), se envía recordatorio con enlace para cancelar.
-- Lo dispara un cron cada 15 minutos que crea `OutboxEvent`s para las reservas que entran en la ventana; nunca se envían dos recordatorios para la misma reserva.
+- Se envía un recordatorio con enlace para cancelar. **Propuesta del 22/11/2026, pendiente de confirmar** (ver preguntas abiertas): a una hora fija del día anterior, para todas las reservas `CONFIRMED` del día siguiente, en lugar de 24 h exactas antes.
+- Lo dispara el cron diario (`/api/cron/daily`, `00-plataforma.md` PLT-08), que crea un `OutboxEvent` `reservation.reminder` por reserva y los envía; nunca se envían dos recordatorios para la misma reserva. Si la reserva se ha cancelado entre medias, el evento queda `FAILED` sin enviarse.
 - No se envía si la reserva se hizo con menos de 24 h de antelación.
 
 ### RES-06 · Cancelar desde el enlace
@@ -312,7 +312,7 @@ Como comensal que prefiere WhatsApp quiero escribir al local con un toque; como 
 - [x] ~~¿Combinar mesas entra en esta fase?~~ Decidido el 13/11/2026: sí, las mesas juntas se reservan juntas (RES-17).
 - [ ] ¿Guardamos combinaciones habituales en el editor (por ejemplo "9 + 10") para juntarlas de un toque, o se juntan siempre a mano?
 
-- [ ] Recordatorio: ¿siempre 24 h antes o a una hora fija del día anterior?
+- [ ] Recordatorio: ¿siempre 24 h antes o a una hora fija del día anterior? Propuesta (22/11/2026): a hora fija del día anterior, con el cron diario, para no depender de un cron cada pocos minutos (`00-plataforma.md` PLT-08). Si se quiere 24 h exactas: Vercel Schedules de una sola vez por reserva.
 - [ ] ¿Confirmación manual (`autoConfirm = false`) por defecto en algún tipo de local?
 - [x] ~~¿WhatsApp en el MVP?~~ Decidido el 16/11/2026: solo el enlace "Reservar por WhatsApp" (RES-18), sin API ni coste.
 - [ ] Fase 2, avisos por WhatsApp (confirmación, recordatorio, cancelación): ¿API directa de Meta o proveedor? Meta cobra por mensaje de plantilla; las respuestas en las 24 h siguientes a que escriba el cliente son gratis. Afecta al precio del módulo.
