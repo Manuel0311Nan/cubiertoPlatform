@@ -232,6 +232,7 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 ### PLT-02 · Aceptar invitación e iniciar sesión
 - El enlace de invitación caduca a los 7 días; un enlace usado o caducado muestra un mensaje claro y la opción de pedir otro.
 - Inicio de sesión por magic link (válido 15 minutos, un solo uso).
+- El enlace se envía **directo, sin outbox ni cron** (22/11/2026): hasta 3 intentos seguidos si el fallo es pasajero (red, 429, 5xx), con la misma clave de idempotencia. Si no sale, la pantalla dice "No hemos podido enviar el enlace" y el enlace que no salió se borra, para que se pueda pedir otro al momento sin esperar el minuto entre enlaces. El enlace no se guarda en ninguna tabla nuestra (Better Auth guarda solo el hash del token).
 - Un usuario con varias membresías elige tenant tras iniciar sesión; la elección queda en la sesión.
 
 ### PLT-03 · Invitar y gestionar personal (OWNER)
@@ -259,11 +260,28 @@ Detalle y lista completa de eventos en `05-pagos.md` (BILL-08 y BILL-09).
 - Firma inválida → 400 y registro en Sentry.
 
 ### PLT-08 · Outbox de notificaciones
-- Un proceso (cron cada minuto) toma eventos `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`.
-- Los que no pueden esperar al cron (el enlace de entrada, PLT-02) se intentan enviar al guardarlos, fuera de la transacción; si falla, siguen los reintentos del cron (22/11/2026). Cada proceso reserva el evento antes de enviarlo, para no mandarlo dos veces.
-- Al enviarse o fallar del todo, del evento se borra lo que no debe quedarse guardado (el enlace de entrada).
-- Reintentos con backoff exponencial (1, 5, 15, 60 minutos); tras 5 fallos → `FAILED` y alerta al superadmin.
+- Los casos de uso guardan el `OutboxEvent` en la misma transacción que el cambio de datos y, **después del commit**, lo envían al momento (`dispatchOutboxEvent`, desde `after()` de Next para no hacer esperar la respuesta). Lo que falla o se programa para más tarde lo recoge un barrido (`processDueOutboxEvents`): toma los `PENDING` con `nextAttemptAt <= now`, los envía y los marca `SENT`. Cuándo se barre: "Envíos sin cron cada minuto", más abajo.
+- Cada proceso reserva el evento antes de enviarlo, para no mandarlo dos veces.
+- Al enviarse o fallar del todo, del evento se borra lo que no debe quedarse guardado (cada tipo de evento dice qué).
+- Reintentos con backoff exponencial (1, 5, 15, 60 minutos); tras 5 fallos → `FAILED` y alerta al superadmin. Un evento que ya no sirve (p. ej. el recordatorio de una reserva cancelada) pasa a `FAILED` sin reintentos.
+- Cada tipo de evento registra cómo se entrega en `notifications/application/outbox-handlers.ts`; un tipo sin registrar queda `FAILED`.
+- El enlace de entrada (PLT-02) no pasa por el outbox desde el 22/11/2026: se envía directo.
 - Canales: email (Resend), WhatsApp (webhook a n8n) y Deploy Hooks de Vercel para recompilar la web de un local cuando Manuel lo pide (`website.rebuild`, WEB-14). Plantillas en español con variables tipadas.
+
+**Envíos sin cron cada minuto (22/11/2026).** Ningún envío depende de un cron frecuente: Vercel Hobby solo admite crons diarios, y un cron cada minuto no deja que Neon se suspenda (lo hace tras 5 minutos sin uso), unos 19 $/mes de cómputo a 0,25 CU en Launch sin clientes. Hasta F3 no hay ningún evento en el outbox (el login va directo) y `/api/cron/outbox` no está programado en `vercel.json`; se puede llamar a mano con `CRON_SECRET`. Con reservas (F3) funciona así:
+
+1. **Al momento, tras el commit.** Confirmación y "Hemos recibido tu solicitud" (RES-03), aviso al local (RES-04), confirmar o rechazar una `PENDING`, cancelación (RES-06) e invitaciones (PLT-03): el caso de uso guarda el evento en su transacción y lo envía con `after(() => dispatchOutboxEvent(id))`. Es el camino normal: casi todo sale aquí.
+2. **Barrido oportunista.** Las peticiones que ya tienen la base de datos despierta (el panel, sobre todo la vista del día de sala, que refresca cada 20 s durante el servicio, RES-08; y la página pública de reservas) lanzan con `after()` un barrido corto (`processDueOutboxEvents`, 5 eventos), como mucho una vez por minuto por instancia. No cuesta nada de más y cumple los reintentos de 1, 5 y 15 minutos mientras haya actividad, que es justo cuando hay reservas.
+3. **Un cron diario** (Hobby lo admite), `/api/cron/daily` a las 8:00 UTC (9:00 en Madrid en invierno, 10:00 en verano; en Hobby salta en cualquier momento de esa hora): crea y envía los recordatorios de las reservas del día siguiente (RES-05), barre el outbox como red de seguridad y, más adelante, hace las tareas diarias de pagos (`05-pagos.md`). Una sola ruta para todo lo diario.
+
+Consecuencias que se aceptan:
+- El recordatorio sale a una hora fija del día anterior, no 24 h exactas antes (propuesta, pendiente de confirmar en `03-reservas.md` §9). Una reserva hecha para mañana después del cron no recibe recordatorio, igual que las hechas con menos de 24 h.
+- Si un email falla y no hay actividad en la plataforma, el reintento espera al cron de la mañana. Lo mitiga que el comensal ya tiene el código y el `.ics` en la pantalla de confirmación (RES-02) y que el local ve las reservas y las `PENDING` en el panel aunque su email falle (RES-04).
+
+Cuándo cambiarlo, en este orden:
+- **Vercel Schedules** (beta, sustituye a los Cron Jobs): en Hobby admite un schedule cada 15 minutos con 15 de margen, y schedules de una sola vez a una hora concreta con zona horaria (con Vercel Queues), útiles para un recordatorio exacto por reserva. Límite en Hobby: 500 schedules creados y 5.000 ejecuciones al mes.
+- **En Vercel Pro:** cron cada minuto solo de día (`* 7-23 * * *`, UTC) si los datos lo piden; pasar a Pro (uso comercial) no obliga a subirlo.
+- **En el VPS** (`anexos/alojamiento-vps.md`): *Scheduled tasks* de Coolify llamando a las mismas rutas `/api/cron/*`.
 
 ### PLT-09 · Superadmin
 - Lista de tenants con estado, módulos, dominio y fecha de alta; búsqueda por nombre o slug.

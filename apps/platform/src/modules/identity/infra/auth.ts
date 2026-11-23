@@ -26,12 +26,9 @@ function createAuth() {
         // Solo entran usuarios que ya existen (invitados o superadmin): no hay registro abierto.
         disableSignUp: true,
         storeToken: "hashed",
+        // Envío directo, sin outbox (PLT-02): si falla, la petición falla y se pide otro enlace.
         sendMagicLink: async ({ email, url }) => {
-          await sendMagicLinkEmail({
-            to: email,
-            url,
-            expiresAt: new Date(Date.now() + MAGIC_LINK_TTL_SECONDS * 1000),
-          });
+          await sendMagicLinkEmail({ to: email, url });
         },
       }),
       // Debe ir el último: guarda las cookies de sesión desde Server Actions.

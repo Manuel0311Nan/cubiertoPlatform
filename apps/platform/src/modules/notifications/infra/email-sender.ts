@@ -1,4 +1,4 @@
-import type { EmailMessage, EmailSender } from "../domain/email";
+import { EmailDeliveryError, type EmailMessage, type EmailSender } from "../domain/email";
 
 const RESEND_API_URL = "https://api.resend.com/emails";
 
@@ -10,24 +10,33 @@ export class ResendEmailSender implements EmailSender {
   ) {}
 
   async send(message: EmailMessage, { idempotencyKey }: { idempotencyKey: string }): Promise<void> {
-    const response = await fetch(RESEND_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey,
-      },
-      body: JSON.stringify({
-        from: this.from,
-        to: [message.to],
-        subject: message.subject,
-        html: message.html,
-        text: message.text,
-      }),
-      signal: AbortSignal.timeout(10_000),
-    });
+    let response: Response;
+    try {
+      response = await fetch(RESEND_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "Idempotency-Key": idempotencyKey,
+        },
+        body: JSON.stringify({
+          from: this.from,
+          to: [message.to],
+          subject: message.subject,
+          html: message.html,
+          text: message.text,
+        }),
+        signal: AbortSignal.timeout(10_000),
+      });
+    } catch (error) {
+      // Caída de red o timeout: puede ir bien al repetir.
+      const reason = error instanceof Error ? error.name : "error de red";
+      throw new EmailDeliveryError(`No se pudo contactar con Resend (${reason})`, true);
+    }
     if (!response.ok) {
-      throw new Error(`Resend respondió ${response.status}`);
+      // 429 y 5xx son pasajeros; un 4xx (API key, remitente, datos) no se arregla repitiendo.
+      const retryable = response.status === 429 || response.status >= 500;
+      throw new EmailDeliveryError(`Resend respondió ${response.status}`, retryable);
     }
   }
 }

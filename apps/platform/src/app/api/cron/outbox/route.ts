@@ -2,7 +2,13 @@ import { processDueOutboxEvents } from "@/modules/notifications/application/outb
 
 export const dynamic = "force-dynamic";
 
-/** PLT-08: Vercel Cron lo llama cada minuto (vercel.json) con `Authorization: Bearer <CRON_SECRET>`. */
+/**
+ * PLT-08: barrido del outbox, protegido con `Authorization: Bearer <CRON_SECRET>`.
+ *
+ * Sin programar en vercel.json desde el 22/11/2026: el login ya no usa el outbox y no hay otros
+ * eventos hasta F3. Con reservas lo llamará el cron diario como red de seguridad (PLT-08, "Envíos
+ * sin cron cada minuto"); mientras, se puede llamar a mano con el secreto.
+ */
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {

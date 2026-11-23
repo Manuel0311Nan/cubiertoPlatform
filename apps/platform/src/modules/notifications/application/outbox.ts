@@ -1,69 +1,72 @@
 import { getSystemDb, Prisma, type OutboxEvent } from "@cubierto/db";
 import type { EmailSender } from "../domain/email";
 import { CLAIM_LEASE_MS, decideAfterFailure } from "../domain/retry";
-import { magicLinkEmail } from "../domain/templates/magic-link-email";
 import { getEmailSender } from "../infra/email-sender";
+import { OUTBOX_HANDLERS } from "./outbox-handlers";
 
 /**
- * Outbox (CLAUDE.md §6.5, PLT-08). Los efectos externos se guardan como OutboxEvent y se envían
- * fuera de cualquier transacción: al momento (`enqueueAndDispatch`) o desde el cron
- * (`processDueOutboxEvents`), que también hace los reintentos.
+ * Outbox (CLAUDE.md §6.5, PLT-08). Los efectos externos se guardan como OutboxEvent en la misma
+ * transacción que el cambio de datos y se envían fuera de ella: al momento (`dispatchOutboxEvent`,
+ * justo después del commit) o en un barrido (`processDueOutboxEvents`), que también hace los
+ * reintentos. Cuándo se barre sin cron cada minuto: PLT-08, "Envíos sin cron cada minuto".
  *
- * Usa systemDb: el cron recorre los eventos de todos los locales y los de plataforma (tenantId null).
+ * El enlace de entrada (PLT-02) no pasa por aquí: se envía directo (notifications/application/magic-link.ts).
+ *
+ * Usa systemDb: el barrido recorre los eventos de todos los locales y los de plataforma (tenantId null).
  */
 
-export const MAGIC_LINK_EVENT = "auth.magic_link";
+export type JsonObject = Record<string, unknown>;
 
-export interface OutboxDeps {
+export interface OutboxHandlerContext {
+  eventId: string;
   email: EmailSender;
   now: () => Date;
 }
 
-export function defaultOutboxDeps(): OutboxDeps {
-  return { email: getEmailSender(), now: () => new Date() };
+/** Cómo se entrega un tipo de evento. Cada módulo registra los suyos en `outbox-handlers.ts`. */
+export interface OutboxHandler {
+  /** Envía el evento. Lanza `NonRetryableError` si ya no tiene sentido reintentarlo. */
+  deliver(payload: JsonObject, context: OutboxHandlerContext): Promise<void>;
+  /** Lo que se queda guardado del payload al enviarse o fallar del todo. Por defecto, todo. */
+  redact?(payload: JsonObject): Prisma.InputJsonValue;
 }
 
-type JsonObject = Record<string, unknown>;
+export interface OutboxDeps {
+  email: EmailSender;
+  now: () => Date;
+  handlers: Readonly<Record<string, OutboxHandler>>;
+}
 
-function payloadOf(event: OutboxEvent): JsonObject {
+export function defaultOutboxDeps(): OutboxDeps {
+  return { email: getEmailSender(), now: () => new Date(), handlers: OUTBOX_HANDLERS };
+}
+
+/** El contenido ya no sirve (p. ej. el recordatorio de una reserva cancelada): no se reintenta. */
+export class NonRetryableError extends Error {
+  override name = "NonRetryableError";
+}
+
+export function payloadOf(event: Pick<OutboxEvent, "payload">): JsonObject {
   return typeof event.payload === "object" && event.payload !== null && !Array.isArray(event.payload)
     ? (event.payload as JsonObject)
     : {};
 }
 
-function requireString(payload: JsonObject, key: string): string {
+export function requireString(payload: JsonObject, key: string): string {
   const value = payload[key];
-  if (typeof value !== "string" || value === "") throw new Error(`Falta "${key}" en el evento`);
+  if (typeof value !== "string" || value === "") throw new NonRetryableError(`Falta "${key}" en el evento`);
   return value;
 }
 
-/** Quita del payload lo que no debe quedarse guardado una vez enviado (el enlace de entrada). */
-function redactedPayload(event: OutboxEvent): Prisma.InputJsonValue {
-  const payload = payloadOf(event);
-  if (event.type === MAGIC_LINK_EVENT) {
-    return { to: payload.to ?? null, redacted: true };
-  }
-  return payload as Prisma.InputJsonValue;
+function handlerFor(event: OutboxEvent, deps: OutboxDeps): OutboxHandler {
+  const handler = deps.handlers[event.type];
+  if (!handler) throw new NonRetryableError(`Tipo de evento sin canal: ${event.type}`);
+  return handler;
 }
 
-async function deliver(event: OutboxEvent, deps: OutboxDeps): Promise<void> {
+function redactedPayload(event: OutboxEvent, deps: OutboxDeps): Prisma.InputJsonValue {
   const payload = payloadOf(event);
-  switch (event.type) {
-    case MAGIC_LINK_EVENT: {
-      const expiresAt = Date.parse(requireString(payload, "expiresAt"));
-      if (deps.now().getTime() >= expiresAt) throw new ExpiredEventError();
-      const message = magicLinkEmail({ to: requireString(payload, "to"), url: requireString(payload, "url") });
-      await deps.email.send(message, { idempotencyKey: event.id });
-      return;
-    }
-    default:
-      throw new Error(`Tipo de evento sin canal: ${event.type}`);
-  }
-}
-
-/** El contenido ya no sirve (p. ej. el enlace caducó): no se reintenta. */
-class ExpiredEventError extends Error {
-  override name = "ExpiredEventError";
+  return deps.handlers[event.type]?.redact?.(payload) ?? (payload as Prisma.InputJsonValue);
 }
 
 /** Envía un evento ya reservado por este proceso y deja su estado según el resultado. */
@@ -71,19 +74,19 @@ async function dispatchClaimed(event: OutboxEvent, deps: OutboxDeps): Promise<"S
   const db = getSystemDb();
   const attempts = event.attempts + 1;
   try {
-    await deliver(event, deps);
+    await handlerFor(event, deps).deliver(payloadOf(event), { eventId: event.id, email: deps.email, now: deps.now });
     await db.outboxEvent.update({
       where: { id: event.id },
-      data: { status: "SENT", attempts, sentAt: deps.now(), lastError: null, payload: redactedPayload(event) },
+      data: { status: "SENT", attempts, sentAt: deps.now(), lastError: null, payload: redactedPayload(event, deps) },
     });
     return "SENT";
   } catch (error) {
     const lastError = (error instanceof Error ? error.message : String(error)).slice(0, 500);
-    const decision = error instanceof ExpiredEventError ? { status: "FAILED" as const } : decideAfterFailure(attempts, deps.now());
+    const decision = error instanceof NonRetryableError ? { status: "FAILED" as const } : decideAfterFailure(attempts, deps.now());
     if (decision.status === "FAILED") {
       await db.outboxEvent.update({
         where: { id: event.id },
-        data: { status: "FAILED", attempts, lastError, payload: redactedPayload(event) },
+        data: { status: "FAILED", attempts, lastError, payload: redactedPayload(event, deps) },
       });
       // PLT-08: alerta al superadmin. Hasta tener Sentry (F0), queda en los logs.
       console.error(`[outbox] Evento ${event.id} (${event.type}) FAILED tras ${attempts} intentos: ${lastError}`);
@@ -97,32 +100,29 @@ async function dispatchClaimed(event: OutboxEvent, deps: OutboxDeps): Promise<"S
   }
 }
 
-export interface NewOutboxEvent {
-  tenantId: string | null;
-  type: string;
-  payload: Prisma.InputJsonValue;
+/** Reserva el evento para este proceso si sigue pendiente y le toca; null si otro lo tiene. */
+async function claim(event: OutboxEvent, now: Date): Promise<OutboxEvent | null> {
+  const lease = new Date(now.getTime() + CLAIM_LEASE_MS);
+  const claimed = await getSystemDb().outboxEvent.updateMany({
+    where: { id: event.id, status: "PENDING", nextAttemptAt: event.nextAttemptAt },
+    data: { nextAttemptAt: lease },
+  });
+  return claimed.count === 1 ? { ...event, nextAttemptAt: lease } : null;
 }
 
 /**
- * Guarda el evento y lo intenta enviar al momento. Si el envío falla, queda PENDING y lo
- * reintenta el cron: no lanza. Llamar siempre fuera de una transacción.
+ * Envía ahora un evento recién guardado (llamar después del commit, p. ej. desde `after()` de
+ * Next). Si falla, queda PENDING para el siguiente barrido: no lanza.
  */
-export async function enqueueAndDispatch(input: NewOutboxEvent, deps: OutboxDeps = defaultOutboxDeps()) {
-  const now = deps.now();
-  const event = await getSystemDb().outboxEvent.create({
-    data: {
-      tenantId: input.tenantId,
-      type: input.type,
-      payload: input.payload,
-      // Reservado para este proceso: el cron no lo coge mientras se envía.
-      nextAttemptAt: new Date(now.getTime() + CLAIM_LEASE_MS),
-    },
-  });
-  const status = await dispatchClaimed(event, deps);
-  return { id: event.id, status };
+export async function dispatchOutboxEvent(id: string, deps: OutboxDeps = defaultOutboxDeps()) {
+  const event = await getSystemDb().outboxEvent.findUnique({ where: { id } });
+  if (!event || event.status !== "PENDING") return { id, status: event?.status ?? null, skipped: true };
+  const claimed = await claim(event, deps.now());
+  if (!claimed) return { id, status: event.status, skipped: true };
+  return { id, status: await dispatchClaimed(claimed, deps), skipped: false };
 }
 
-/** PLT-08: lo llama el cron cada minuto. Reserva cada evento antes de enviarlo para no duplicar. */
+/** PLT-08: barrido de lo pendiente que ya toca. Reserva cada evento antes de enviarlo para no duplicar. */
 export async function processDueOutboxEvents(deps: OutboxDeps = defaultOutboxDeps(), limit = 20) {
   const db = getSystemDb();
   const now = deps.now();
@@ -134,15 +134,12 @@ export async function processDueOutboxEvents(deps: OutboxDeps = defaultOutboxDep
 
   const result = { sent: 0, retrying: 0, failed: 0, skipped: 0 };
   for (const event of due) {
-    const claim = await db.outboxEvent.updateMany({
-      where: { id: event.id, status: "PENDING", nextAttemptAt: event.nextAttemptAt },
-      data: { nextAttemptAt: new Date(now.getTime() + CLAIM_LEASE_MS) },
-    });
-    if (claim.count !== 1) {
+    const claimed = await claim(event, now);
+    if (!claimed) {
       result.skipped += 1;
       continue;
     }
-    const status = await dispatchClaimed(event, deps);
+    const status = await dispatchClaimed(claimed, deps);
     if (status === "SENT") result.sent += 1;
     else if (status === "FAILED") result.failed += 1;
     else result.retrying += 1;

@@ -1,15 +1,20 @@
 import { disconnectDb, getSystemDb } from "@cubierto/db";
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import type { EmailMessage } from "@/modules/notifications/domain/email";
+import { EmailDeliveryError, type EmailMessage } from "@/modules/notifications/domain/email";
 import { requireTestDatabase, uniqueSuffix } from "@/test/database";
 import { getAuth } from "../infra/auth";
 import { requestSignInLink } from "./sign-in";
 
-// Los emails se quedan en memoria: así el test puede leer el enlace.
-const outbox = vi.hoisted(() => ({ sent: [] as EmailMessage[] }));
+// Los emails se quedan en memoria: así el test puede leer el enlace. `rejectNext` simula que
+// Resend rechaza los siguientes envíos con un error que no se arregla repitiendo (sin esperas).
+const outbox = vi.hoisted(() => ({ sent: [] as EmailMessage[], rejectNext: 0 }));
 vi.mock("@/modules/notifications/infra/email-sender", () => ({
   getEmailSender: () => ({
     send: async (message: EmailMessage) => {
+      if (outbox.rejectNext > 0) {
+        outbox.rejectNext -= 1;
+        throw new EmailDeliveryError("Resend respondió 403", false);
+      }
       outbox.sent.push(message);
     },
   }),
@@ -55,17 +60,17 @@ function redirectPath(response: Response): string {
   return url.pathname + url.search;
 }
 
-const linkEventsTo = (email: string) =>
-  getSystemDb().outboxEvent.count({ where: { type: "auth.magic_link", payload: { path: ["to"], equals: email } } });
+const linksTo = (email: string) =>
+  getSystemDb().verification.count({ where: { identifier: { startsWith: "magic-link:" }, value: { contains: email } } });
 
 beforeAll(() => requireTestDatabase());
 beforeEach(() => {
   outbox.sent.length = 0;
+  outbox.rejectNext = 0;
 });
 afterAll(async () => {
   const db = getSystemDb();
   for (const email of emails) {
-    await db.outboxEvent.deleteMany({ where: { payload: { path: ["to"], equals: email } } });
     await db.verification.deleteMany({ where: { value: { contains: email } } });
   }
   await db.session.deleteMany({ where: { userId: { in: userIds } } });
@@ -132,10 +137,30 @@ describe("PLT-02 · entrar con un enlace por email", () => {
     expect(await getSystemDb().user.count({ where: { email } })).toBe(0);
   });
 
-  test("no manda un segundo enlace al mismo email antes de un minuto", async () => {
+  test("PLT-02: no manda un segundo enlace al mismo email antes de un minuto", async () => {
     const email = await createUser();
     await requestSignInLink(email, headers);
     await requestSignInLink(email, headers);
-    expect(await linkEventsTo(email)).toBe(1);
+    expect(await linksTo(email)).toBe(1);
+    expect(outbox.sent.filter((m) => m.to === email)).toHaveLength(1);
+  });
+
+  test("PLT-02: el enlace sale directo, sin outbox", async () => {
+    const email = await createUser();
+    await requestSignInLink(email, headers);
+    expect(outbox.sent.filter((m) => m.to === email)).toHaveLength(1);
+    expect(await getSystemDb().outboxEvent.count({ where: { payload: { path: ["to"], equals: email } } })).toBe(0);
+  });
+
+  test("PLT-02: si el email no sale, avisa del fallo y se puede pedir otro al momento", async () => {
+    const email = await createUser();
+    outbox.rejectNext = 1;
+    expect(await requestSignInLink(email, headers)).toEqual({ ok: false, code: "SEND_FAILED" });
+    // El enlace que no salió no se queda válido ni cuenta para el minuto de espera.
+    expect(await linksTo(email)).toBe(0);
+
+    expect(await requestSignInLink(email, headers)).toEqual({ ok: true });
+    const response = await verify(lastLinkTo(email));
+    expect(redirectPath(response)).toBe("/panel");
   });
 });
