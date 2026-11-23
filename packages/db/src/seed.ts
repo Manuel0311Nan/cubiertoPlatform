@@ -14,7 +14,9 @@ try {
 
 const SEED_REASON = "Datos de demo (seed)";
 
-const superadminEmail = process.env.SEED_SUPERADMIN_EMAIL ?? "superadmin@cubierto.test";
+// Vacío en el .env (como en .env.example) cuenta como no puesto. En minúsculas: la entrada (PLT-02)
+// busca el email normalizado.
+const superadminEmail = process.env.SEED_SUPERADMIN_EMAIL?.trim().toLowerCase() || "superadmin@cubierto.test";
 
 const tenants = [
   {

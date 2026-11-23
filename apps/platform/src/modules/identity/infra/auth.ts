@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { getSystemDb } from "@cubierto/db";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -10,6 +11,31 @@ export const MAGIC_LINK_TTL_SECONDS = 15 * 60;
 
 export const SIGN_IN_PATH = "/entrar";
 export const AFTER_SIGN_IN_PATH = "/panel";
+
+/** URL absoluta en `app.<PLATFORM_DOMAIN>` (la de BETTER_AUTH_URL), p. ej. para enlaces en emails. */
+export function appUrl(path: string): string {
+  const base = process.env.BETTER_AUTH_URL;
+  if (!base) throw new Error("Falta BETTER_AUTH_URL (la URL de app.<PLATFORM_DOMAIN>).");
+  return new URL(path, base).toString();
+}
+
+/**
+ * Enlace de entrada que se usa en el momento, sin email: al aceptar una invitación (PLT-02) el
+ * email ya está comprobado (el enlace llegó a ese buzón) y se entra directamente. Solo lo activa
+ * código del servidor con `captureMagicLink`; una petición HTTP a Better Auth nunca lo tiene.
+ */
+type MagicLinkCapture = AsyncLocalStorage<{ url?: string }>;
+// Global, como la instancia de Better Auth (getAuth): Next carga este módulo en varios paquetes
+// (ruta /api/auth, Server Actions) y el callback de la instancia tiene que ver la misma captura.
+const globalForCapture = globalThis as typeof globalThis & { __cubiertoMagicLinkCapture?: MagicLinkCapture };
+const magicLinkCapture: MagicLinkCapture = (globalForCapture.__cubiertoMagicLinkCapture ??= new AsyncLocalStorage());
+
+export async function captureMagicLink(request: () => Promise<unknown>): Promise<string> {
+  const store: { url?: string } = {};
+  await magicLinkCapture.run(store, request);
+  if (!store.url) throw new Error("Better Auth no ha generado el enlace de entrada");
+  return store.url;
+}
 
 function createAuth() {
   return betterAuth({
@@ -28,6 +54,11 @@ function createAuth() {
         storeToken: "hashed",
         // Envío directo, sin outbox (PLT-02): si falla, la petición falla y se pide otro enlace.
         sendMagicLink: async ({ email, url }) => {
+          const capture = magicLinkCapture.getStore();
+          if (capture) {
+            capture.url = url;
+            return;
+          }
           await sendMagicLinkEmail({ to: email, url });
         },
       }),

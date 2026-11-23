@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { es } from "@/i18n/es";
 import { signOutAction } from "@/modules/identity/actions";
+import { isSuperadmin } from "@/modules/identity/application/superadmin";
 import { requireSession } from "@/modules/identity/session";
 
 const t = es.panel;
@@ -17,6 +19,11 @@ export default async function PanelPage() {
         {t.greeting}, {user.name || user.email}
       </h1>
       <p className="text-mute">{t.comingSoon}</p>
+      {(await isSuperadmin(user.id)) ? (
+        <Link href="/admin" className="link self-start py-2.5">
+          {t.toAdmin}
+        </Link>
+      ) : null}
       <form action={signOutAction}>
         <button type="submit" className="btn">
           {t.signOut}
