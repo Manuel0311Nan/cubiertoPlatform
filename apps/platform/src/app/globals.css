@@ -114,6 +114,80 @@ body {
     display: flex;
   }
 
+  /*
+   * Casillas (guía `brand-consistent-forms`): las nativas con el verde de la marca por
+   * accent-color, de 20 px y con toda la fila pulsable (48 px de alto).
+   */
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-height: 48px;
+    padding-block: 0.625rem;
+    cursor: pointer;
+  }
+  .check > input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0.125rem 0 0;
+    accent-color: var(--bottle);
+  }
+
+  /*
+   * accent-color no es Baseline amplio (Safari desde 26.2): donde no se admite, la casilla
+   * nativa se oculta de forma accesible y se dibuja una con los colores de la marca.
+   */
+  @supports not (accent-color: red) {
+    .check {
+      position: relative;
+    }
+    .check > input {
+      position: absolute;
+      clip-path: inset(50%);
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
+      white-space: nowrap;
+    }
+    .check > input + span {
+      position: relative;
+      padding-inline-start: 2rem;
+    }
+    .check > input + span::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0.125rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      box-sizing: border-box;
+      border: 2px solid var(--mute);
+      border-radius: 4px;
+      background: #fff;
+    }
+    .check > input:checked + span::before {
+      border-color: var(--bottle);
+      background: var(--bottle);
+    }
+    .check > input:checked + span::after {
+      content: "✓";
+      position: absolute;
+      inset-inline-start: 0.25rem;
+      top: 0.0625rem;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+    .check > input:focus-visible + span::before {
+      outline: 3px solid var(--saffron);
+      outline-offset: 2px;
+    }
+  }
+
   .link {
     color: var(--bottle);
     font-weight: 650;

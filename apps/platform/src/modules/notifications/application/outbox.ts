@@ -2,6 +2,7 @@ import { getSystemDb, Prisma, type OutboxEvent } from "@cubierto/db";
 import type { EmailSender } from "../domain/email";
 import { CLAIM_LEASE_MS, decideAfterFailure } from "../domain/retry";
 import { getEmailSender } from "../infra/email-sender";
+import { NonRetryableError, payloadOf, type OutboxHandler } from "./outbox-handler";
 import { OUTBOX_HANDLERS } from "./outbox-handlers";
 
 /**
@@ -11,25 +12,13 @@ import { OUTBOX_HANDLERS } from "./outbox-handlers";
  * reintentos. Cuándo se barre sin cron cada minuto: PLT-08, "Envíos sin cron cada minuto".
  *
  * El enlace de entrada (PLT-02) no pasa por aquí: se envía directo (notifications/application/magic-link.ts).
+ * Los tipos de evento y cómo se entrega cada uno: `outbox-handlers.ts`.
  *
  * Usa systemDb: el barrido recorre los eventos de todos los locales y los de plataforma (tenantId null).
  */
 
-export type JsonObject = Record<string, unknown>;
-
-export interface OutboxHandlerContext {
-  eventId: string;
-  email: EmailSender;
-  now: () => Date;
-}
-
-/** Cómo se entrega un tipo de evento. Cada módulo registra los suyos en `outbox-handlers.ts`. */
-export interface OutboxHandler {
-  /** Envía el evento. Lanza `NonRetryableError` si ya no tiene sentido reintentarlo. */
-  deliver(payload: JsonObject, context: OutboxHandlerContext): Promise<void>;
-  /** Lo que se queda guardado del payload al enviarse o fallar del todo. Por defecto, todo. */
-  redact?(payload: JsonObject): Prisma.InputJsonValue;
-}
+export { NonRetryableError, payloadOf, requireString } from "./outbox-handler";
+export type { JsonObject, OutboxHandler, OutboxHandlerContext } from "./outbox-handler";
 
 export interface OutboxDeps {
   email: EmailSender;
@@ -39,23 +28,6 @@ export interface OutboxDeps {
 
 export function defaultOutboxDeps(): OutboxDeps {
   return { email: getEmailSender(), now: () => new Date(), handlers: OUTBOX_HANDLERS };
-}
-
-/** El contenido ya no sirve (p. ej. el recordatorio de una reserva cancelada): no se reintenta. */
-export class NonRetryableError extends Error {
-  override name = "NonRetryableError";
-}
-
-export function payloadOf(event: Pick<OutboxEvent, "payload">): JsonObject {
-  return typeof event.payload === "object" && event.payload !== null && !Array.isArray(event.payload)
-    ? (event.payload as JsonObject)
-    : {};
-}
-
-export function requireString(payload: JsonObject, key: string): string {
-  const value = payload[key];
-  if (typeof value !== "string" || value === "") throw new NonRetryableError(`Falta "${key}" en el evento`);
-  return value;
 }
 
 function handlerFor(event: OutboxEvent, deps: OutboxDeps): OutboxHandler {

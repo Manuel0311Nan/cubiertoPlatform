@@ -1,6 +1,6 @@
 import { getSystemDb } from "@cubierto/db";
 import { SIGN_IN_THROTTLE_MS, type RequestSignInLinkResult } from "../domain/sign-in";
-import { AFTER_SIGN_IN_PATH, getAuth, SIGN_IN_PATH } from "../infra/auth";
+import { AFTER_SIGN_IN_PATH, captureMagicLink, getAuth, SIGN_IN_PATH } from "../infra/auth";
 
 /**
  * Enlaces de entrada de `email` pedidos después de `since`. Better Auth los guarda en `Verification`
@@ -42,6 +42,21 @@ export async function requestSignInLink(email: string, headers: Headers): Promis
     await db.verification.deleteMany({ where: magicLinksFor(email, since) }).catch(() => undefined);
     return { ok: false, code: "SEND_FAILED" };
   }
+}
+
+/**
+ * Abre sesión para `email` (usuario que ya existe) en esta misma petición, sin enviar ningún
+ * email: para cuando el email ya está comprobado por otra vía (aceptar una invitación, PLT-02).
+ * Usa el enlace de entrada de Better Auth sin mandarlo: se genera y se verifica aquí. En una Server
+ * Action, la cookie de sesión la pone el plugin nextCookies. Devuelve la respuesta de Better Auth.
+ *
+ * No se redirige al navegador a la URL del enlace: tras el `redirect()` de una Server Action, Next
+ * pide antes esa URL por su cuenta y gastaría el token de un solo uso.
+ */
+export async function signInDirectly(email: string, headers: Headers): Promise<Response> {
+  const url = await captureMagicLink(() => getAuth().api.signInMagicLink({ body: { email }, headers }));
+  const token = new URL(url).searchParams.get("token") ?? "";
+  return getAuth().api.magicLinkVerify({ query: { token }, headers, asResponse: true });
 }
 
 /** Sesión del usuario que hace la petición, o null. */

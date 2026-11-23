@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getSessionFromHeaders } from "./application/sign-in";
+import { isSuperadmin } from "./application/superadmin";
 import { SIGN_IN_PATH } from "./infra/auth";
 
 /** Para Server Components: sesión actual o null. */
@@ -12,5 +13,15 @@ export async function getCurrentSession() {
 export async function requireSession() {
   const session = await getCurrentSession();
   if (!session) redirect(SIGN_IN_PATH);
+  return session;
+}
+
+/**
+ * Para pantallas y acciones del superadmin (PLT-09). Sin sesión, a la entrada; con sesión pero
+ * sin ser superadmin, 404: no se dice que `/admin` existe.
+ */
+export async function requireSuperadmin() {
+  const session = await requireSession();
+  if (!(await isSuperadmin(session.user.id))) notFound();
   return session;
 }
