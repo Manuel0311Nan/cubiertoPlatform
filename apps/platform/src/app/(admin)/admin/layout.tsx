@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { es } from "@/i18n/es";
+import { signOutAction } from "@/modules/identity/actions";
 import { requireSuperadmin } from "@/modules/identity/session";
 
 const t = es.admin;
@@ -24,7 +25,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {t.nav.tenants}
           </Link>
         </nav>
-        <span className="ms-auto text-sm text-line">{user.name || user.email}</span>
+        <div className="ms-auto flex items-center gap-4 text-sm">
+          <span className="text-line">{user.name || user.email}</span>
+          <form action={signOutAction}>
+            <button type="submit" className="cursor-pointer py-2 font-[650] underline underline-offset-3">
+              {es.panel.signOut}
+            </button>
+          </form>
+        </div>
       </header>
       {children}
     </div>
