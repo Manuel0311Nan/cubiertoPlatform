@@ -66,16 +66,18 @@ model Tenant {
   updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
   deletedAt        DateTime?    @db.Timestamptz(3)
 
-  domains       Domain[]
-  modules       TenantModule[]
-  subscriptions Subscription[]
-  memberships   Membership[]
-  invitations   Invitation[]
-  venues        Venue[]
-  tables        Table[]
-  floorZones    FloorZone[]
-  outboxEvents  OutboxEvent[]
-  auditLogs     AuditLog[]
+  domains        Domain[]
+  modules        TenantModule[]
+  subscriptions  Subscription[]
+  memberships    Membership[]
+  invitations    Invitation[]
+  venues         Venue[]
+  tables         Table[]
+  floorZones     FloorZone[]
+  outboxEvents   OutboxEvent[]
+  auditLogs      AuditLog[]
+  /// Sesiones con este local como activo (PLT-02)
+  activeSessions Session[]
 }
 
 model User {
@@ -98,16 +100,19 @@ model User {
 // ─── Sesiones (Better Auth, PLT-02; sin RLS: las usa systemDb) ─────────────
 
 model Session {
-  id        String   @id
-  token     String   @unique
-  userId    String
-  expiresAt DateTime @db.Timestamptz(3)
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id             String   @id
+  token          String   @unique
+  userId         String
+  expiresAt      DateTime @db.Timestamptz(3)
+  ipAddress      String?
+  userAgent      String?
+  /// Local elegido en el panel (PLT-02). Solo vale si el usuario tiene membresía en él: se comprueba en cada petición
+  activeTenantId String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeTenant Tenant? @relation(fields: [activeTenantId], references: [id], onDelete: SetNull)
 
   @@index([userId])
 }

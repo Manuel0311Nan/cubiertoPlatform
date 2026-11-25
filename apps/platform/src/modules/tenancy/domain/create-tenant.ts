@@ -2,9 +2,9 @@ import { z } from "zod";
 import { signInEmailSchema } from "@/modules/identity/domain/sign-in";
 import { slugSchema } from "./slug";
 
-/** Módulos que se venden (00-plataforma §6), en el orden en que se muestran. */
-export const MODULE_KEYS = ["SITE", "MENU", "RESERVATIONS"] as const;
-export type ModuleKeyValue = (typeof MODULE_KEYS)[number];
+import { MODULE_KEYS } from "./modules";
+
+export { MODULE_KEYS, type ModuleKeyValue } from "./modules";
 
 export const TENANT_NAME_MAX_LENGTH = 80;
 export const ACTIVATION_REASON_MAX_LENGTH = 200;
