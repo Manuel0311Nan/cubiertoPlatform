@@ -4,11 +4,12 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { dispatchOutboxEvent } from "@/modules/notifications/application/outbox";
+import { selectActiveTenant } from "./application/active-tenant";
 import { acceptInvitation, reissueInvitation, requestNewInvitation } from "./application/invitations";
 import { requestSignInLink, signInDirectly, signOut } from "./application/sign-in";
 import { INVITATION_PATH } from "./domain/invitation";
 import { AFTER_SIGN_IN_PATH } from "./infra/auth";
-import { requireSuperadmin } from "./session";
+import { CHOOSE_TENANT_PATH, requireSession, requireSuperadmin } from "./session";
 import { signInEmailSchema } from "./domain/sign-in";
 import { SIGN_IN_PATH } from "./infra/auth";
 
@@ -61,4 +62,11 @@ export async function resendInvitationAction(formData: FormData): Promise<void> 
   const result = await reissueInvitation(String(formData.get("invitationId") ?? ""));
   if (result.ok) after(() => dispatchOutboxEvent(result.eventId));
   redirect(`/admin?${result.ok ? `reenviada=${encodeURIComponent(result.email)}` : "reenvio=fallido"}`);
+}
+
+/** PLT-02: elegir el local con el que se trabaja. Solo uno en el que tenga membresía. */
+export async function selectTenantAction(formData: FormData): Promise<void> {
+  const session = await requireSession();
+  const result = await selectActiveTenant(session.user.id, session.session.id, String(formData.get("tenantId") ?? ""));
+  redirect(result.ok ? AFTER_SIGN_IN_PATH : CHOOSE_TENANT_PATH);
 }

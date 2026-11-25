@@ -240,6 +240,8 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 - Inicio de sesión por magic link (válido 15 minutos, un solo uso).
 - El enlace se envía **directo, sin outbox ni cron** (22/11/2026): hasta 3 intentos seguidos si el fallo es pasajero (red, 429, 5xx), con la misma clave de idempotencia. Si no sale, la pantalla dice "No hemos podido enviar el enlace" y el enlace que no salió se borra, para que se pueda pedir otro al momento sin esperar el minuto entre enlaces. El enlace no se guarda en ninguna tabla nuestra (Better Auth guarda solo el hash del token).
 - Un usuario con varias membresías elige tenant tras iniciar sesión; la elección queda en la sesión.
+- **Local activo (25/11/2026):** se guarda en `Session.activeTenantId` y en cada petición se comprueba que el usuario sigue teniendo membresía en ese local; si no (le han quitado el acceso o el local se ha borrado), se olvida. Con un solo local se elige solo; con varios, `/panel/elegir-local` y "Cambiar de local" en el panel. Sin ningún local: el superadmin va a `/admin` y el resto ve "Aún no tienes acceso a ningún local".
+- **Menú del panel (vistas D6 y M11):** Hoy siempre; Reservas, Sala y Clientes con `RESERVATIONS`; Carta con `MENU`; Web y Mensajes con `SITE`; Ajustes solo para `OWNER` (contiene facturación y equipo, que `STAFF` no ve, §3). Un apartado de un módulo que el local no tiene no sale en el menú y, si se abre su dirección, ofrece activarlo (CLAUDE.md §6.4). En móvil, la barra inferior lleva Hoy, hasta tres apartados de sus módulos y "Más" con el resto.
 
 ### PLT-03 · Invitar y gestionar personal (OWNER)
 - El OWNER invita por email con rol `OWNER` o `STAFF`, cambia roles y revoca accesos.
@@ -335,4 +337,5 @@ Como encargado quiero tener el panel en la pantalla de inicio de la tablet de sa
 - [ ] ¿Periodo de prueba gratuito? ¿De cuántos días y para qué módulos?
 - [ ] ¿Precio anual con descuento desde el MVP o más adelante?
 - [ ] Impago del módulo `SITE`: la web es un despliegue aparte y no se apaga sola. ¿Se pausa a mano su proyecto de Vercel, se muestra un aviso o se deja la web y solo se corta el mantenimiento?
+- [ ] Ajustes de reservas (RES-11): hoy Ajustes es solo de `OWNER`. ¿El encargado con papel `STAFF` necesita cambiar algo de ahí (días cerrados, por ejemplo)? Relacionado con el tercer papel de la vista D19 (`diseno/README.md` §5).
 - [ ] ¿Cuánto dura la sesión del panel? Hoy, 7 días desde el último uso (lo que trae Better Auth). En la tablet de sala quizá convenga más.

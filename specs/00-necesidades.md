@@ -124,6 +124,7 @@ Lista de partida; se completa en cada PR que añada una.
 | 22/11/2026 | ~~Los emails de entrada salen por el outbox y los reintenta el cron~~ Sustituida el mismo día: el enlace de entrada se envía directo, sin outbox ni cron, con hasta 3 intentos seguidos; si no sale, se pide otro (excepción a `CLAUDE.md` §6.5) | `modulos/00-plataforma.md` PLT-02 |
 | 22/11/2026 | La plataforma sigue en Vercel Hobby hasta estar completa. Ningún envío depende de un cron frecuente: envío tras el commit, barrido oportunista desde el panel y un cron diario (recordatorios y red de seguridad). `/api/cron/outbox` sin programar hasta F3 | `modulos/00-plataforma.md` PLT-08 |
 | 23/11/2026 | Alta de un local (PLT-01): formulario de una página; los módulos iniciales se activan sin pago con motivo hasta tener Stripe (a confirmar). La invitación se acepta con un botón y entra al panel sin otro email (PLT-02) | `modulos/00-plataforma.md` PLT-01 y PLT-02 |
+| 25/11/2026 | Local activo del panel guardado en la sesión (`Session.activeTenantId`) y comprobado en cada petición; menú según módulos y papel, Ajustes solo para `OWNER` | `modulos/00-plataforma.md` PLT-02 |
 
 ## 8. Decisiones pendientes
 

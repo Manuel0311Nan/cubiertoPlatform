@@ -17,3 +17,6 @@ Thumbs.db
 
 # Cliente de Prisma generado (pnpm db:generate)
 packages/db/src/generated/
+
+# Descargas de la app de Claude en la carpeta del repo
+/Claude outputs/
