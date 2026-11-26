@@ -125,6 +125,8 @@ Lista de partida; se completa en cada PR que añada una.
 | 22/11/2026 | La plataforma sigue en Vercel Hobby hasta estar completa. Ningún envío depende de un cron frecuente: envío tras el commit, barrido oportunista desde el panel y un cron diario (recordatorios y red de seguridad). `/api/cron/outbox` sin programar hasta F3 | `modulos/00-plataforma.md` PLT-08 |
 | 23/11/2026 | Alta de un local (PLT-01): formulario de una página; los módulos iniciales se activan sin pago con motivo hasta tener Stripe (a confirmar). La invitación se acepta con un botón y entra al panel sin otro email (PLT-02) | `modulos/00-plataforma.md` PLT-01 y PLT-02 |
 | 25/11/2026 | Local activo del panel guardado en la sesión (`Session.activeTenantId`) y comprobado en cada petición; menú según módulos y papel, Ajustes solo para `OWNER` | `modulos/00-plataforma.md` PLT-02 |
+| 26/11/2026 | Orden de construcción: después de F0, la carta (F2) y las reservas (F3); las webs (F1) al final, antes de F5 | `01-contexto.md` §7, `00-necesidades.md` §9 |
+| 26/11/2026 | Datos, horario y cierres del local (PLT-04) en Ajustes → El local, solo para `OWNER`. Los cierres son días enteros del local (`ClosedDate`); en F3 se añade el cierre de un solo turno | `modulos/00-plataforma.md` PLT-04 |
 
 ## 8. Decisiones pendientes
 
@@ -161,4 +163,4 @@ Las que condicionan el arranque o algo que luego cuesta cambiar. El resto está 
 
 ## 9. Orden de construcción
 
-F0 Fundaciones → F1 Webs → F2 Carta (desde aquí ya se puede vender) → F3 Reservas (empezando por RES-12) → F5 aislamiento, copias y monitorización. Detalle y estimación en `01-contexto.md` §7.
+**Cambiado el 26/11/2026:** F0 (lo imprescindible) → F2 Carta (con WEB-16 al final) → F3 Reservas (empezando por RES-12) → antes del piloto: Stripe, RGPD y superadmin completo → F1 Webs (empezando por "Mi web" con las visitas, WEB-15) → F5 aislamiento, copias y monitorización. Las webs de los locales se montan por fuera y corren menos prisa. Detalle en `01-contexto.md` §7.

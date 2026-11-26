@@ -78,11 +78,14 @@ Monorepo con pnpm + Turborepo: `apps/platform` (Next.js), `apps/landing` (la web
 
 ## 7. Orden de construcción
 
-1. **F0 Fundaciones** (PLT-01 a PLT-12 + AI-01 a AI-05 y AI-08). Primer hito en `00-necesidades.md` §3: monorepo pnpm + Turborepo, Prisma + Neon, `getTenantDb` y RLS, middleware de tenant, Better Auth, roles, Stripe, outbox, superadmin y la base del servicio de IA con el proveedor simulado. Sin esto no arranca nada.
-2. **F1** Webs (WEB-* y FORM-*): repositorio plantilla, primera web, API pública y ficha de la web en el superadmin.
-3. **F2** Carta QR (MENU-*), con la traducción como primer uso real de la IA. Desde aquí ya se puede vender.
-4. **F3** Reservas (RES-*), empezando por **RES-12** (concurrencia) y después el plano (RES-15/16/17).
-5. **F5** Pruebas de aislamiento entre tenants, copias, monitorización.
+**Cambiado el 26/11/2026:** después de F0 van la carta y las reservas; las webs de los locales se montan por fuera y quedan para el final.
+
+1. **F0 Fundaciones**, lo imprescindible para la carta y las reservas: primer hito en `00-necesidades.md` §3 (monorepo, Prisma + Neon, `getTenantDb` y RLS, middleware, Better Auth, outbox, alta de locales, panel), datos y horario del local (PLT-04), mesas y QR (PLT-05), equipo (PLT-03), la base del servicio de IA con el proveedor simulado (AI-01 a AI-05 y AI-08), y CI y Sentry.
+2. **F2** Carta QR (MENU-*), con la traducción como primer uso real de la IA. Al final, la página mínima del local (WEB-16) con el botón a la carta.
+3. **F3** Reservas (RES-*), empezando por **RES-12** (concurrencia) y después el plano (RES-15/16/17). Incluye el widget para las webs (RES-07).
+4. **Antes del piloto:** Stripe (PLT-06, PLT-07 y `05-pagos.md`), RGPD (PLT-10), superadmin completo (PLT-09) y panel instalable (PLT-12). Desde aquí ya se puede vender.
+5. **F1** Webs (WEB-* y FORM-*), empezando por "Mi web" en el panel con las visitas (WEB-15); después la plantilla, la API pública (WEB-13) y la ficha de la web en el superadmin.
+6. **F5** Pruebas de aislamiento entre tenants, copias, monitorización.
 
 Estimación inicial: unas 11 semanas de desarrollo con 2–3 h/día de revisión de Manuel.
 

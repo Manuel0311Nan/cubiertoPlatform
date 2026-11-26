@@ -76,6 +76,7 @@ model Tenant {
   floorZones     FloorZone[]
   outboxEvents   OutboxEvent[]
   auditLogs      AuditLog[]
+  closedDates    ClosedDate[]
   /// Sesiones con este local como activo (PLT-02)
   activeSessions Session[]
 }
@@ -254,9 +255,10 @@ model Venue {
   createdAt     DateTime @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime @updatedAt @db.Timestamptz(3)
 
-  tenant     Tenant      @relation(fields: [tenantId], references: [id])
-  tables     Table[]
-  floorZones FloorZone[]
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  tables      Table[]
+  floorZones  FloorZone[]
+  closedDates ClosedDate[]
 
   /// Permite claves foráneas (id, tenantId): una mesa no puede colgar del local de otro tenant
   @@unique([id, tenantId])
@@ -295,6 +297,25 @@ model Table {
 
   @@unique([venueId, label])
   @@index([tenantId])
+}
+
+/// Cierres puntuales del local (PLT-04): el local entero cierra ese día. Reservas (RES-01) los respeta;
+/// en F3 se añade `shiftId` para cerrar solo un turno (03-reservas §4).
+model ClosedDate {
+  id        String    @id @default(cuid())
+  tenantId  String
+  venueId   String
+  /// "2026-12-25", fecha en la zona horaria del local
+  date      String
+  reason    String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  /// Borrado lógico desde el panel (CLAUDE.md §11)
+  deletedAt DateTime? @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  venue  Venue  @relation(fields: [venueId, tenantId], references: [id, tenantId])
+
+  @@index([tenantId, venueId, date])
 }
 
 /// "Sala", "Terraza", "Planta alta"

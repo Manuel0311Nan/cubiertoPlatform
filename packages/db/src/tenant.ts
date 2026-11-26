@@ -17,6 +17,7 @@ export const TENANT_SCOPED_MODELS = [
   "Venue",
   "Table",
   "FloorZone",
+  "ClosedDate",
   "OutboxEvent",
   "AuditLog",
 ] as const satisfies readonly Prisma.ModelName[];

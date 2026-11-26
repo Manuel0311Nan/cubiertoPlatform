@@ -181,6 +181,16 @@ model Table {
   @@index([tenantId])
 }
 
+model ClosedDate {                         // cierres puntuales (PLT-04); en F3 se añade shiftId (03-reservas §4)
+  id        String @id @default(cuid())
+  tenantId  String
+  venueId   String
+  date      String                         // "2026-12-25" en hora local
+  reason    String?
+  deletedAt DateTime?                      // borrado lógico desde el panel
+  @@index([tenantId, venueId, date])
+}
+
 model FloorZone {                          // "Sala", "Terraza", "Planta alta"
   id        String @id @default(cuid())
   tenantId  String
@@ -250,6 +260,10 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 ### PLT-04 · Datos del local
 - El OWNER edita nombre comercial, dirección, teléfono, email, horario semanal (varias franjas por día) y cierres puntuales.
 - Estos datos alimentan la web, la carta y las reservas; no se duplican en cada módulo.
+- **Implementado el 26/11/2026** en Ajustes → El local (`/panel/ajustes/local`), solo para `OWNER`:
+  - Datos: nombre, dirección, localidad, código postal (5 cifras), teléfono y WhatsApp (a E.164, `+34` si no llevan prefijo, como RES-02) y email. Nombre obligatorio; el resto, opcional.
+  - Horario: de 0 a 4 franjas por día, sin solapes. Una franja que cierra de madrugada ("20:00"–"02:00") vale si es la última del día. Se guarda en `Venue.openingHours` como `{ "1": [{ "open": "13:00", "close": "16:00" }], … }`, con los días como `Shift.daysOfWeek` (1 = lunes). Un día sin franjas está cerrado.
+  - Cierres: un día o un periodo de hasta 62 días, con motivo opcional que solo ve el local; nunca en el pasado. Se guarda un `ClosedDate` por día (el local cierra entero); quitarlo es un borrado lógico. Se muestran agrupados ("del 12 al 26 de enero").
 
 ### PLT-05 · Mesas y QR
 - El OWNER crea, edita y desactiva mesas (etiqueta, zona, plazas mín./máx.).

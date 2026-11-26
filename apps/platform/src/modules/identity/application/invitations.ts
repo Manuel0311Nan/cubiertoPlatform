@@ -1,4 +1,4 @@
-import { getSystemDb, getTenantDb, type Prisma, type Role } from "@cubierto/db";
+import { getSystemDb, getTenantDb, Prisma, type Role } from "@cubierto/db";
 import {
   INVITATION_EVENT,
   type InvitationEventPayload,
@@ -107,6 +107,22 @@ export async function getInvitationView(token: string, now = new Date()): Promis
   };
 }
 
+/**
+ * Usuario por email, creándolo si no existe. `upsert` no es atómico en Prisma: si dos peticiones
+ * lo crean a la vez, la segunda choca con el email único (P2002) y basta con leer el que ya hay.
+ */
+async function findOrCreateUser(email: string) {
+  const db = getSystemDb();
+  try {
+    return await db.user.upsert({ where: { email }, create: { email, emailVerified: true }, update: {} });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return db.user.findUniqueOrThrow({ where: { email } });
+    }
+    throw error;
+  }
+}
+
 export type AcceptInvitationResult =
   | { ok: true; email: string }
   | { ok: false; code: "NOT_FOUND" | "EXPIRED" | "ALREADY_ACCEPTED" };
@@ -124,11 +140,7 @@ export async function acceptInvitation(token: string, now = new Date()): Promise
   if (state === "EXPIRED") return { ok: false, code: "EXPIRED" };
 
   // User es tabla de plataforma. Haber recibido el enlace en ese buzón comprueba el email.
-  const user = await getSystemDb().user.upsert({
-    where: { email: invitation.email },
-    create: { email: invitation.email, emailVerified: true },
-    update: {},
-  });
+  const user = await findOrCreateUser(invitation.email);
 
   const accepted = await getTenantDb(invitation.tenantId).$tenantTransaction(async (tx) => {
     // Solo una petición la acepta aunque lleguen dos a la vez.

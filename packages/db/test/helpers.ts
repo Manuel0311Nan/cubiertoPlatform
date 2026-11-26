@@ -35,6 +35,7 @@ export async function deleteTestTenants(tenantIds: string[]): Promise<void> {
   const where = { tenantId: { in: tenantIds } };
   await db.table.deleteMany({ where });
   await db.floorZone.deleteMany({ where });
+  await db.closedDate.deleteMany({ where });
   await db.outboxEvent.deleteMany({ where });
   await db.auditLog.deleteMany({ where });
   await db.membership.deleteMany({ where });
