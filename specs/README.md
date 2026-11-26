@@ -9,6 +9,7 @@ Fuente de verdad de **qué** se construye, **para quién** y **cómo debe compor
 3. `02-arquitectura.md`: tres tipos de proyecto (web comercial, plataforma y una web por local), cómo se conectan, de dónde salen los datos, mapa de dominios, acceso al panel, monorepo.
 4. `modulos/`: una spec por módulo, con historias e IDs.
 5. `diseno/`: vistas de todas las pantallas, colores, principios y logo.
+6. `progreso.md`: qué está construido ya, fase a fase, y las decisiones tomadas por el camino.
 
 ## Contenido
 
@@ -24,6 +25,7 @@ Fuente de verdad de **qué** se construye, **para quién** y **cómo debe compor
 | `modulos/04-ia.md` | Servicio de IA interno (`AI-01`…`AI-09`) | v0.1 |
 | `modulos/05-pagos.md` | Pagos y suscripciones con Stripe: catálogo, primer pago, IVA, pack, impagos, facturas (`BILL-01`…`BILL-13`) | v0.2 |
 | `modulos/06-formulario-contacto.md` | Formulario de contacto de las webs de los locales (`FORM-01`…`FORM-08`) | v0.2 |
+| `progreso.md` | Qué está construido, por fases, y decisiones tomadas al construir | 26/11/2026 |
 | `diseno/README.md` | Colores, principios, índice de vistas y diferencias con las specs | v0.1 |
 | `diseno/vistas-movil.html`, `diseno/vistas-ordenador.html` | Maquetas de las 39 pantallas | 14/11/2026 |
 | `diseno/marca/` | Logo en SVG y reglas de uso | 15/11/2026 |
@@ -33,12 +35,16 @@ Fuente de verdad de **qué** se construye, **para quién** y **cómo debe compor
 
 ## Orden de construcción
 
-1. **F0** · `PLT-01` a `PLT-12` + base de IA `AI-01` a `AI-05` y `AI-08` + pagos en modo prueba `BILL-01` a `BILL-03`, `BILL-08` y `BILL-09`. Primer hito en `00-necesidades.md` §3.
-   El resto de `BILL-*` antes de cobrar al primer local; `BILL-13` antes del 1/7/2027.
-2. **F1** · `WEB-*` y `FORM-*` (la plantilla y la primera web, más la API pública y la ficha en la plataforma)
-3. **F2** · `MENU-*` → a partir de aquí ya se puede vender
-4. **F3** · `RES-*` → `RES-12` (concurrencia) antes que cualquier otra historia de reservas
-5. **F5** · Pruebas de aislamiento entre tenants, copias, monitorización
+Cambiado el 26/11/2026 (`01-contexto.md` §7): las webs de los locales se montan por fuera y quedan para el final.
+
+1. **F0** · lo imprescindible: primer hito (`00-necesidades.md` §3), `PLT-04`, `PLT-05`, `PLT-03`, base de IA `AI-01` a `AI-05` y `AI-08`, CI y Sentry.
+2. **F2** · `MENU-*`, y al final `WEB-16` (página mínima del local)
+3. **F3** · `RES-*` → `RES-12` (concurrencia) antes que cualquier otra historia de reservas
+4. **Antes del piloto** · pagos (`PLT-06`, `PLT-07`, `BILL-*`; `BILL-13` antes del 1/7/2027), `PLT-09`, `PLT-10`, `PLT-12` → a partir de aquí ya se puede vender
+5. **F1** · `WEB-*` y `FORM-*`, empezando por "Mi web" con las visitas (`WEB-15`)
+6. **F5** · Pruebas de aislamiento entre tenants, copias, monitorización
+
+Lo que ya está hecho: `progreso.md`.
 
 ## Estructura de cada spec de módulo
 

@@ -141,6 +141,7 @@ Una tarea está terminada cuando:
 - [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` en verde
 - [ ] Incluye un test de aislamiento si añade una consulta nueva a datos de cliente (el tenant B no ve datos del tenant A)
 - [ ] La spec está actualizada si cambió el comportamiento
+- [ ] `specs/progreso.md` recoge lo construido y las decisiones tomadas en la tarea
 - [ ] El PR describe cómo probarlo a mano en la preview
 
 ## 10. Git y commits
