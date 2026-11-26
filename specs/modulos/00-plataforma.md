@@ -269,6 +269,11 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 - El OWNER crea, edita y desactiva mesas (etiqueta, zona, plazas mín./máx.).
 - Cada mesa tiene un `qrToken` aleatorio; regenerarlo invalida el QR anterior (con confirmación).
 - La posición de las mesas en el plano y las zonas se editan desde el editor de RES-16 (`03-reservas.md`).
+- **Implementado el 26/11/2026** en Ajustes → Mesas (`/panel/ajustes/mesas`), solo para `OWNER`:
+  - Etiqueta (hasta 20 caracteres, única en el local), zona opcional en texto libre y plazas de 1 a 50 (máximas ≥ mínimas). Lista en orden natural ("2" antes que "10"), las desactivadas al final.
+  - Las mesas no se borran: se desactivan y se pueden volver a activar. Editar o desactivar no cambia el QR.
+  - `qrToken`: 128 bits aleatorios en 22 caracteres (base64url). "Regenerar QR" pide confirmación en una pantalla aparte y explica que el QR impreso seguirá abriendo la carta, pero sin mesa (MENU-01). La lista enseña los 6 primeros caracteres del token para ver que ha cambiado.
+  - Las imágenes del QR y el PDF para imprimir son de MENU-08 (F2).
 
 ### PLT-06 · Contratar y cambiar módulos
 Detalle en `05-pagos.md` (BILL-03 a BILL-07).

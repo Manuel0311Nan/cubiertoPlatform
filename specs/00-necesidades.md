@@ -127,6 +127,7 @@ Lista de partida; se completa en cada PR que añada una.
 | 25/11/2026 | Local activo del panel guardado en la sesión (`Session.activeTenantId`) y comprobado en cada petición; menú según módulos y papel, Ajustes solo para `OWNER` | `modulos/00-plataforma.md` PLT-02 |
 | 26/11/2026 | Orden de construcción: después de F0, la carta (F2) y las reservas (F3); las webs (F1) al final, antes de F5 | `01-contexto.md` §7, `00-necesidades.md` §9 |
 | 26/11/2026 | Datos, horario y cierres del local (PLT-04) en Ajustes → El local, solo para `OWNER`. Los cierres son días enteros del local (`ClosedDate`); en F3 se añade el cierre de un solo turno | `modulos/00-plataforma.md` PLT-04 |
+| 26/11/2026 | Mesas (PLT-05) en Ajustes → Mesas, solo para `OWNER`; no se borran, se desactivan; regenerar el QR pide confirmación | `modulos/00-plataforma.md` PLT-05 |
 
 ## 8. Decisiones pendientes
 
