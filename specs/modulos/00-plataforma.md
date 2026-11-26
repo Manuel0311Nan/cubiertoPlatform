@@ -128,6 +128,7 @@ model Membership {
   userId   String
   tenantId String
   role     Role                            // OWNER | STAFF
+  deletedAt DateTime?                      // acceso quitado (PLT-03)
   @@id([userId, tenantId])
   @@index([tenantId])
 }
@@ -140,6 +141,7 @@ model Invitation {
   tokenHash String @unique
   expiresAt DateTime                       // 7 días
   acceptedAt DateTime?
+  revokedAt DateTime?                      // cancelada por el OWNER (PLT-03)
 }
 
 model Venue {
@@ -179,6 +181,16 @@ model Table {
   rotation  Int @default(0)                // grados, múltiplos de 15
   @@unique([venueId, label])
   @@index([tenantId])
+}
+
+model ClosedDate {                         // cierres puntuales (PLT-04); en F3 se añade shiftId (03-reservas §4)
+  id        String @id @default(cuid())
+  tenantId  String
+  venueId   String
+  date      String                         // "2026-12-25" en hora local
+  reason    String?
+  deletedAt DateTime?                      // borrado lógico desde el panel
+  @@index([tenantId, venueId, date])
 }
 
 model FloorZone {                          // "Sala", "Terraza", "Planta alta"
@@ -246,15 +258,30 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 ### PLT-03 · Invitar y gestionar personal (OWNER)
 - El OWNER invita por email con rol `OWNER` o `STAFF`, cambia roles y revoca accesos.
 - No se puede quitar el último OWNER de un tenant.
+- **Implementado el 27/11/2026** en Ajustes → Equipo (`/panel/ajustes/equipo`, vista D19 con dos papeles), solo para `OWNER`:
+  - Lista del equipo con papel, qué puede hacer y último acceso; invitaciones pendientes (o caducadas) con "Reenviar" y "Cancelar invitación".
+  - Invitar por email con papel `OWNER` o `STAFF`. No se invita a quien ya está en el equipo ni dos veces al mismo email (se reenvía la pendiente).
+  - Cambiar el papel y quitar el acceso, con confirmación. Nadie cambia su propio papel ni se quita a sí mismo desde aquí, para no dejarse fuera por error. El último `OWNER` está protegido también si dos responsables se quitan el papel a la vez (bloqueo de fila en la transacción).
+  - Quitar el acceso no borra la membresía (`Membership.deletedAt`): deja de entrar en su siguiente petición y una invitación nueva la recupera. Cancelar una invitación la marca (`Invitation.revokedAt`) y su enlace deja de valer.
+  - Cada cambio queda en `AuditLog` (`member.invited`, `member.role_changed`, `member.removed`, `invitation.revoked`).
 
 ### PLT-04 · Datos del local
 - El OWNER edita nombre comercial, dirección, teléfono, email, horario semanal (varias franjas por día) y cierres puntuales.
 - Estos datos alimentan la web, la carta y las reservas; no se duplican en cada módulo.
+- **Implementado el 26/11/2026** en Ajustes → El local (`/panel/ajustes/local`), solo para `OWNER`:
+  - Datos: nombre, dirección, localidad, código postal (5 cifras), teléfono y WhatsApp (a E.164, `+34` si no llevan prefijo, como RES-02) y email. Nombre obligatorio; el resto, opcional.
+  - Horario: de 0 a 4 franjas por día, sin solapes. Una franja que cierra de madrugada ("20:00"–"02:00") vale si es la última del día. Se guarda en `Venue.openingHours` como `{ "1": [{ "open": "13:00", "close": "16:00" }], … }`, con los días como `Shift.daysOfWeek` (1 = lunes). Un día sin franjas está cerrado.
+  - Cierres: un día o un periodo de hasta 62 días, con motivo opcional que solo ve el local; nunca en el pasado. Se guarda un `ClosedDate` por día (el local cierra entero); quitarlo es un borrado lógico. Se muestran agrupados ("del 12 al 26 de enero").
 
 ### PLT-05 · Mesas y QR
 - El OWNER crea, edita y desactiva mesas (etiqueta, zona, plazas mín./máx.).
 - Cada mesa tiene un `qrToken` aleatorio; regenerarlo invalida el QR anterior (con confirmación).
 - La posición de las mesas en el plano y las zonas se editan desde el editor de RES-16 (`03-reservas.md`).
+- **Implementado el 26/11/2026** en Ajustes → Mesas (`/panel/ajustes/mesas`), solo para `OWNER`:
+  - Etiqueta (hasta 20 caracteres, única en el local), zona opcional en texto libre y plazas de 1 a 50 (máximas ≥ mínimas). Lista en orden natural ("2" antes que "10"), las desactivadas al final.
+  - Las mesas no se borran: se desactivan y se pueden volver a activar. Editar o desactivar no cambia el QR.
+  - `qrToken`: 128 bits aleatorios en 22 caracteres (base64url). "Regenerar QR" pide confirmación en una pantalla aparte y explica que el QR impreso seguirá abriendo la carta, pero sin mesa (MENU-01). La lista enseña los 6 primeros caracteres del token para ver que ha cambiado.
+  - Las imágenes del QR y el PDF para imprimir son de MENU-08 (F2).
 
 ### PLT-06 · Contratar y cambiar módulos
 Detalle en `05-pagos.md` (BILL-03 a BILL-07).

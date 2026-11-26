@@ -169,6 +169,9 @@ body {
       border-radius: 4px;
       background: #fff;
     }
+    .check > input[type="radio"] + span::before {
+      border-radius: 50%;
+    }
     .check > input:checked + span::before {
       border-color: var(--bottle);
       background: var(--bottle);
@@ -269,9 +272,26 @@ body {
     background: var(--saffron);
   }
 
+  /* Apartados de Ajustes (D17–D19): pestañas que son enlaces a páginas, con la actual marcada. */
+  .settings-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.875rem;
+    border-block-end: 3px solid transparent;
+    color: var(--mute);
+    font-weight: 650;
+  }
+  .settings-tab[aria-current="page"] {
+    border-block-end-color: var(--saffron);
+    color: var(--ink);
+    font-weight: 750;
+  }
+
   @media (forced-colors: active) {
     .side-link[aria-current="page"],
-    .tab-link[aria-current="page"] {
+    .tab-link[aria-current="page"],
+    .settings-tab[aria-current="page"] {
       outline: 2px solid CanvasText;
       outline-offset: -2px;
     }

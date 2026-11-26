@@ -63,7 +63,7 @@ model Shift {
   @@index([tenantId, venueId])
 }
 
-model ClosedDate {
+model ClosedDate {                           // ya existe desde PLT-04 (cierres del local entero); F3 añade shiftId
   id        String @id @default(cuid())
   tenantId  String
   venueId   String

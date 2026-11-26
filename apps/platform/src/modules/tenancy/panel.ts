@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { cache } from "react";
 import { requireTenant, type TenantSession } from "@/modules/identity/session";
 import { getTenantPanelData, type TenantPanelData } from "./application/panel-data";
@@ -27,5 +28,12 @@ export class ModuleNotActiveError extends Error {
 export async function requireModule(module: ModuleKeyValue): Promise<PanelContext> {
   const panel = await requirePanel();
   if (!panel.modules.includes(module)) throw new ModuleNotActiveError(`Módulo ${module} no activo`);
+  return panel;
+}
+
+/** Para pantallas y acciones solo del responsable (Ajustes: datos del local, equipo, plan). */
+export async function requireOwner(): Promise<PanelContext> {
+  const panel = await requirePanel();
+  if (panel.membership.role !== "OWNER") notFound();
   return panel;
 }

@@ -28,9 +28,9 @@ export async function listTenants(now = new Date()): Promise<TenantListItem[]> {
       name: true,
       createdAt: true,
       modules: { where: { status: { in: ["ACTIVE", "PAST_DUE"] } }, select: { module: true } },
-      _count: { select: { memberships: { where: { role: "OWNER" } } } },
+      _count: { select: { memberships: { where: { role: "OWNER", deletedAt: null } } } },
       invitations: {
-        where: { role: "OWNER", acceptedAt: null },
+        where: { role: "OWNER", acceptedAt: null, revokedAt: null },
         orderBy: { createdAt: "desc" },
         take: 1,
         select: { id: true, email: true, expiresAt: true, acceptedAt: true },

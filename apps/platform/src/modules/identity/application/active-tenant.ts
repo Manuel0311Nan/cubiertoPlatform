@@ -16,10 +16,10 @@ export interface UserMembership {
   role: Role;
 }
 
-/** Locales en los que el usuario tiene membresía, sin los borrados, por nombre. */
+/** Locales en los que el usuario tiene membresía activa (sin accesos quitados ni locales borrados), por nombre. */
 export async function listUserMemberships(userId: string): Promise<UserMembership[]> {
   const memberships = await getSystemDb().membership.findMany({
-    where: { userId, tenant: { deletedAt: null } },
+    where: { userId, deletedAt: null, tenant: { deletedAt: null } },
     select: { tenantId: true, role: true, tenant: { select: { name: true } } },
     orderBy: { tenant: { name: "asc" } },
   });
