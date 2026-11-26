@@ -1,6 +1,6 @@
 # Progreso de la plataforma
 
-**Última actualización:** 27/11/2026 (equipo)
+**Última actualización:** 28/11/2026 (base del servicio de IA)
 
 Qué está construido, fase a fase, qué hace cada pieza y qué decisiones se han tomado por el camino. Se actualiza en cada PR que añada o cambie funcionalidad (CLAUDE.md §9).
 
@@ -10,7 +10,7 @@ Qué está construido, fase a fase, qué hace cada pieza y qué decisiones se ha
 
 | Fase | Contenido | Estado |
 |---|---|---|
-| **F0** Fundaciones | Monorepo, base de datos, entrada, alta de locales, panel, datos del local, mesas y equipo; después IA y CI | 🟡 En curso |
+| **F0** Fundaciones | Monorepo, base de datos, entrada, alta de locales, panel, datos del local, mesas, equipo y base de IA; falta CI y Sentry | 🟡 En curso |
 | **F2** Carta QR | `MENU-*` y, al final, la página mínima del local (WEB-16) | ⏳ Pendiente |
 | **F3** Reservas | `RES-*`, empezando por RES-12 | ⏳ Pendiente |
 | **Antes del piloto** | Stripe, RGPD, superadmin completo, panel instalable | ⏳ Pendiente |
@@ -93,9 +93,23 @@ Orden de construcción cambiado el 26/11/2026: después de F0 van la carta y las
 - Migración `20261127000000_team` (`Membership.deletedAt`, `Invitation.revokedAt`).
 - **Por qué se mantiene (27/11, decisión de Manuel):** no era algo con lo que contara al principio, pero ya está hecho y probado. Sirve para que el personal entre con su propio email sin usar el correo ni la sesión del dueño (que da acceso a ajustes y plan), para quitar el acceso a quien deja el local y para saber quién hizo cada cosa. No es imprescindible: un bar pequeño donde el dueño lo lleva todo puede no usarlo nunca. Si sobra, se puede ocultar la pestaña "Equipo" hasta que un cliente lo pida.
 
+#### 11. Base del servicio de IA · AI-01 a AI-05 y AI-08 (28/11/2026, PR pendiente)
+Pieza interna, sin pantallas para el local todavía. La usará primero la traducción de la carta (MENU-07, F2).
+- **`packages/ai`**: el único sitio con SDKs de proveedores (Vercel AI SDK 7 y `@ai-sdk/anthropic`). `runTask()` pide la salida estructurada y la valida con Zod; si no vale, la repite una vez (`AI_INVALID_OUTPUT`). Ante 429 o 5xx reintenta una vez y, si hay respaldo configurado, prueba el respaldo una vez. Tiempo máximo de 30 s por llamada.
+- **Modelo por nivel desde el entorno** (`AI_MODEL_FAST`, `_STANDARD`, `_ADVANCED`): Haiku 5.5, Sonnet 5.5 y Opus 5.5 por defecto. Sin `ANTHROPIC_API_KEY`, todo devuelve `AI_DISABLED` sin romper nada.
+- **Proveedor simulado (`mock`)** en tests, CI y previews de Vercel, siempre; en local también con `AI_PROVIDER=mock`. Pasa por el mismo camino que el real, con coste 0.
+- **Precios** (`packages/ai/src/pricing.ts`) en dólares por millón de tokens, pasados a euros con un cambio fijo de 0,90 (algo alto a propósito). Revisar si cambian las tarifas.
+- **Tareas registradas** en `modules/ai/tasks/`: `menu.translate` v1 (traduce textos de la carta a en/fr/de/it/pt, conserva los nombres marcados y comprueba que devuelve las mismas claves) con 6 casos en `evals.json`, y `system.ping` para "Probar conexión".
+- **`runAiTask`**: antes de llamar comprueba IA activada para el local, tarea no desactivada, presupuesto del mes (2 € por defecto, mes en hora de Madrid), tope global y 20 llamadas por minuto. Cada llamada, también las fallidas, queda en `AiUsage` con tokens, modelo, coste y latencia, sin el texto (AI-07).
+- **Tope global** `AI_GLOBAL_BUDGET_EUR`: aviso por email al superadmin al 80 % y al 100 % (una vez al mes cada uno, por la outbox); al 100 % se cortan las tareas no esenciales.
+- **Trabajos en segundo plano** (`enqueueAiJob`, `processAiJob`, `processDueAiJobs`): la misma clave no duplica el trabajo; 3 intentos con espera de 1 y 5 minutos ante fallos pasajeros; un trabajo que se quedó a medias se recupera al caducar su reserva. Barrido en `/api/cron/ai-jobs` (con `CRON_SECRET`, sin programar todavía).
+- **Superadmin → IA** (`/admin/ia`): modelo y respaldo de cada nivel, "Probar conexión" por nivel y gasto del mes frente al tope.
+- **`pnpm ai:eval <tarea>`** ejecuta los evals contra el modelo real, a mano y nunca en CI. Una regla de ESLint impide importar SDKs de IA fuera de `packages/ai`.
+- Migración `20261128000000_ai` (`AiSettings`, `AiUsage`, `AiJob`, con RLS).
+- **Falta para usarla con clientes:** cómo ve el local su consumo (AI-03, pregunta abierta), el panel completo del superadmin (AI-09) y revisar las condiciones de datos de Anthropic antes de activarla en producción (AI-07).
+
 ### Pendiente en F0
-- **Base del servicio de IA** con proveedor simulado (AI-01 a AI-05, AI-08). Puede ir al final de F2, antes de la traducción. ← siguiente
-- **CI** en GitHub Actions (lint, tipos, tests y migraciones automáticas) y **Sentry**.
+- **CI** en GitHub Actions (lint, tipos, tests y migraciones automáticas) y **Sentry**. ← siguiente
 
 ---
 
@@ -135,6 +149,8 @@ Las que han cambiado cómo funciona algo. La lista completa con fechas está en 
 | 26/11 | Mesas en Ajustes → Mesas; no se borran, se desactivan | Un QR impreso no debe dar error nunca; la carta y las reservas comparten las mesas |
 | 27/11 | Equipo: nadie se cambia ni se quita a sí mismo; quitar el acceso es un borrado lógico | Evitar dejarse fuera por error; CLAUDE.md §11 |
 | 27/11 | Se mantiene Equipo (PLT-03) aunque no estaba previsto por Manuel | Ya probado; cuentas propias para el personal sin compartir el correo del dueño. Opcional para el local |
+| 28/11 | IA: 2 € al mes por local, solo Anthropic (sin respaldo configurado) y precios pasados a euros a 0,90 | Lo que proponía la spec; se revisa con el uso real (04-ia.md §8) |
+| 28/11 | El mes del presupuesto de IA se cuenta en hora de Madrid | "Se renueva el día 1" para el local, no a la 1:00 de la madrugada |
 
 ## Decisiones pendientes que afectan a lo construido
 - Módulos activos sin pago en el alta (PLT-01).
@@ -142,9 +158,10 @@ Las que han cambiado cómo funciona algo. La lista completa con fechas está en 
 - Resend en las previews: clave aparte o sin envío.
 - Recordatorios de reservas: el día anterior a la hora del turno, o el mismo día (RES-05).
 - Dirección pública de la carta, antes de F2.
+- IA: si va incluida en los módulos o se vende aparte, y si el local ve su consumo (04-ia.md §8).
 
 ## Infraestructura y operación
-- **Vercel** (Hobby): proyecto de la plataforma con `app.cubierto.site`. Variables necesarias: base de datos, Better Auth, `PLATFORM_DOMAIN`, `RESEND_API_KEY`, `EMAIL_FROM`, `CRON_SECRET`.
+- **Vercel** (Hobby): proyecto de la plataforma con `app.cubierto.site`. Variables necesarias: base de datos, Better Auth, `PLATFORM_DOMAIN`, `RESEND_API_KEY`, `EMAIL_FROM`, `CRON_SECRET`. Para la IA (opcional hasta F2): `ANTHROPIC_API_KEY` y `AI_GLOBAL_BUDGET_EUR`, solo en producción; las previews usan siempre el proveedor simulado.
 - **Neon:** rama `main` (producción) y `test` (tests). **Pendiente:** crear la rama `dev` para trabajar en local sin tocar producción.
 - **Migraciones:** en producción se aplican a mano con `pnpm db:migrate:deploy` contra la conexión directa de `main` hasta que haya CI.
 - **Resend:** dominio `cubierto.site` verificado; la plataforma necesita su propia clave en Vercel.

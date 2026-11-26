@@ -24,6 +24,10 @@ export default defineConfig({
       BETTER_AUTH_SECRET: "test-secret-only-for-vitest-0123456789abcdef",
       BETTER_AUTH_URL: "http://app.localhost:3000",
       RESEND_API_KEY: "",
+      // AI-08: nunca un proveedor de IA real en tests.
+      AI_PROVIDER: "mock",
+      ANTHROPIC_API_KEY: "",
+      AI_GLOBAL_BUDGET_EUR: "",
     },
   },
 });

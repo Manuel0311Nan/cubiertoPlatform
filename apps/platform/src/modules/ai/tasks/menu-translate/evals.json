@@ -1,0 +1,88 @@
+{
+  "task": "menu.translate",
+  "version": 1,
+  "about": "AI-08: casos para `pnpm ai:eval menu.translate` contra el modelo real. Cada check mira una ruta de la salida: equals (igual), includesAny (contiene alguna, sin mayúsculas) o excludesAll (no contiene ninguna).",
+  "cases": [
+    {
+      "name": "plato sencillo al inglés",
+      "input": {
+        "targetLocale": "en",
+        "entries": [{ "key": "MenuItem:1", "name": "Croquetas caseras de jamón", "description": "Seis unidades, hechas a mano cada mañana." }]
+      },
+      "checks": [
+        { "path": "entries.0.key", "equals": "MenuItem:1" },
+        { "path": "entries.0.name", "includesAny": ["croquette"] },
+        { "path": "entries.0.name", "includesAny": ["ham"] },
+        { "path": "entries.0.description", "includesAny": ["six", "6"] }
+      ]
+    },
+    {
+      "name": "nombre propio que se conserva",
+      "input": {
+        "targetLocale": "fr",
+        "entries": [{ "key": "MenuItem:2", "name": "Tortilla de Betanzos", "description": "Jugosa, con huevo de corral.", "keepName": true }]
+      },
+      "checks": [
+        { "path": "entries.0.name", "equals": "Tortilla de Betanzos" },
+        { "path": "entries.0.description", "includesAny": ["œuf", "oeuf", "œufs", "oeufs"] }
+      ]
+    },
+    {
+      "name": "sección y nota de precio al alemán",
+      "input": {
+        "targetLocale": "de",
+        "entries": [
+          { "key": "MenuSection:1", "name": "Para compartir" },
+          { "key": "MenuItem:3", "name": "Pulpo a la gallega", "priceNote": "Precio por ración" }
+        ]
+      },
+      "checks": [
+        { "path": "entries.0.key", "equals": "MenuSection:1" },
+        { "path": "entries.0.name", "includesAny": ["teilen"] },
+        { "path": "entries.1.name", "includesAny": ["pulpo", "oktopus", "krake"] },
+        { "path": "entries.1.priceNote", "includesAny": ["portion"] }
+      ]
+    },
+    {
+      "name": "no inventa descripción ni alérgenos",
+      "input": {
+        "targetLocale": "it",
+        "entries": [{ "key": "MenuItem:4", "name": "Patatas bravas" }]
+      },
+      "checks": [
+        { "path": "entries.0.description", "equals": null },
+        { "path": "entries.0.name", "excludesAll": ["glutine", "allergen", "lattosio"] }
+      ]
+    },
+    {
+      "name": "postre al portugués",
+      "input": {
+        "targetLocale": "pt",
+        "venueName": "Casa Brezo",
+        "entries": [{ "key": "MenuItem:5", "name": "Tarta de queso al horno", "description": "Con mermelada de frutos rojos." }]
+      },
+      "checks": [
+        { "path": "entries.0.name", "includesAny": ["queijo"] },
+        { "path": "entries.0.description", "includesAny": ["frutos vermelhos", "frutas vermelhas"] }
+      ]
+    },
+    {
+      "name": "varios textos mantienen sus claves",
+      "input": {
+        "targetLocale": "en",
+        "entries": [
+          { "key": "Menu:1", "name": "Carta de mediodía" },
+          { "key": "MenuItem:6", "name": "Salmorejo cordobés", "description": "Con huevo duro y taquitos de jamón." },
+          { "key": "MenuItem:7", "name": "Vino de la casa", "priceNote": "Copa o botella" }
+        ]
+      },
+      "checks": [
+        { "path": "entries.0.key", "equals": "Menu:1" },
+        { "path": "entries.1.key", "equals": "MenuItem:6" },
+        { "path": "entries.2.key", "equals": "MenuItem:7" },
+        { "path": "entries.0.name", "includesAny": ["lunch", "midday"] },
+        { "path": "entries.2.priceNote", "includesAny": ["glass"] }
+      ]
+    }
+  ]
+}
