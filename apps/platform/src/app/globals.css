@@ -169,6 +169,9 @@ body {
       border-radius: 4px;
       background: #fff;
     }
+    .check > input[type="radio"] + span::before {
+      border-radius: 50%;
+    }
     .check > input:checked + span::before {
       border-color: var(--bottle);
       background: var(--bottle);

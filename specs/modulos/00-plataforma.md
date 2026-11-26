@@ -128,6 +128,7 @@ model Membership {
   userId   String
   tenantId String
   role     Role                            // OWNER | STAFF
+  deletedAt DateTime?                      // acceso quitado (PLT-03)
   @@id([userId, tenantId])
   @@index([tenantId])
 }
@@ -140,6 +141,7 @@ model Invitation {
   tokenHash String @unique
   expiresAt DateTime                       // 7 días
   acceptedAt DateTime?
+  revokedAt DateTime?                      // cancelada por el OWNER (PLT-03)
 }
 
 model Venue {
@@ -256,6 +258,12 @@ Como superadmin quiero dar de alta un restaurante para empezar a configurarlo.
 ### PLT-03 · Invitar y gestionar personal (OWNER)
 - El OWNER invita por email con rol `OWNER` o `STAFF`, cambia roles y revoca accesos.
 - No se puede quitar el último OWNER de un tenant.
+- **Implementado el 27/11/2026** en Ajustes → Equipo (`/panel/ajustes/equipo`, vista D19 con dos papeles), solo para `OWNER`:
+  - Lista del equipo con papel, qué puede hacer y último acceso; invitaciones pendientes (o caducadas) con "Reenviar" y "Cancelar invitación".
+  - Invitar por email con papel `OWNER` o `STAFF`. No se invita a quien ya está en el equipo ni dos veces al mismo email (se reenvía la pendiente).
+  - Cambiar el papel y quitar el acceso, con confirmación. Nadie cambia su propio papel ni se quita a sí mismo desde aquí, para no dejarse fuera por error. El último `OWNER` está protegido también si dos responsables se quitan el papel a la vez (bloqueo de fila en la transacción).
+  - Quitar el acceso no borra la membresía (`Membership.deletedAt`): deja de entrar en su siguiente petición y una invitación nueva la recupera. Cancelar una invitación la marca (`Invitation.revokedAt`) y su enlace deja de valer.
+  - Cada cambio queda en `AuditLog` (`member.invited`, `member.role_changed`, `member.removed`, `invitation.revoked`).
 
 ### PLT-04 · Datos del local
 - El OWNER edita nombre comercial, dirección, teléfono, email, horario semanal (varias franjas por día) y cierres puntuales.

@@ -26,8 +26,14 @@ import { appUrl } from "../infra/auth";
  * (aceptar) va por getTenantDb.
  */
 
-/** Transacción de systemDb (alta de un local por el superadmin, reenvíos). */
-type SystemTransaction = Prisma.TransactionClient;
+/**
+ * Transacción en la que se guarda la invitación: de systemDb (alta de un local por el superadmin,
+ * reenvíos) o del tenant (el OWNER invita a su equipo, PLT-03). Solo hacen falta estas dos tablas.
+ */
+export interface InvitationTransaction {
+  invitation: { create(args: { data: Prisma.InvitationUncheckedCreateInput }): PromiseLike<{ id: string }> };
+  outboxEvent: { create(args: { data: Prisma.OutboxEventUncheckedCreateInput }): PromiseLike<{ id: string }> };
+}
 
 interface NewInvitation {
   tenantId: string;
@@ -38,7 +44,7 @@ interface NewInvitation {
 }
 
 /** Guarda la invitación y su evento de email. Devuelve el id del evento para enviarlo tras el commit. */
-export async function createInvitation(tx: SystemTransaction, input: NewInvitation) {
+export async function createInvitation(tx: InvitationTransaction, input: NewInvitation) {
   const token = newInvitationToken();
   const expiresAt = invitationExpiresAt(input.now);
   const invitation = await tx.invitation.create({
@@ -55,7 +61,7 @@ export async function createInvitation(tx: SystemTransaction, input: NewInvitati
 }
 
 async function enqueueInvitationEmail(
-  tx: SystemTransaction,
+  tx: InvitationTransaction,
   input: NewInvitation & { invitationId: string; token: string; expiresAt: Date },
 ): Promise<string> {
   const payload: InvitationEventPayload = {
@@ -83,11 +89,12 @@ async function findByToken(token: string) {
       role: true,
       expiresAt: true,
       acceptedAt: true,
+      revokedAt: true,
       tenant: { select: { name: true, deletedAt: true } },
     },
   });
-  // Un local borrado no recibe a nadie: se trata como un enlace que no existe.
-  if (!invitation || invitation.tenant.deletedAt) return null;
+  // Una invitación cancelada (PLT-03) o de un local borrado se trata como un enlace que no existe.
+  if (!invitation || invitation.revokedAt || invitation.tenant.deletedAt) return null;
   return invitation;
 }
 
@@ -149,12 +156,20 @@ export async function acceptInvitation(token: string, now = new Date()): Promise
       data: { acceptedAt: now },
     });
     if (claimed.count !== 1) return false;
-    // Si ya era del equipo, conserva su papel: una invitación no le quita permisos.
-    await tx.membership.upsert({
+    // Si ya era del equipo, conserva su papel: una invitación no le quita permisos. Si le habían
+    // quitado el acceso (PLT-03), lo recupera con el papel de la invitación.
+    const existing = await tx.membership.findUnique({
       where: { userId_tenantId: { userId: user.id, tenantId: invitation.tenantId } },
-      create: { userId: user.id, tenantId: invitation.tenantId, role: invitation.role },
-      update: {},
+      select: { deletedAt: true },
     });
+    if (!existing) {
+      await tx.membership.create({ data: { userId: user.id, tenantId: invitation.tenantId, role: invitation.role } });
+    } else if (existing.deletedAt) {
+      await tx.membership.update({
+        where: { userId_tenantId: { userId: user.id, tenantId: invitation.tenantId } },
+        data: { deletedAt: null, role: invitation.role },
+      });
+    }
     return true;
   });
   if (!accepted) return { ok: false, code: "ALREADY_ACCEPTED" };
@@ -175,7 +190,7 @@ async function reissue(invitationId: string, now: Date): Promise<ReissueInvitati
     const token = newInvitationToken();
     const expiresAt = invitationExpiresAt(now);
     const updated = await tx.invitation.updateMany({
-      where: { id: invitationId, acceptedAt: null },
+      where: { id: invitationId, acceptedAt: null, revokedAt: null },
       data: { tokenHash: hashInvitationToken(token), expiresAt },
     });
     if (updated.count !== 1) return { ok: false, code: "ALREADY_ACCEPTED" } as const;

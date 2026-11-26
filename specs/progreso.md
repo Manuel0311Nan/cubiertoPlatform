@@ -1,6 +1,6 @@
 # Progreso de la plataforma
 
-**Última actualización:** 26/11/2026 (mesas y QR)
+**Última actualización:** 27/11/2026 (equipo)
 
 Qué está construido, fase a fase, qué hace cada pieza y qué decisiones se han tomado por el camino. Se actualiza en cada PR que añada o cambie funcionalidad (CLAUDE.md §9).
 
@@ -10,7 +10,7 @@ Qué está construido, fase a fase, qué hace cada pieza y qué decisiones se ha
 
 | Fase | Contenido | Estado |
 |---|---|---|
-| **F0** Fundaciones | Monorepo, base de datos, entrada, alta de locales, panel, datos del local y mesas; después equipo, IA y CI | 🟡 En curso |
+| **F0** Fundaciones | Monorepo, base de datos, entrada, alta de locales, panel, datos del local, mesas y equipo; después IA y CI | 🟡 En curso |
 | **F2** Carta QR | `MENU-*` y, al final, la página mínima del local (WEB-16) | ⏳ Pendiente |
 | **F3** Reservas | `RES-*`, empezando por RES-12 | ⏳ Pendiente |
 | **Antes del piloto** | Stripe, RGPD, superadmin completo, panel instalable | ⏳ Pendiente |
@@ -83,9 +83,18 @@ Orden de construcción cambiado el 26/11/2026: después de F0 van la carta y las
 - Cada mesa tiene un token de QR aleatorio (128 bits). "Regenerar QR" pide confirmación y avisa de que el QR impreso dejará de llevar a esa mesa (seguirá abriendo la carta). La lista enseña los primeros caracteres del token para ver que ha cambiado.
 - Las imágenes de los QR y el PDF para imprimir llegan con la carta (MENU-08).
 
+#### 10. Equipo · PLT-03 (27/11/2026, PR pendiente)
+- **Ajustes → Equipo** (`/panel/ajustes/equipo`, vista D19), solo para el responsable.
+- Lista del equipo con papel, qué puede hacer cada papel y último acceso; invitaciones pendientes con "Reenviar" y "Cancelar invitación".
+- Invitar por email como responsable o personal; avisa si ya está en el equipo o si ya tiene una invitación pendiente.
+- Cambiar papel ("Pasar a personal" / "Pasar a responsable") y quitar el acceso con confirmación. Nadie se cambia ni se quita a sí mismo, y siempre queda al menos un responsable, también si dos lo intentan a la vez.
+- Quitar el acceso no borra nada: la persona deja de entrar al momento y una invitación nueva la recupera. Cancelar una invitación invalida su enlace.
+- Todo queda en la auditoría.
+- Migración `20261127000000_team` (`Membership.deletedAt`, `Invitation.revokedAt`).
+- **Por qué se mantiene (27/11, decisión de Manuel):** no era algo con lo que contara al principio, pero ya está hecho y probado. Sirve para que el personal entre con su propio email sin usar el correo ni la sesión del dueño (que da acceso a ajustes y plan), para quitar el acceso a quien deja el local y para saber quién hizo cada cosa. No es imprescindible: un bar pequeño donde el dueño lo lleva todo puede no usarlo nunca. Si sobra, se puede ocultar la pestaña "Equipo" hasta que un cliente lo pida.
+
 ### Pendiente en F0
-- **Equipo:** invitar, cambiar papeles y quitar accesos (PLT-03). ← siguiente
-- **Base del servicio de IA** con proveedor simulado (AI-01 a AI-05, AI-08). Puede ir al final de F2, antes de la traducción.
+- **Base del servicio de IA** con proveedor simulado (AI-01 a AI-05, AI-08). Puede ir al final de F2, antes de la traducción. ← siguiente
 - **CI** en GitHub Actions (lint, tipos, tests y migraciones automáticas) y **Sentry**.
 
 ---
@@ -124,6 +133,8 @@ Las que han cambiado cómo funciona algo. La lista completa con fechas está en 
 | 26/11 | Orden: F0 → carta → reservas → antes del piloto → webs → F5 | Las webs se montan por fuera y corren menos prisa |
 | 26/11 | Los cierres son días enteros del local (`ClosedDate`) | No se duplican por módulo; F3 añade el cierre de un turno |
 | 26/11 | Mesas en Ajustes → Mesas; no se borran, se desactivan | Un QR impreso no debe dar error nunca; la carta y las reservas comparten las mesas |
+| 27/11 | Equipo: nadie se cambia ni se quita a sí mismo; quitar el acceso es un borrado lógico | Evitar dejarse fuera por error; CLAUDE.md §11 |
+| 27/11 | Se mantiene Equipo (PLT-03) aunque no estaba previsto por Manuel | Ya probado; cuentas propias para el personal sin compartir el correo del dueño. Opcional para el local |
 
 ## Decisiones pendientes que afectan a lo construido
 - Módulos activos sin pago en el alta (PLT-01).
