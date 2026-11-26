@@ -137,3 +137,5 @@ Las que han cambiado cómo funciona algo. La lista completa con fechas está en 
 - **Neon:** rama `main` (producción) y `test` (tests). **Pendiente:** crear la rama `dev` para trabajar en local sin tocar producción.
 - **Migraciones:** en producción se aplican a mano con `pnpm db:migrate:deploy` contra la conexión directa de `main` hasta que haya CI.
 - **Resend:** dominio `cubierto.site` verificado; la plataforma necesita su propia clave en Vercel.
+- **Turborepo:** el cliente de Prisma (`packages/db/src/generated`) está declarado como salida de `@cubierto/db#build` (`packages/db/turbo.json`). Sin eso, cuando turbo reutilizaba la caché no lo recuperaba y la compilación de Vercel fallaba con `Can't resolve './generated/prisma/enums.ts'` (26/11/2026).
+- **Pendiente:** cambiar `sslmode=require` por `sslmode=verify-full` en las cadenas de conexión antes de actualizar a `pg` 9 (hoy solo da un aviso).
