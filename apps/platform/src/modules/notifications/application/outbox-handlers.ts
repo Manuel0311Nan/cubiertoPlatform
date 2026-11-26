@@ -1,3 +1,4 @@
+import { AI_BUDGET_EVENT, aiBudgetHandler } from "./handlers/ai-budget";
 import { INVITATION_EVENT, invitationHandler } from "./handlers/invitation";
 import type { OutboxHandler } from "./outbox-handler";
 
@@ -10,4 +11,5 @@ import type { OutboxHandler } from "./outbox-handler";
  */
 export const OUTBOX_HANDLERS: Readonly<Record<string, OutboxHandler>> = {
   [INVITATION_EVENT]: invitationHandler,
+  [AI_BUDGET_EVENT]: aiBudgetHandler,
 };

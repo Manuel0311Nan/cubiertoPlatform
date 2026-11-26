@@ -16,7 +16,8 @@
     "db:migrate:deploy": "pnpm --filter @cubierto/db migrate:deploy",
     "db:migrate:test": "pnpm --filter @cubierto/db migrate:test",
     "db:migrate:status": "pnpm --filter @cubierto/db migrate:status",
-    "db:seed": "pnpm --filter @cubierto/db seed"
+    "db:seed": "pnpm --filter @cubierto/db seed",
+    "ai:eval": "pnpm --filter @cubierto/platform ai:eval"
   },
   "devDependencies": {
     "turbo": "2.11.13"

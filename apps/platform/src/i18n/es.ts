@@ -231,8 +231,30 @@ export const es = {
   },
   admin: {
     badge: "Superadmin",
-    nav: { tenants: "Locales" },
+    nav: { tenants: "Locales", ai: "IA" },
     navLabel: "Superadmin",
+    ai: {
+      metaTitle: "IA · Superadmin · Cubierto",
+      title: "Servicio de IA",
+      intro: "Conexión con los modelos y gasto del mes. Cada local tiene 2 € al mes por defecto.",
+      mode: { mock: "Proveedor simulado: no se llama a ningún modelo real (tests, previews o AI_PROVIDER=mock).", live: "Proveedores reales." },
+      tiersTitle: "Probar conexión",
+      tiersHint: "Hace una llamada mínima al modelo de cada nivel y la registra como uso interno.",
+      tiers: { fast: "Rápido", standard: "Estándar", advanced: "Avanzado" },
+      columns: { tier: "Nivel", model: "Modelo", fallback: "Respaldo", status: "Estado", actions: "Acciones" },
+      noFallback: "Sin respaldo",
+      available: "Configurado",
+      unavailable: "Sin clave: la IA de este nivel está apagada",
+      test: "Probar conexión",
+      testLabel: (tier: string) => `Probar conexión del nivel ${tier}`,
+      testing: "Probando…",
+      testOk: (tier: string, model: string, ms: number) => `Nivel ${tier}: responde ${model} en ${ms} ms.`,
+      testFailed: (tier: string, code: string) => `Nivel ${tier}: no responde (${code}).`,
+      spendTitle: "Gasto de este mes",
+      spend: (spent: string) => `${spent} en toda la plataforma.`,
+      globalBudget: (budget: string, percent: number) => `Tope global: ${budget} (${percent} % usado).`,
+      noGlobalBudget: "Sin tope global (AI_GLOBAL_BUDGET_EUR).",
+    },
     tenants: {
       metaTitle: "Locales · Superadmin · Cubierto",
       title: "Locales",
@@ -328,6 +350,17 @@ export const es = {
       cta: "Aceptar la invitación",
       fallback: "Si el botón no funciona, copia esta dirección en el navegador:",
       ignore: "Si no esperabas esta invitación, puedes ignorar este email: nadie puede entrar sin el enlace.",
+    },
+    aiBudget: {
+      subject: (threshold: number) => (threshold >= 100 ? "IA: tope del mes alcanzado" : `IA: ${threshold} % del tope del mes`),
+      title: (threshold: number) => (threshold >= 100 ? "Se ha alcanzado el tope de IA del mes" : `La IA va por el ${threshold} % del tope del mes`),
+      body: (spent: string, budget: string, month: string, full: boolean) =>
+        full
+          ? `El gasto de IA de la plataforma en ${month} es de ${spent}, con un tope de ${budget}. Las tareas no esenciales están cortadas hasta el día 1 o hasta que subas el tope (AI_GLOBAL_BUDGET_EUR).`
+          : `El gasto de IA de la plataforma en ${month} es de ${spent}, con un tope de ${budget}. Al llegar al tope se cortan las tareas no esenciales.`,
+      cta: "Ver el uso de IA",
+      fallback: "Si el botón no funciona, copia esta dirección en el navegador:",
+      footer: "Aviso automático de Cubierto para el superadmin.",
     },
   },
 } as const;

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { es } from "@/i18n/es";
 import { signOutAction } from "@/modules/identity/actions";
 import { requireSuperadmin } from "@/modules/identity/session";
+import { AdminNavLink } from "@/ui/admin/admin-nav-link";
 
 const t = es.admin;
 
@@ -18,12 +18,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="rounded-full bg-saffron/20 px-2.5 py-0.5 text-[0.8125rem] font-[650] text-[#f5c766]">{t.badge}</span>
         </div>
         <nav aria-label={t.navLabel}>
-          <Link
-            href="/admin"
-            className="font-semibold underline decoration-saffron decoration-[3px] underline-offset-[7px]"
-          >
-            {t.nav.tenants}
-          </Link>
+          <ul className="flex gap-5">
+            <li>
+              <AdminNavLink href="/admin" also="/admin/locales">
+                {t.nav.tenants}
+              </AdminNavLink>
+            </li>
+            <li>
+              <AdminNavLink href="/admin/ia">{t.nav.ai}</AdminNavLink>
+            </li>
+          </ul>
         </nav>
         <div className="ms-auto flex items-center gap-4 text-sm">
           <span className="text-line">{user.name || user.email}</span>

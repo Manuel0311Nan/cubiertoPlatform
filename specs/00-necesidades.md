@@ -129,6 +129,7 @@ Lista de partida; se completa en cada PR que añada una.
 | 26/11/2026 | Datos, horario y cierres del local (PLT-04) en Ajustes → El local, solo para `OWNER`. Los cierres son días enteros del local (`ClosedDate`); en F3 se añade el cierre de un solo turno | `modulos/00-plataforma.md` PLT-04 |
 | 26/11/2026 | Mesas (PLT-05) en Ajustes → Mesas, solo para `OWNER`; no se borran, se desactivan; regenerar el QR pide confirmación | `modulos/00-plataforma.md` PLT-05 |
 | 27/11/2026 | Equipo (PLT-03) en Ajustes → Equipo: dos papeles, nadie se cambia ni se quita a sí mismo, quitar el acceso y cancelar invitaciones sin borrar filas | `modulos/00-plataforma.md` PLT-03 |
+| 28/11/2026 | Base del servicio de IA: 2 € al mes por local, solo Anthropic en el MVP, precios en euros a 0,90 $/€ y mes contado en hora de Madrid | `modulos/04-ia.md` §8 |
 
 ## 8. Decisiones pendientes
 

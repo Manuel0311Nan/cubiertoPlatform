@@ -47,6 +47,13 @@ enum TableShape {
   RECT
 }
 
+enum AiJobStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
 enum OutboxStatus {
   PENDING
   SENT
@@ -79,6 +86,9 @@ model Tenant {
   closedDates    ClosedDate[]
   /// Sesiones con este local como activo (PLT-02)
   activeSessions Session[]
+  aiSettings     AiSettings?
+  aiUsage        AiUsage[]
+  aiJobs         AiJob[]
 }
 
 model User {
@@ -373,5 +383,77 @@ model AuditLog {
   tenant Tenant? @relation(fields: [tenantId], references: [id])
   actor  User?   @relation(fields: [actorUserId], references: [id])
 
+  @@index([tenantId, createdAt])
+}
+
+// ─── Servicio de IA (04-ia.md) ─────────────────────────────────────────────────
+
+/// AI-04: IA activada, presupuesto mensual y tareas desactivadas de un local. Sin fila = valores por defecto.
+model AiSettings {
+  tenantId            String   @id
+  enabled             Boolean  @default(true)
+  /// Micro-euros (1 € = 1.000.000). 2 € al mes por defecto (04-ia.md §8)
+  monthlyBudgetMicros Int      @default(2000000)
+  /// Ids de tarea desactivados para este local ("menu.translate")
+  disabledTasks       String[] @default([])
+  updatedAt           DateTime @updatedAt @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+}
+
+/// AI-03: una fila por llamada a un modelo, también si falla. Sin texto del prompt ni de la respuesta (AI-07).
+model AiUsage {
+  id           String   @id @default(cuid())
+  /// null = uso interno o del superadmin ("Probar conexión")
+  tenantId     String?
+  taskId       String
+  taskVersion  Int
+  /// "anthropic", "mock"
+  provider     String
+  /// "anthropic:claude-haiku-5-5"
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  /// Coste estimado en micro-euros con la tabla de packages/ai/src/pricing.ts
+  costMicros   Int
+  latencyMs    Int
+  /// ok | invalid_output | timeout | provider_error
+  status       String
+  jobId        String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([taskId, createdAt])
+  @@index([createdAt])
+}
+
+/// AI-05: tarea larga en segundo plano (p. ej. traducir una carta entera).
+model AiJob {
+  id             String      @id @default(cuid())
+  tenantId       String
+  taskId         String
+  taskVersion    Int
+  /// Evita duplicar el trabajo si se pulsa dos veces
+  idempotencyKey String
+  input          Json
+  output         Json?
+  status         AiJobStatus @default(PENDING)
+  attempts       Int         @default(0)
+  /// Siguiente intento; mientras corre, hasta cuándo lo tiene reservado un proceso (como el outbox)
+  nextAttemptAt  DateTime    @default(now()) @db.Timestamptz(3)
+  /// Progreso para el panel ("Traduciendo 34 de 80 platos"); lo actualiza el trabajo si tiene partes
+  progressDone   Int         @default(0)
+  progressTotal  Int?
+  /// Código del último fallo (AI_TIMEOUT…), sin datos del local
+  error          String?
+  createdAt      DateTime    @default(now()) @db.Timestamptz(3)
+  finishedAt     DateTime?   @db.Timestamptz(3)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([status, nextAttemptAt])
   @@index([tenantId, createdAt])
 }

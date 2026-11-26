@@ -10,8 +10,8 @@ try {
 }
 
 const nextConfig: NextConfig = {
-  // packages/db se usa como código fuente TypeScript.
-  transpilePackages: ["@cubierto/db"],
+  // packages/db y packages/ai se usan como código fuente TypeScript.
+  transpilePackages: ["@cubierto/db", "@cubierto/ai"],
 };
 
 export default nextConfig;
